@@ -1,0 +1,9 @@
+-----instalar el conector de Mysql-Python
+sudo apt-get install python-mysql.connector
+sudo apt-get install python-serial
+
+Otros (No probados, pero podrian ser necesarios)
+sudo apt-get install python-pip
+sudo pip install -U pip
+sudo apt-get install python-dev libmysqlclient-dev
+sudo pip install MySQL-python

@@ -1,0 +1,7 @@
+* depreciacion de activos
+* Alertas
+* Hacer notas  de Devolucion de productos para retiro de productos que pueda afectar una cuenta x pagar del proveedor puede ser por factura de compra.
+* Documento equivalente a Factura (Cuenta de Cobro)
+* Libros Oficiales (Mayor y Balances) de inventarios
+* Otros impuestos caleñas
+* Informe  de ventas por subgrupos
