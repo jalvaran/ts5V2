@@ -30,22 +30,22 @@ class PageConstruct extends html_estruct_class{
                 print($Titulo);
                 $this->Ctitle();
                 if($CssFramework==1){
-                    print('<link rel="stylesheet" href="../../bower_components/bootstrap/dist/css/bootstrap.min.css">');
+                    print('<link rel="stylesheet" href="../../componentes/bootstrap/dist/css/bootstrap.min.css">');
 
                 }
                 print("<link rel='shortcut icon' href='../../images/technoIco.ico'>");
-                print('<link rel="stylesheet" href="../../bower_components/font-awesome/css/font-awesome.min.css">');
-                print('<link rel="stylesheet" href="../../bower_components/Ionicons/css/ionicons.min.css">');
-                print('<link rel="stylesheet" href="../../bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">');
+                print('<link rel="stylesheet" href="../../componentes/font-awesome/css/font-awesome.min.css">');
+                print('<link rel="stylesheet" href="../../componentes/Ionicons/css/ionicons.min.css">');
+                print('<link rel="stylesheet" href="../../componentes/datatables.net-bs/css/dataTables.bootstrap.min.css">');
                 print('<link rel="stylesheet" href="../../dist/css/AdminLTE.css">');
                 print('<link rel="stylesheet" href="../../dist/css/skins/_all-skins.min.css">');
-                print('<link rel="stylesheet" href="../../bower_components/fonts/css.css">');
-                print('<link rel="stylesheet" href="../../bower_components/techno/css/checkts.css">');
-                print('<link rel="stylesheet" href="../../bower_components/techno/css/css_ts.css">');                 
-                print('<link rel="stylesheet" href="../../bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">'); 
-                print("<link rel='stylesheet' href='../../bower_components/alertify/themes/alertify.core.css' />");
-                print("<link rel='stylesheet' href='../../bower_components/alertify/themes/alertify.default.css' id='toggleCSS' />");
-                print('<link rel="stylesheet" href="../../bower_components/select2/dist/css/select2.min.css">');       
+                print('<link rel="stylesheet" href="../../componentes/fonts/css.css">');
+                print('<link rel="stylesheet" href="../../componentes/techno/css/checkts.css">');
+                print('<link rel="stylesheet" href="../../componentes/techno/css/css_ts.css">');                 
+                print('<link rel="stylesheet" href="../../componentes/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">'); 
+                print("<link rel='stylesheet' href='../../componentes/alertify/themes/alertify.core.css' />");
+                print("<link rel='stylesheet' href='../../componentes/alertify/themes/alertify.default.css' id='toggleCSS' />");
+                print('<link rel="stylesheet" href="../../componentes/select2/dist/css/select2.min.css">');       
 
             $this->Chead();
             $this->body("", "hold-transition skin-blue sidebar-mini");
@@ -703,24 +703,24 @@ class PageConstruct extends html_estruct_class{
      * Agrega los JavaScripts Necesarios
      */
     public function AgregaJS(){
-        print('<script src="../../bower_components/jquery/dist/jquery.min.js"></script>');
-        print('<script src="../../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>');
-        print('<script src="../../bower_components/datatables.net/js/jquery.dataTables.min.js"></script>');
-        print('<script src="../../bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>');
-        print('<script src="../../bower_components/jquery-slimscroll/jquery.slimscroll.min.js"></script>');
-        print('<script src="../../bower_components/fastclick/lib/fastclick.js"></script>');
-        print('<script src="../../bower_components/alertify/lib/alertify.min.js"></script>');
-        print('<script src="../../bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>');
+        print('<script src="../../componentes/jquery/dist/jquery.min.js"></script>');
+        print('<script src="../../componentes/bootstrap/dist/js/bootstrap.min.js"></script>');
+        print('<script src="../../componentes/datatables.net/js/jquery.dataTables.min.js"></script>');
+        print('<script src="../../componentes/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>');
+        print('<script src="../../componentes/jquery-slimscroll/jquery.slimscroll.min.js"></script>');
+        print('<script src="../../componentes/fastclick/lib/fastclick.js"></script>');
+        print('<script src="../../componentes/alertify/lib/alertify.min.js"></script>');
+        print('<script src="../../componentes/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>');
         
         print('<script src="../../dist/js/adminlte.min.js"></script>');
         print('<script src="../../dist/js/admintss.js"></script>');
-        print('<script src="../../bower_components/select2/dist/js/select2.full.min.js"></script>');
+        print('<script src="../../componentes/select2/dist/js/select2.full.min.js"></script>');
         print('<script src="../../general/js/tablas.js"></script>');  //script genrral de la pagina
         //print('<script type="text/javascript" src="../ext/jquery/jquery-1.11.0.min.js"></script>');
         
     }
     public function AgregaAngular(){
-        print('<script src="../../bower_components/angularjs/angular.min.js"></script>');
+        print('<script src="../../componentes/angularjs/angular.min.js"></script>');
     }
     /**
      * Crea una barra de progreso
