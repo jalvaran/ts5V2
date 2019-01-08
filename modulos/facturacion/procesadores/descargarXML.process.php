@@ -13,7 +13,7 @@ $param = array('<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap
 
          <!--Optional:-->
 
-         <tem:documentID>4af54ea328944c83b1ffe615b5867e6a</tem:documentID>
+         <tem:documentID>2d369ffd286f4b0dbfa3ed127a9b9f5f</tem:documentID>
 
          <!--Optional:-->
 
@@ -39,9 +39,9 @@ $param = array('<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap
 
 // Call RemoteFunction () 
 $error = 0; 
-$ID='fff23f27950d469ab96644f7b071e641';
+$ID='2d369ffd286f4b0dbfa3ed127a9b9f5f';
 try { 
-	$result= $client->__call("DescargarXML", $ID); 
+	$result= $client->__call("DescargarXML", $param); 
 } catch (SoapFault $fault) { 
     $error = 1; 
     print(" 

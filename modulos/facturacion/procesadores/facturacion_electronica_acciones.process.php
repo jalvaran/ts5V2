@@ -18,7 +18,7 @@ if(isset($_REQUEST["idAccion"])){
             $idFactura=$obCon->normalizar($_REQUEST["idFactura"]);
             $WebService=$obCon->DevuelveValores("fe_webservice", "ID", 1); //Tabla que aloja la direccion del web service
             $client = new SoapClient($WebService["DireccionWebService"]);
-            $param=$obCon->ConstruyaLayoutEmitirFactura($idFactura); 
+            $param=$obCon->ConstruyaLayoutEmitirFactura($WebService["User"],$WebService["Pass"],$idFactura); 
             /*
             print("<pre>");
             print_r($param);
@@ -28,11 +28,43 @@ if(isset($_REQUEST["idAccion"])){
             $error = 0; 
             try { 
                 $result= $client->__call("EmitirComprobante", array($param));
-                print_r($result);
-                //$EmitirComprobanteResult=$result->EmitirComprobanteResult;
-                //$errorMessage=$EmitirComprobanteResult->MensajeDocumentStatus->errorMessage;
-                //var_dump($result);
-                //print_r($errorMessage);
+                $EmitirComprobanteResult=$result->EmitirComprobanteResult;
+	
+                $XMLFiscalValido=$EmitirComprobanteResult->XMLFiscalValido;
+                $fileName=$EmitirComprobanteResult->fileName;
+                $documentNumber=$EmitirComprobanteResult->documentNumber;
+                $transactionId=$EmitirComprobanteResult->ID;
+                $msgError=$EmitirComprobanteResult->MensajeErrorLAYOUT;
+
+                //document status
+                $processName=$EmitirComprobanteResult->MensajeDocumentStatus->processName;
+                $processStatus=$EmitirComprobanteResult->MensajeDocumentStatus->processStatus;
+                $processDate=$EmitirComprobanteResult->MensajeDocumentStatus->processDate;
+                $messageType=$EmitirComprobanteResult->MensajeDocumentStatus->messageType;
+                $errorMessage=$EmitirComprobanteResult->MensajeDocumentStatus->errorMessage;
+                $businessStatus=$EmitirComprobanteResult->MensajeDocumentStatus->businessStatus;
+
+                //get CUFE
+                $Status=$EmitirComprobanteResult->MensajeRespuestaCUFE->Status;
+                $CUFE=$EmitirComprobanteResult->MensajeRespuestaCUFE->CUFE;
+                
+                if(!empty($XMLFiscalValido)){
+
+                        $myfilexmlResponse = fopen("filename.xml", "w");
+                        fwrite($myfilexmlResponse, $XMLFiscalValido);
+                        fclose($myfilexmlResponse);
+
+
+                        echo 'Done!';
+
+                }
+                else{
+                        echo $errorMessage;
+                }
+
+                echo '<br><br>';
+                var_dump($result);
+
                 
             } catch (SoapFault $fault) { 
                 $error = 1; 

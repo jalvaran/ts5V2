@@ -6,71 +6,91 @@
  */
 
 class Factura_Electronica extends ProcesoVenta{
-    public function ConstruyaLayoutEmitirFactura($idFactura) {
+    public function ConstruyaLayoutEmitirFactura($UserWebService,$PassWebService,$idFactura) {
+        $DatosFactura=$this->DevuelveValores("facturas", "idFacturas", $idFactura);
+        $idEmpresaPro=$DatosFactura["EmpresaPro_idEmpresaPro"];
+        $DatosEmpresaPro=$this->DevuelveValores("empresapro", "idEmpresaPro", $idEmpresaPro);
+        $DatosCliente=$this->DevuelveValores("clientes", "idClientes", $DatosFactura["Clientes_idClientes"]);
         $DocumentoFE="FACTURA";
-        $TipoDocumentoFE="INVOIC";
-        $UserWebService="programacion@facturatech.co";
-        $PassWebService="Demo.Col2018.1";
-        $NitEmisor="901143311";
-        $DVEmisor="07";
-        $NitAdquiriente="94481747";
+        $TipoDocumentoFE="INVOIC";        
+        $NitEmisor=$DatosEmpresaPro["NIT"];
+        $DVEmisor=str_pad($DatosEmpresaPro["DigitoVerificacion"], 2, "0", STR_PAD_LEFT);
+        $NitEmisorCompleto=$NitEmisor."-".$DVEmisor;
+        $NitAdquiriente=$DatosCliente["Num_Identificacion"];
         $UBLVersion="UBL 2.0";
         $VersionFormatoDocumento="DIAN 1.0";
-        $PrefijoFactura="PRUE";
-        $NumeroFactura="980000513";
+        $PrefijoFactura=$DatosFactura["Prefijo"];
+        $NumeroFactura=$DatosFactura["NumeroFactura"];
         $FacturaCompleta=$PrefijoFactura.$NumeroFactura;
-        $FechaFactura="2018-11-30";
-        $HoraFactura="09:19:19";
+        $FechaFactura=$DatosFactura["Fecha"];
+        $HoraFactura=$DatosFactura["Hora"];
         $TipoFactura=1;//1 Factura 9 Nota Credito
         $MonedaFactura="COP";
-        $FechaVencimiento="2018-12-30";
-        $EmisorTipoPersona=3; //1 Juridica 2 Persona Natural
-        $EmisorTipoDocumento=31; //Tabla tipos_documentos
-        $EmisorNumTipoRegimen=2; //0 Simplificado 2 Comun 
-        $EmisorRazonSocial="Ftech Colombia SAS";
-        $EmisorDireccion="AvPoblado Cra 43 A 19 17";
-        $EmisorDepartamento="ANTIOQUIA";
-        $EmisorCiudad="MEDELLIN";
-        $EmisorBarrio="MEDELLIN";
+        $Datos["Fecha"]=$DatosFactura["Fecha"];
+        $Datos["Dias"]=30;
+        $FechaVencimiento=$this->SumeDiasFecha($Datos);
+        $EmisorTipoPersona=$DatosEmpresaPro["TipoPersona"]; //1 Juridica 2 Persona Natural
+        $EmisorTipoDocumento=$DatosEmpresaPro["TipoDocumento"]; //Tabla tipos_documentos
+        $EmisorNumTipoRegimen=0;
+        if($DatosEmpresaPro["Regimen"]=='COMUN'){
+            $EmisorNumTipoRegimen=2; //0 Simplificado 2 Comun 
+        }
+        
+        $EmisorRazonSocial=$DatosEmpresaPro["RazonSocial"];
+        $EmisorDireccion=$DatosEmpresaPro["Direccion"];
+        $DatosDepartamentos=$this->DevuelveValores("cod_municipios_dptos", "Ciudad", $DatosEmpresaPro["Ciudad"]);
+        $EmisorDepartamento=$DatosDepartamentos["Departamento"];
+        $EmisorCiudad=$DatosEmpresaPro["Ciudad"];
+        $EmisorBarrio=$DatosEmpresaPro["Barrio"];
         $EmisorCodigoPais="CO";
         $EmisorPais="Colombia";
         //Actividades del RUT
-        $TAC="      (TAC)
-
-		TAC_1:O-42;
-
-	(/TAC)
-
-	(TAC)
-
-		TAC_1:O-42;
-
-	(/TAC)
-                            ";
+        $Actividades = explode(";", $DatosEmpresaPro["ActividadesEconomicas"]);
+       
+        foreach ($Actividades as $key => $value) {
+            $TAC="(TAC)TAC_1:$value;(/TAC)";
+        }
+        
         $EmisorMatriculaMercantil="1234567";
         
         //Datos Adquiriente
-        $AdqTipoPersona=2; //1 Juridica 2 Persona Natural
-        $AdqNit="94481747";
+        
+        $AdqNit=$DatosCliente["Num_Identificacion"];
         $AdqTipoDocumento=13;
+        $AdqTipoPersona=2;
+        if($AdqTipoDocumento==31 or $AdqTipoDocumento==44){
+            $AdqTipoPersona=1; //1 Juridica 2 Persona Natural
+        }
         $adqNumTipoRegimen=0;
 
 
-        $AdqRazonSocial="JULIAN ANDRES ALVARAN VALENCIA";
-        $AdqNombres="JULIAN ANDRES";
-        $adqApellidos="ALVARAN VALENCIA";
+        $AdqRazonSocial=$DatosCliente["RazonSocial"];
+        $AdqNombres=$DatosCliente["Primer_Nombre"]." ".$DatosCliente["Otros_Nombres"];
+        $adqApellidos=$DatosCliente["Primer_Apellido"]." ".$DatosCliente["Segundo_Apellido"];
 
-        $AdqDireccion="CALLE 19A 18-26";
-        $AdqDepartamento="VALLE DEL CAUCA";
-        $AdqBarrio="GUADALAJARA DE BUGA";
-        $AdqCiudad="GUADALAJARA DE BUGA";
+        $AdqDireccion=$DatosCliente["Direccion"];
+        $DatosDepartamentos=$this->DevuelveValores("cod_municipios_dptos", "Ciudad", $DatosCliente["Ciudad"]);
+        $AdqDepartamento=$DatosDepartamentos["Departamento"];
+        $AdqBarrio=$DatosCliente["Ciudad"];
+        $AdqCiudad=$DatosCliente["Ciudad"];
         $AdqCodigoPais="CO";
         $AdqCodigoComercio=0; //0 si se desconoce
         $AdqInfoTributariaAduana="O-99";  // O-99 si se desconoce
         $AdqContactoTipo=1; // 1 Persona de contacto, 2 de Entrega,3 de contabilidad, 4 de compras, 5 procesamiento del pedido
-        $AdqContactoNombre="JULIAN ALVARAN";
-        $AdqContactoTelefono="3177740609";
-        $AdqContactoMail="jalvaran@gmail.com";
+        $AdqContactoNombre=$DatosCliente["Contacto"];
+        $AdqContactoTelefono=$DatosCliente["TelContacto"];
+        $AdqContactoMail=$DatosCliente["Email"];
+        
+        //Datos Resolucion
+        $DatosResolucion=$this->DevuelveValores("empresapro_resoluciones_facturacion", "ID", $DatosFactura["idResolucion"]);
+        $NumeroResolucion=$DatosResolucion["NumResolucion"];
+        $FechaInicioResolucion=$DatosResolucion["Fecha"];
+        $FechaFinResolucion=$DatosResolucion["FechaVencimiento"];
+        $PrefijoResolucion=$DatosResolucion["Prefijo"];
+        $RangoInicialResolucion=$DatosResolucion["Desde"];
+        $RangoFinalResolucion=$DatosResolucion["Hasta"];
+        //Notas legales
+        $NotasLegales=$DatosEmpresaPro["ResolucionDian"];
         
         //Totales de la factura
         
@@ -111,26 +131,12 @@ class Factura_Electronica extends ProcesoVenta{
         $ModedaDescuento="COP";
         $CodigoDescuento=19;
         $IndicadorSecuenciaCalculo=1;
-        
-        //Datos Resolucion
-        
-        $NumeroResolucion="9000000123973223";
-        $FechaInicioResolucion="2018-01-11";
-        $FechaFinResolucion="2028-01-11";
-        $PrefijoResolucion="PRUE";
-        $RangoInicialResolucion=980000000;
-        $RangoFinalResolucion=985000000;
-        
         //Total impuestos
         
         $TotalesImpuestos=190.00;
         $ImpuestosMoneda="COP";
         $TotalFactura=1000.00;
         $MonedaTotal="COP";
-        
-        //Notas legales
-        
-        $NotasLegales="IVA REGIMEN COMUN ACTIVIDAD ECONOMICA CIIU 8020";
 
         //Referencias, se refiere a los documentos enviados por el proveedor ejemplo cotizaciones, ordenes de compra, etc
 
@@ -165,10 +171,11 @@ class Factura_Electronica extends ProcesoVenta{
         
         $ItemDescuentoTipo="false"; //false descuento,true cargo
         $TotalDescuentoItem=0.00;
-        $MonedaDescuentoItem="COP";
+        $MonedaDescuentoItem="COP";  
         
-        $param = array('LayOut' => "[".$NitEmisor."]
-            [".$NitEmisor."-".$DVEmisor."]
+        
+        $param['LayOut'] = "[".$NitEmisor."]
+            [$NitEmisorCompleto]
             [NO]
             [".$DocumentoFE."]
             [".$UserWebService."]
@@ -235,7 +242,45 @@ class Factura_Electronica extends ProcesoVenta{
                     (/ICC)
 
             (/EMI)
+            
+            (DRF)
 
+                    DRF_1:".$NumeroResolucion.";
+
+                    DRF_2:".$FechaInicioResolucion.";
+
+                    DRF_3:".$FechaFinResolucion.";
+
+                    DRF_4:".$PrefijoResolucion.";
+
+                    DRF_5:".$RangoInicialResolucion.";
+
+                    DRF_6:".$RangoFinalResolucion.";      
+
+            (/DRF)
+            
+            (NOT)
+
+                    NOT_1: ".$NotasLegales.";
+
+            (/NOT)
+
+            (REF)
+
+                    REF_1:".$ReferenciaTipo.";
+
+                    REF_2:".$NumReferencia.";
+
+                    REF_3:".$FechaDocumentoReferencia.";
+
+            (/REF)
+
+            (CTS)
+
+                    CTS_1:".$CodigoPlantilla.";
+
+            (/CTS)
+            
             (ADQ)
 
                     ADQ_1:".$AdqTipoPersona.";
@@ -331,8 +376,6 @@ class Factura_Electronica extends ProcesoVenta{
 
                     (/IMP)
 
-
-
             (/TIM)
 
             (TDC)
@@ -363,22 +406,6 @@ class Factura_Electronica extends ProcesoVenta{
 
             (/DSC)
 
-            (DRF)
-
-                    DRF_1:".$NumeroResolucion.";
-
-                    DRF_2:".$FechaInicioResolucion.";
-
-                    DRF_3:".$FechaFinResolucion.";
-
-                    DRF_4:".$PrefijoResolucion.";
-
-                    DRF_5:".$RangoInicialResolucion.";
-
-                    DRF_6:".$RangoFinalResolucion.";      
-
-            (/DRF)
-
             (ITD)
 
                     ITD_1:".$TotalesImpuestos.";
@@ -390,28 +417,6 @@ class Factura_Electronica extends ProcesoVenta{
                     ITD_6:".$MonedaTotal.";
 
             (/ITD)
-
-            (NOT)
-
-                    NOT_1: ".$NotasLegales.";
-
-            (/NOT)
-
-            (REF)
-
-                    REF_1:".$ReferenciaTipo.";
-
-                    REF_2:".$NumReferencia.";
-
-                    REF_3:".$FechaDocumentoReferencia.";
-
-            (/REF)
-
-            (CTS)
-
-                    CTS_1:".$CodigoPlantilla.";
-
-            (/CTS)
             
             (ITE)
 
@@ -458,442 +463,10 @@ class Factura_Electronica extends ProcesoVenta{
 
                    (/IDE)
 
-                   (/ITE)
+            (/ITE)
 
-            [/FACTURA]");
+            [/FACTURA]";
         
-        
-        $paramok = array('LayOut' => "[901143311]
-[901143311-01]
-[NO]
-[FACTURA]
-[programacion@facturatech.co]
-[Demo.Col2018.1]
-(ENC)
-
-	ENC_1:INVOIC;
-
-	ENC_2:901143311;  
-
-	ENC_3:985499999;  
-
-	ENC_4:UBL 2.0;
-
-	ENC_5:DIAN 1.0;
-
-	ENC_6:".$FacturaCompleta."; 
-
-	ENC_7:2018-07-17;
-
-	ENC_8:08:15:19;
-
-	ENC_9:1;
-
-	ENC_10:COP;
-
-	ENC_16:2018-11-25;
-(/ENC)
-
-(EMI)
-
-	EMI_1:3;
-
-	EMI_2:901143311; 
-
-	EMI_3:31;
-
-	EMI_4:2;
-
-	EMI_6:Ftech Colombia SAS;
-
-	EMI_10:AvPoblado Cra 43 A 19 17;
-
-	EMI_11:ANTIOQUIA;
-
-	EMI_12:MEDELLIN;
-
-	EMI_13:MEDELLIN;
-
-	EMI_15:CO;
-
-	EMI_19:ANTIOQUIA;
-
-	EMI_20:MEDELLIN;
-
-	EMI_21:Colombia;
-
-	(TAC)
-
-		TAC_1:O-42;
-
-	(/TAC)
-
-	(TAC)
-
-		TAC_1:O-42;
-
-	(/TAC)
-
-	(ICC)
-
-		ICC_1:1234567;
-
-	(/ICC)
-
-(/EMI)
-
-(ADQ)
-
-	ADQ_1:1;
-
-	ADQ_2:985499999;
-
-	ADQ_3:13;
-
-	ADQ_4:2;
-
-	ADQ_6:VANEGAS SOTO LUIS ALEJANDRO;
-
-	ADQ_8:VANEGAS SOTO LUIS ALEJANDRO;
-
-	ADQ_9:VANEGAS SOTO LUIS ALEJANDRO;
-
-	ADQ_10:CL 34  25  44;
-
-	ADQ_11:SANTANDER;
-
-	ADQ_12:BUCARAMANGA;
-
-	ADQ_13:BUCARAMANGA;
-
-	ADQ_15:CO;
-
-	ADQ_17:1234567;
-
-	(TCR)
-
-		TCR_1:O-99;
-
-	(/TCR)
-
-	(ICR/)
-	(CDA)
-		CDA_1:1;
-		CDA_2:Test;
-		CDA_3:9999999;
-		CDA_4:carlosmario.ep@gmail.co;
-	(/CDA)
-(/ADQ)
-
-(TOT)
-
-	TOT_1:0.0;
-
-	TOT_2:COP;
-
-	TOT_3:1700.3;
-
-	TOT_4:COP;
-
-	TOT_5:2099.14;
-
-	TOT_6:COP;
-
-	TOT_7:2099.14;
-
-	TOT_8:COP;
-
-	TOT_10:COP;
-
-	TOT_12:COP;
-
-(/TOT)
-
-(TIM)
-
-	TIM_1:false;
-
-	TIM_2:398.84;
-
-	TIM_3:COP;
-
-	(IMP)
-
-		IMP_1:01;
-
-		IMP_2:0.0;
-
-		IMP_3:COP;
-
-		IMP_4:0.0;
-
-		IMP_5:COP;
-
-		IMP_6:19.0;
-
-	(/IMP)
-
-	(IMP)
-
-		IMP_1:01;
-
-		IMP_2:850.15;
-
-		IMP_3:COP;
-
-		IMP_4:199.42;
-
-		IMP_5:COP;
-
-		IMP_6:19.0;
-
-	(/IMP)
-
-	(IMP)
-
-		IMP_1:01;
-
-		IMP_2:850.15;
-
-		IMP_3:COP;
-
-		IMP_4:199.42;
-
-		IMP_5:COP;
-
-		IMP_6:19.0;
-
-	(/IMP)
-
-(/TIM)
-
-(TDC)
-
-	TDC_1:COP;
-
-	TDC_2:COP;
-
-	TDC_3:1.0;
-
-(/TDC)
-
-(DSC)
-
-	DSC_1:false;
-
-	DSC_2:12.0;
-
-	DSC_3:12.0;
-
-	DSC_4:COP;
-
-	DSC_5:19;
-
-	DSC_8:COP;
-
-	DSC_9:1;
-
-(/DSC:
-
-(DRF)
-
-	DRF_1:9000000123973223;
-
-	DRF_2:2018-01-11;
-
-	DRF_3:2028-01-11;
-
-	DRF_4:PRUE;
-
-	DRF_5:980000000;
-
-	DRF_6:985000000;      
-
-(/DRF)
-
-(ITD)
-
-	ITD_1:398.84;
-
-	ITD_2:COP;
-
-	ITD_5:398.84;
-
-	ITD_6:COP;
-
-(/ITD)
-
-(NOT)
-
-	NOT_1: SOMOS AUTORETENEDORES RES 6777 JUL 28/2008, GRANDES CONTRIBUYENTES RES 7714 de 16 de Dic de 1998, NO EFECTUAR RETENCI?N SOBRE EL IVA IVA - REGIMEN COMUN;
-
-(/NOT)
-
-(REF)
-
-	REF_1:IV;
-
-	REF_2:0000200216;
-
-	REF_3:2017-09-26;
-
-(/REF)
-
-(CTS)
-
-	CTS_1:CGEN01;
-
-(/CTS)
-
-(FE1)
-
-	FE1_1:                           1.00000;
-
-	FE1_2:COP;
-
-	FE1_3:1700.3;
-
-	FE1_4:398.84;
-
-	FE1_5:1700.3;
-
-	(FT1)
-
-		FT1_1:100;
-
-		FT1_2:0.0;
-
-		FT1_3:0.0;
-
-	(/FT1)
-
-	(FT1)
-
-		FT1_1:101;
-
-		FT1_2:1049.57;
-
-		FT1_3:1049.57;
-
-	(/FT1)
-
-	(FT1)
-
-		FT1_1:102;
-
-		FT1_2:1049.57;
-
-		FT1_3:1049.57;
-
-	(/FT1)
-
-(/FE1)
-
-(ITE)
-
-	ITE_1:101;
-
-	ITE_2:true;
-
-	ITE_3:1.0;
-
-	ITE_4:ST;
-
-	ITE_5:850.15;
-
-	ITE_6:COP;
-
-	ITE_7:850.15;
-
-	ITE_8:COP;
-
-	ITE_11:CINT_FEM_UNIFAZ_HEBILLA_ENGANCHE/ROJO/SM;
-
-	ITE_12:CINT_FEM_UNIFAZ_HEBILLA_ENGANCHE/ROJO/SM;
-
-	ITE_14:CR;
-
-	ITE_19:850.15;
-
-	ITE_20:COP;
-
-	ITE_21:850.15;
-
-	ITE_22:COP;
-
-	(IDE)
-
-		IDE_1:false;
-
-		IDE_2:0.0;
-
-		IDE_3:COP;
-
-		IDE_8:COP;
-
-	(/IDE)
-
-(/ITE)
-
-(ITE)
-
-	ITE_1:102;
-
-	ITE_2:true;
-
-	ITE_3:1.0;
-
-	ITE_4:ST;
-
-	ITE_5:850.15;
-
-	ITE_6:COP;
-
-	ITE_7:850.15;
-
-	ITE_8:COP;
-
-	ITE_11:CINT_FEM_UNIFAZ_HEBILLA_ENGANCHE/ROJO/ME;
-
-	ITE_12:CINT_FEM_UNIFAZ_HEBILLA_ENGANCHE/ROJO/ME;
-
-	ITE_14:CR;
-
-	ITE_19:850.15;
-
-	ITE_20:COP;
-
-	ITE_21:850.15;
-
-	ITE_22:COP;
-
-	(IDE)
-
-		IDE_1:false;
-
-		IDE_2:0.0;
-
-		IDE_3:COP;
-
-		IDE_8:COP;
-
-	(/IDE)
-
-	(IDE)
-
-		IDE_1:false;
-
-		IDE_2:0.0;
-
-		IDE_3:COP;
-
-		IDE_8:COP;
-
-	(/IDE)
-
-(/ITE)
-[/FACTURA]");
-        
-        return($paramok);
+        return($param);
     }
 }
