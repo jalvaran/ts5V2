@@ -94,29 +94,89 @@ class Factura_Electronica extends ProcesoVenta{
         
         //Totales de la factura
         
-        $FacturaSubtotal=1000.00;
+        
+        $sql="SELECT SUM(ValorOtrosImpuestos) as ValorOtrosImpuestos,SUM(SubtotalItem) as Subtotal, SUM(IVAItem) as IVA, SUM(TotalItem) as Total, PorcentajeIVA FROM facturas_items "
+                . " WHERE idFactura='$idFactura' GROUP BY PorcentajeIVA";
+        $Consulta=$this->Query($sql);
+        $SubtotalFactura=0;
+        $TotalFactura=0;
+        $TotalIVAFactura=0;
+        $OtrosImpuestos=0;
+        while($TotalesFactura= $this->FetchArray($Consulta)){
+            
+            $OtrosImpuestos=$OtrosImpuestos+$TotalesFactura["ValorOtrosImpuestos"];
+            $SubtotalFactura=$SubtotalFactura+$TotalesFactura["Subtotal"];
+            $TotalFactura=$TotalFactura+$TotalesFactura["Total"];
+            $TotalIVAFactura=$TotalIVAFactura+$TotalesFactura["IVA"];
+            $PorcentajeIVA=$TotalesFactura["PorcentajeIVA"];
+            
+            $TiposIVA[$PorcentajeIVA]=$TotalesFactura["PorcentajeIVA"];
+            $IVA[$PorcentajeIVA]["Valor"]=$TotalesFactura["IVA"];
+            $Bases[$PorcentajeIVA]["Valor"]=$TotalesFactura["Subtotal"];
+        }
+        $TotalBases=0;  
+        $TotalImpuestos=0;
+        $ImpuestosMoneda="COP";
+        $LayoutImpuestos="";
+        foreach($TiposIVA as $PorcentajeIVA){
+
+            if($Bases[$PorcentajeIVA]["Valor"]>0){
+                $TotalBases=$TotalBases+$Bases[$PorcentajeIVA]["Valor"];
+            }
+            if($IVA[$PorcentajeIVA]["Valor"]>0){
+                $TotalImpuestos=$TotalImpuestos+$IVA[$PorcentajeIVA]["Valor"];
+            }
+            //Impuestos
+        
+            
+            $ImpuestosClase="01"; //01 IVA, 02 Impoconsumo, 03 ICA, 
+            $ImpuestosBase=round($Bases[$PorcentajeIVA]["Valor"],2);
+            $ImpuestosMonedaBase="COP";
+            $ImpuestosTotalItemImpuesto=round($IVA[$PorcentajeIVA]["Valor"]);
+            $PorcentajeLimpio=str_replace( "%" , "" , $PorcentajeIVA);
+            $ImpuestosPorcentaje=round($PorcentajeLimpio,2);
+            $DatosImpuestos=$this->DevuelveValores("porcentajes_iva", "Valor", $ImpuestosPorcentaje/100);
+            if($DatosImpuestos["ClaseImpuesto"]<>''){
+                $ImpuestosClase=$DatosImpuestos["ClaseImpuesto"];
+            }
+            $LayoutImpuestos.="(IMP)
+
+                                    IMP_1:".$ImpuestosClase.";
+
+                                    IMP_2:".$ImpuestosBase.";
+
+                                    IMP_3:".$ImpuestosMonedaBase.";
+
+                                    IMP_4:".$ImpuestosTotalItemImpuesto.";
+
+                                    IMP_5:".$ImpuestosMoneda.";
+
+                                    IMP_6:".$ImpuestosPorcentaje.";
+
+                                (/IMP)
+                                ";
+
+        }
+        if($OtrosImpuestos>0){
+            $TotalImpuestos=$TotalImpuestos+$OtrosImpuestos;
+            
+        }
+
+        
+        $FacturaSubtotal=round($SubtotalFactura,2);
         $FacturaMonedaSubtotal="COP";
-        $FacturaBaseImpuestos=1000.00;
+        $FacturaBaseImpuestos=round($TotalBases);
         $FacturaMonedaBaseImpuestos="COP";
-        $FacturaTotalSinImpuestosRetenidos=1190.00;
+        $FacturaTotalSinImpuestosRetenidos=round($TotalFactura,2);
         $FacturaMonedaTotalSinImpuestosRetenidos="COP";
-        $FacturaTotal=1190.00;
+        $FacturaTotal=round($TotalFactura,2);
         $FacturaMonedaTotal="COP";
         $FacturaTotalDescuentos=0;
         $FacturaMonedaDescuentos="COP";
         $FacturaTotalCargos=0;
         $FacturaMonedaCargos="COP";
         
-        //Impuestos
         
-        $ImpuestosTipo="false";//false para IVA o ImpoConsumo
-        $ImpuestosTotal=190.00;
-        $ImpuestosMoneda="COP";
-        $ImpuestosClase="01"; //01 IVA, 02 Impoconsumo, 03 ICA, 
-        $ImpuestosBase=1000.00;
-        $ImpuestosMonedaBase="COP";
-        $ImpuestosTotalItemImpuesto=190.00;
-        $ImpuestosPorcentaje="19.00";
         
         //Tasa de Cambio
         
@@ -133,9 +193,12 @@ class Factura_Electronica extends ProcesoVenta{
         $IndicadorSecuenciaCalculo=1;
         //Total impuestos
         
-        $TotalesImpuestos=190.00;
-        $ImpuestosMoneda="COP";
-        $TotalFactura=1000.00;
+        $ImpuestosTipo="false";//false para IVA o ImpoConsumo
+        $ImpuestosTotal=round($TotalImpuestos,2);
+        
+        $TotalesImpuestos=round($TotalImpuestos,2);
+        
+        $TotalFactura= round($TotalFactura,2);
         $MonedaTotal="COP";
 
         //Referencias, se refiere a los documentos enviados por el proveedor ejemplo cotizaciones, ordenes de compra, etc
@@ -150,30 +213,84 @@ class Factura_Electronica extends ProcesoVenta{
         
         
         $CodigoMonedaCambio="COP";
-        $TotalImporteBrutoMonedaCambio=1000.00;
+        $TotalImporteBrutoMonedaCambio=round($TotalFactura,2);
 
         //Items
         
-        $ItemConsecutivo=1; //Consecutivo del item
-        $TipoItem='false'; //true si el item es gratis, false si se cobra}
-        $ItemCantidad=1.0;
-        $UnidadMedida="ST"; //Ver tabla 12
-        $TotalItem=1000.00;
-        $MonedaItem="COP";
-        $PrecioUnitarioItem=1000.00;
-        $MonedaItem="COP";
-        $ReferenciaItem="REF001";
-        $NombreItem="Soporte Tecnico";
-        $UnidadMedidaEmpaque="CR";
-        $TotlItemConCargos=1000.00;
         
+        
+        $sql="SELECT Referencia,Nombre,ValorUnitarioItem,Cantidad,SubtotalItem FROM facturas_items WHERE idFactura='$idFactura'";
+        $Consulta=$this->Query($sql);
+        $ItemConsecutivo=0;
         //Descuentos items
         
         $ItemDescuentoTipo="false"; //false descuento,true cargo
         $TotalDescuentoItem=0.00;
         $MonedaDescuentoItem="COP";  
-        
-        
+        $LayoutItems="";
+        while($DatosItems=$this->FetchAssoc($Consulta)){
+            $ItemConsecutivo++; //Consecutivo del item
+            $TipoItem='false'; //true si el item es gratis, false si se cobra}
+            $ItemCantidad=$DatosItems["Cantidad"];
+            $UnidadMedida="ST"; //Ver tabla 12
+            $TotalItem=round($DatosItems["SubtotalItem"],2);
+            $MonedaItem="COP";
+            $PrecioUnitarioItem=round($DatosItems["ValorUnitarioItem"],2);
+            $MonedaItem="COP";
+            $ReferenciaItem=$DatosItems["Referencia"];
+            $NombreItem=$DatosItems["Nombre"];
+            $UnidadMedidaEmpaque="CR";
+            $TotlItemConCargos=$TotalItem;
+            
+            $LayoutItems.="(ITE)
+
+                                ITE_1:".$ItemConsecutivo.";
+
+                                ITE_2:".$TipoItem.";
+
+                                ITE_3:".$ItemCantidad.";
+
+                                ITE_4:".$UnidadMedida.";
+
+                                ITE_5:".$TotalItem.";
+
+                                ITE_6:".$MonedaItem.";
+
+                                ITE_7:".$PrecioUnitarioItem.";
+
+                                ITE_8:".$MonedaItem.";
+
+                                ITE_11:".$ReferenciaItem.";
+
+                                ITE_12:".$NombreItem.";
+
+                                ITE_14:".$UnidadMedidaEmpaque.";
+
+                                ITE_19:".$TotlItemConCargos.";
+
+                                ITE_20:".$MonedaItem.";
+
+                                ITE_21:".$TotalItem.";
+
+                                ITE_22:".$MonedaItem.";
+
+
+                                (IDE)
+
+                                    IDE_1:".$ItemDescuentoTipo.";
+
+                                    IDE_2:".$TotalDescuentoItem.";
+
+                                    IDE_3:".$MonedaDescuentoItem.";
+
+                                    IDE_8:".$MonedaDescuentoItem.";
+
+                                (/IDE)
+
+                         (/ITE)";
+            
+        }
+               
         $param['LayOut'] = "[".$NitEmisor."]
             [$NitEmisorCompleto]
             [NO]
@@ -360,21 +477,7 @@ class Factura_Electronica extends ProcesoVenta{
 
                     TIM_3:".$ImpuestosMoneda.";
 
-                    (IMP)
-
-                            IMP_1:".$ImpuestosClase.";
-
-                            IMP_2:".$ImpuestosBase.";
-
-                            IMP_3:".$ImpuestosMonedaBase.";
-
-                            IMP_4:".$ImpuestosTotalItemImpuesto.";
-
-                            IMP_5:".$ImpuestosMoneda.";
-
-                            IMP_6:".$ImpuestosPorcentaje.";
-
-                    (/IMP)
+                    $LayoutImpuestos
 
             (/TIM)
 
@@ -418,52 +521,7 @@ class Factura_Electronica extends ProcesoVenta{
 
             (/ITD)
             
-            (ITE)
-
-                   ITE_1:".$ItemConsecutivo.";
-
-                   ITE_2:".$TipoItem.";
-
-                   ITE_3:".$ItemCantidad.";
-
-                   ITE_4:".$UnidadMedida.";
-
-                   ITE_5:".$TotalItem.";
-
-                   ITE_6:".$MonedaItem.";
-
-                   ITE_7:".$PrecioUnitarioItem.";
-
-                   ITE_8:".$MonedaItem.";
-
-                   ITE_11:".$ReferenciaItem.";
-
-                   ITE_12:".$NombreItem.";
-
-                   ITE_14:".$UnidadMedidaEmpaque.";
-
-                   ITE_19:".$TotlItemConCargos.";
-
-                   ITE_20:".$MonedaItem.";
-
-                   ITE_21:".$TotalItem.";
-
-                   ITE_22:".$MonedaItem.";
-
-
-                   (IDE)
-
-                       IDE_1:".$ItemDescuentoTipo.";
-
-                       IDE_2:".$TotalDescuentoItem.";
-
-                       IDE_3:".$MonedaDescuentoItem.";
-
-                       IDE_8:".$MonedaDescuentoItem.";
-
-                   (/IDE)
-
-            (/ITE)
+            $LayoutItems
 
             [/FACTURA]";
         

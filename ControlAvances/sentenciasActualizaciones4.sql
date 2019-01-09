@@ -581,3 +581,5 @@ INSERT INTO `menu_submenus` (`ID`, `Nombre`, `idPestana`, `idCarpeta`, `idMenu`,
 INSERT INTO `configuracion_control_tablas` (`ID`, `TablaDB`, `Agregar`, `Editar`, `Ver`, `LinkVer`, `Exportar`, `AccionesAdicionales`, `Eliminar`, `Updated`, `Sync`) VALUES (6, 'empresapro_resoluciones_facturacion', '1', '1', '0', '', '1', '0', '0', '2018-12-19 11:29:55', '2018-12-19 11:29:55');
 ALTER TABLE `empresapro_resoluciones_facturacion` CHANGE `Fecha` `Fecha` DATE NOT NULL;
 ALTER TABLE `empresapro_resoluciones_facturacion` CHANGE `FechaVencimiento` `FechaVencimiento` DATE NOT NULL;
+
+ALTER TABLE `porcentajes_iva` ADD `ClaseImpuesto` VARCHAR(2) NOT NULL DEFAULT '01' COMMENT '01 para IVA, 02 impoconsumo, 03 ICA' AFTER `Valor`;

@@ -19,6 +19,8 @@ if(isset($_REQUEST["idAccion"])){
             $WebService=$obCon->DevuelveValores("fe_webservice", "ID", 1); //Tabla que aloja la direccion del web service
             $client = new SoapClient($WebService["DireccionWebService"]);
             $param=$obCon->ConstruyaLayoutEmitirFactura($WebService["User"],$WebService["Pass"],$idFactura); 
+            
+            
             /*
             print("<pre>");
             print_r($param);
