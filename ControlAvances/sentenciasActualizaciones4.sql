@@ -561,3 +561,23 @@ INSERT INTO `configuracion_tablas_acciones_adicionales` (`ID`, `TablaDB`, `JavaS
 (2,	'facturas',	'',	'fa fa-fw fa-book',	'Contabilidad',	'../../general/Consultas/PDF_Documentos.draw.php?TipoFactura=CONTABILIDAD&idDocumento=2&ID=	',	'_BLANK',	'2018-12-13 17:15:35',	'0000-00-00 00:00:00'),
 (3,	'facturas',	'',	'fa fa-fw fa-close',	'Anular',	'../../VAtencion/AnularFactura.php?idFactura=',	'_BLANK',	'2018-12-13 17:15:35',	'0000-00-00 00:00:00');
 
+DROP TABLE IF EXISTS `fe_webservice`;
+CREATE TABLE `fe_webservice` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `DireccionWebService` varchar(100) COLLATE utf8_spanish_ci NOT NULL,
+  `User` varchar(45) COLLATE utf8_spanish_ci NOT NULL,
+  `Pass` varchar(45) COLLATE utf8_spanish_ci NOT NULL,
+  `Updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Sync` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+ALTER TABLE `empresapro` ADD `TipoPersona` ENUM("1","2","3") NOT NULL COMMENT '1 Persona jurica, 2 persona natural,3 grandes contribuyentes' AFTER `Regimen`, ADD `TipoDocumento` INT NOT NULL AFTER `TipoPersona`;
+
+ALTER TABLE `empresapro` ADD `ActividadesEconomicas` TEXT NOT NULL AFTER `MatriculoMercantil`;
+
+INSERT INTO `menu_submenus` (`ID`, `Nombre`, `idPestana`, `idCarpeta`, `idMenu`, `TablaAsociada`, `TipoLink`, `JavaScript`, `Pagina`, `Target`, `Estado`, `Image`, `Orden`, `Updated`, `Sync`) VALUES (184, 'Reportes', '16', '3', '0', '', '0', '', '../modulos/contabilidad/ReportesContabilidad.php', '_BLANK', '1', 'reportes.jpg', '4', '2018-12-19 11:51:07', '2018-12-19 11:51:07');
+
+INSERT INTO `configuracion_control_tablas` (`ID`, `TablaDB`, `Agregar`, `Editar`, `Ver`, `LinkVer`, `Exportar`, `AccionesAdicionales`, `Eliminar`, `Updated`, `Sync`) VALUES (6, 'empresapro_resoluciones_facturacion', '1', '1', '0', '', '1', '0', '0', '2018-12-19 11:29:55', '2018-12-19 11:29:55');
+ALTER TABLE `empresapro_resoluciones_facturacion` CHANGE `Fecha` `Fecha` DATE NOT NULL;
+ALTER TABLE `empresapro_resoluciones_facturacion` CHANGE `FechaVencimiento` `FechaVencimiento` DATE NOT NULL;
