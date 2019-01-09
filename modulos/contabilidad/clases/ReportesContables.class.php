@@ -19,6 +19,12 @@ class Contabilidad extends conexion{
         $sql="DROP VIEW IF EXISTS `vista_balancextercero2`;";
         $this->Query($sql);
         $CondicionEmpresa="";
+        $Condicion=" WHERE ";
+        if($Tipo==1){
+            $Condicion.="Fecha>='$FechaInicial' AND Fecha <='$FechaFinal'";
+        }else{
+            $Condicion.="Fecha <='$FechaFinal'";
+        }
         if($Empresa<>"ALL"){
             $CondicionEmpresa=" AND idEmpresa = '$Empresa'";
         }
@@ -33,7 +39,7 @@ class Contabilidad extends conexion{
             SUM(`Debito`) AS Debitos,SUM(`Credito`) AS Creditos,(SUM(`Debito`)-SUM(`Credito`)) AS Neto,
             idEmpresa,idCentroCosto
             FROM `librodiario`
-            WHERE Fecha>='$FechaInicial' AND Fecha <='$FechaFinal' $CondicionEmpresa $CondicionCentroCostos
+            $Condicion $CondicionEmpresa $CondicionCentroCostos
             GROUP BY `Tercero_Identificacion` ORDER BY SUBSTRING(`CuentaPUC`,1,8),Tercero_Razon_Social;";         
         $this->Query($sql);
         
