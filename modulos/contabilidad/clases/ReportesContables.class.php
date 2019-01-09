@@ -29,17 +29,12 @@ class Contabilidad extends conexion{
         }
         $sql="CREATE VIEW vista_balancextercero2 AS
             SELECT '' as ID,`Tercero_Identificacion` as Identificacion,`Tercero_Razon_Social` AS Razon_Social,
-            `CuentaPUC` as Cuenta, `NombreCuenta` as Nombre_Cuenta,
-            (SELECT (SUM(`Debito`)-SUM(`Credito`)) 
-            FROM librodiario 
-            WHERE librodiario.`CuentaPUC`=(SELECT Cuenta) 
-            AND librodiario.`Tercero_Identificacion`=(SELECT Identificacion) 
-            AND librodiario.`Fecha`<'$FechaInicial') AS Saldo_Anterior,
+            `CuentaPUC` as Cuenta, `NombreCuenta` as Nombre_Cuenta,            
             SUM(`Debito`) AS Debitos,SUM(`Credito`) AS Creditos,(SUM(`Debito`)-SUM(`Credito`)) AS Neto,
             idEmpresa,idCentroCosto
             FROM `librodiario`
             WHERE Fecha>='$FechaInicial' AND Fecha <='$FechaFinal' $CondicionEmpresa $CondicionCentroCostos
-            GROUP BY `Tercero_Identificacion` ORDER BY SUBSTRING(`CuentaPUC`,1,8) ;";         
+            GROUP BY `Tercero_Identificacion` ORDER BY SUBSTRING(`CuentaPUC`,1,8),Tercero_Razon_Social;";         
         $this->Query($sql);
         
     }
