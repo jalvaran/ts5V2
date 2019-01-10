@@ -205,13 +205,13 @@ class PageConstruct extends html_estruct_class{
                   <li><!-- Task item -->
                     <a href="#">
                       <h3>
-                        Create a nice theme
-                        <small class="pull-right">40%</small>
+                        Contabilización de Facturas                        
                       </h3>
-                      <div class="progress progress-xs">
-                        <div class="progress-bar progress-bar-green" style="width: 40%" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
-                          <span class="sr-only">40% Complete</span>
-                        </div>
+                      <div id="DivErroresContabilizacionFacturas">
+                                              
+                      </div>
+                      <div id="DivMensajesContabilizacionFacturas">
+                                            
                       </div>
                     </a>
                   </li>

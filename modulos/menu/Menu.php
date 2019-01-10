@@ -73,6 +73,7 @@ $css->PageFin();
 
 print('<script src="../../general/js/notificaciones.js"></script>');
 print('<script src="../../general/js/backups.js"></script>');
+print('<script src="../../general/js/ProcesosConFacturas.js"></script>');
 
 $css->Cbody();
 $css->Chtml();

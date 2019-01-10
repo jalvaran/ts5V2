@@ -583,3 +583,8 @@ ALTER TABLE `empresapro_resoluciones_facturacion` CHANGE `Fecha` `Fecha` DATE NO
 ALTER TABLE `empresapro_resoluciones_facturacion` CHANGE `FechaVencimiento` `FechaVencimiento` DATE NOT NULL;
 
 ALTER TABLE `porcentajes_iva` ADD `ClaseImpuesto` VARCHAR(2) NOT NULL DEFAULT '01' COMMENT '01 para IVA, 02 impoconsumo, 03 ICA' AFTER `Valor`;
+ALTER TABLE `facturas` ADD `ReporteFacturaElectronica` INT(1) NOT NULL COMMENT 'indica si ya fue reportada como factura electronica' AFTER `idTarjetas`;
+ALTER TABLE `ori_facturas` ADD `ReporteFacturaElectronica` INT(1) NOT NULL COMMENT 'indica si ya fue reportada como factura electronica' AFTER `idTarjetas`;
+UPDATE `facturas` SET `ReporteFacturaElectronica`=1;
+ALTER TABLE `facturas` ADD INDEX(`ReporteFacturaElectronica`);
+

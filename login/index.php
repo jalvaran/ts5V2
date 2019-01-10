@@ -14,8 +14,8 @@
         <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css">
 		<link rel="stylesheet" href="assets/css/form-elements.css">
         <link rel="stylesheet" href="assets/css/style.css">
-        <link rel='stylesheet' href='..\bower_components\alertify/themes/alertify.core.css' />
-        <link rel='stylesheet' href='..\bower_components\alertify/themes/alertify.default.css' id='toggleCSS' />
+        <link rel='stylesheet' href='..\componentes\alertify/themes/alertify.core.css' />
+        <link rel='stylesheet' href='..\componentes\alertify/themes/alertify.default.css' id='toggleCSS' />
         <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
@@ -123,7 +123,7 @@
         <script src="assets/bootstrap/js/bootstrap.min.js"></script>
         <script src="assets/js/jquery.backstretch.min.js"></script>
         <script src="assets/js/scripts.js"></script>
-        <script src="..\bower_components\alertify/lib/alertify.min.js"></script>
+        <script src="..\componentes\alertify/lib/alertify.min.js"></script>
         <script src="js/index.js"></script>
         
         <!--[if lt IE 10]>
