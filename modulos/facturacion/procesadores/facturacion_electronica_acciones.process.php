@@ -21,11 +21,11 @@ if(isset($_REQUEST["idAccion"])){
             $param=$obCon->ConstruyaLayoutEmitirFactura($WebService["User"],$WebService["Pass"],$idFactura); 
             
             
-            /*
+           
             print("<pre>");
             print_r($param);
             print("</pre>");
-             */
+             
             // Call RemoteFunction () 
             $error = 0; 
             try { 
@@ -51,21 +51,26 @@ if(isset($_REQUEST["idAccion"])){
                 $CUFE=$EmitirComprobanteResult->MensajeRespuestaCUFE->CUFE;
                 
                 if(!empty($XMLFiscalValido)){
-
-                        $myfilexmlResponse = fopen("filename.xml", "w");
-                        fwrite($myfilexmlResponse, $XMLFiscalValido);
-                        fclose($myfilexmlResponse);
-
-
-                        echo 'Done!';
+                    $Datos["idFactura"]=$idFactura;
+                    $Datos["XmlFiscal"]=str_replace( "'" , "" , $XMLFiscalValido);
+                    $Datos["NumeroDocumento"]=$documentNumber;
+                    $Datos["idDocumento"]=$transactionId;
+                    $Datos["EstadoCUFE"]=$Status;
+                    $Datos["CUFE"]=$CUFE;
+                    $sql=$obCon->getSQLInsert("facturas_electronicas", $Datos);
+                    $obCon->Query($sql);
+                    $myfilexmlResponse = fopen("filename.xml", "w");
+                    fwrite($myfilexmlResponse, $XMLFiscalValido);
+                    fclose($myfilexmlResponse);
+                    echo 'OK';
 
                 }
                 else{
-                        echo $errorMessage;
+                    
+                    echo $errorMessage;
                 }
 
-                echo '<br><br>';
-                var_dump($result);
+                //var_dump($result);
 
                 
             } catch (SoapFault $fault) { 
@@ -77,13 +82,11 @@ if(isset($_REQUEST["idAccion"])){
             } 
             
             catch (Exception $e){
-                    echo 'Error: '.$e->getMessage();
+                echo 'Error: '.$e->getMessage();
             }
             
             break;
 
-                    default:
-                        break;
         }
 }else{
     print("No se recibieron parametros");

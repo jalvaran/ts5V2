@@ -23,7 +23,7 @@ function BackupsIni(){
         data: form_data,
         type: 'post',
         success: function(data){
-            console.log(data);          
+            //console.log(data);          
           if (data == "OK") {                 
                 CrearTablas();                          
           }else {
@@ -55,7 +55,7 @@ function CrearTablas(){
         data: form_data,
         type: 'post',
         success: function(data){
-            console.log(data);
+           // console.log(data);
           var respuestas = data.split(';'); 
           if (respuestas[0] == "OK") { 
               
@@ -142,7 +142,7 @@ function BackupTabla(Tablas,IndiceTabla,TotalTablas,TotalRegistros){
     var tabla=Tablas[IndiceTabla]["Nombre"];
     
     var TotalRegistrosTabla=Tablas[IndiceTabla]["Registros"];
-    console.log(tabla+" "+TotalRegistrosTabla);
+    //console.log(tabla+" "+TotalRegistrosTabla);
     document.getElementById('hTituloBackCreacionTablas').innerHTML="Backup a tabla "+tabla;
           
     var form_data = new FormData();
@@ -159,7 +159,7 @@ function BackupTabla(Tablas,IndiceTabla,TotalTablas,TotalRegistros){
         success: function(data){
             
           var respuestas = data.split(';'); 
-          console.log(data);
+          //console.log(data);
           if (respuestas[0] == "OK") { 
                 var RegistrosFaltantes=respuestas[1];
                 var RegistrosCreados=TotalRegistrosTabla-RegistrosFaltantes;                

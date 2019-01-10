@@ -3140,7 +3140,7 @@ public function CalculePesoRemision($idCotizacion)
         while($Datos =  $this->FetchArray($consulta)){
             $z++;
             for ($i=0;$i<$Leng;$i++){
-                $DatoN=  $this->normalizar($Datos[$i]);
+                $DatoN= str_replace("'", "", $Datos[$i]);
                 if($i==0 and $ai==1){
                    $sql.="'',"; 
                 }else{

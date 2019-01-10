@@ -125,36 +125,39 @@ class Factura_Electronica extends ProcesoVenta{
             }
             if($IVA[$PorcentajeIVA]["Valor"]>0){
                 $TotalImpuestos=$TotalImpuestos+$IVA[$PorcentajeIVA]["Valor"];
+                
+                $ImpuestosClase="01"; //01 IVA, 02 Impoconsumo, 03 ICA, 
+                $ImpuestosBase=round($Bases[$PorcentajeIVA]["Valor"],2);
+                $ImpuestosMonedaBase="COP";
+                $ImpuestosTotalItemImpuesto=round($IVA[$PorcentajeIVA]["Valor"],2);
+                $PorcentajeLimpio=str_replace( "%" , "" , $PorcentajeIVA);
+                $ImpuestosPorcentaje=round($PorcentajeLimpio,2);
+                $DatosImpuestos=$this->DevuelveValores("porcentajes_iva", "Valor", $ImpuestosPorcentaje/100);
+                if($DatosImpuestos["ClaseImpuesto"]<>''){
+                    $ImpuestosClase=$DatosImpuestos["ClaseImpuesto"];
+                }
+                $LayoutImpuestos.="(IMP)
+
+                                        IMP_1:".$ImpuestosClase.";
+
+                                        IMP_2:".$ImpuestosBase.";
+
+                                        IMP_3:".$ImpuestosMonedaBase.";
+
+                                        IMP_4:".$ImpuestosTotalItemImpuesto.";
+
+                                        IMP_5:".$ImpuestosMoneda.";
+
+                                        IMP_6:".$ImpuestosPorcentaje.";
+
+                                    (/IMP)
+                                    ";
+            
             }
             //Impuestos
         
             
-            $ImpuestosClase="01"; //01 IVA, 02 Impoconsumo, 03 ICA, 
-            $ImpuestosBase=round($Bases[$PorcentajeIVA]["Valor"],2);
-            $ImpuestosMonedaBase="COP";
-            $ImpuestosTotalItemImpuesto=round($IVA[$PorcentajeIVA]["Valor"]);
-            $PorcentajeLimpio=str_replace( "%" , "" , $PorcentajeIVA);
-            $ImpuestosPorcentaje=round($PorcentajeLimpio,2);
-            $DatosImpuestos=$this->DevuelveValores("porcentajes_iva", "Valor", $ImpuestosPorcentaje/100);
-            if($DatosImpuestos["ClaseImpuesto"]<>''){
-                $ImpuestosClase=$DatosImpuestos["ClaseImpuesto"];
-            }
-            $LayoutImpuestos.="(IMP)
-
-                                    IMP_1:".$ImpuestosClase.";
-
-                                    IMP_2:".$ImpuestosBase.";
-
-                                    IMP_3:".$ImpuestosMonedaBase.";
-
-                                    IMP_4:".$ImpuestosTotalItemImpuesto.";
-
-                                    IMP_5:".$ImpuestosMoneda.";
-
-                                    IMP_6:".$ImpuestosPorcentaje.";
-
-                                (/IMP)
-                                ";
+            
 
         }
         if($OtrosImpuestos>0){
@@ -165,7 +168,7 @@ class Factura_Electronica extends ProcesoVenta{
         
         $FacturaSubtotal=round($SubtotalFactura,2);
         $FacturaMonedaSubtotal="COP";
-        $FacturaBaseImpuestos=round($TotalBases);
+        $FacturaBaseImpuestos=round($TotalBases,2);
         $FacturaMonedaBaseImpuestos="COP";
         $FacturaTotalSinImpuestosRetenidos=round($TotalFactura,2);
         $FacturaMonedaTotalSinImpuestosRetenidos="COP";
