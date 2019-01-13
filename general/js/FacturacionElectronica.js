@@ -1,15 +1,15 @@
 /**
- * Controlador para realizar los procesos de contabilizacion y descarga de inventarios de facturas
+ * Controlador para realizar los reportes de facturacion electronica
  * JULIAN ALVARAN 2019-01-10
  * TECHNO SOLUCIONES SAS 
  * 317 774 0609
  */
 
 /**
- * Se encarga de crear las tablas en el servidor externo
+ * Revisa las transacciones disponibles
  * @returns {undefined}
  */
-function ContabilizarFacturas(){
+function VerificarDisponibilidadTransacciones(){
        
     var form_data = new FormData();
         form_data.append('idAccion', 1);
@@ -25,8 +25,7 @@ function ContabilizarFacturas(){
         success: function(data){
            // console.log(data);
           var respuestas = data.split(';'); 
-          if (respuestas[0] == "OK") { 
-              
+          if (respuestas[0] == "OK") {               
                 var Mensaje=respuestas[1];
                 if(Mensaje!=''){
                     document.getElementById('DivMensajesContabilizacionFacturas').innerHTML=Mensaje;                
