@@ -1,6 +1,6 @@
 <?php
 /**
- * Pagina base para la plataforma TSS
+ * Pagina para recibir y verificar ordenes de compras
  * 2018-11-27, Julian Alvaran Techno Soluciones SAS
  */
 $myPage="ReciboOrdenCompra.php";
