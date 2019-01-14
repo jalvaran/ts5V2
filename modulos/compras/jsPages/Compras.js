@@ -222,65 +222,92 @@ function DibujeItemsCompra(idCompra=""){
       
 }
 
-/**
- * Guardar la Orden
- * @returns {undefined}
- */
-function GuargarOrden(){
-    var idOrden = document.getElementById('CmbOrdenCompra').value;
-    if(idOrden==""){
-        alertify.alert("Debe seleccionar una Orden de Compra");
-        return;
+function ConvertirSelectBusquedas(){
+    var Listado=document.getElementById('CmbListado').value;
+    if(Listado==1){ //Opcion para buscar un producto
+        document.getElementById('CmbBusquedas').value="";
+        document.getElementById('CodigoBarras').value="";
+        document.getElementById('TxtDescripcion').value="";
+        document.getElementById('ValorUnitario').value="";
+        document.getElementById('Cantidad').value="1";
+        document.getElementById('TxtDescripcion').disabled=true;
+        $('#CmbBusquedas').select2({
+		  
+            placeholder: 'Selecciona un producto',
+            ajax: {
+              url: 'buscadores/productosventa.search.php',
+              dataType: 'json',
+              delay: 250,
+              processResults: function (data) {
+
+                return {                     
+                  results: data
+                };
+              },
+             cache: true
+            }
+          });
     }
     
-    alertify.confirm("Está seguro que desea Gurdar esta orden?",
-    function (e) {
-        if (e) {
     
-    
-    var form_data = new FormData();
-        form_data.append('Accion', 3);
-        form_data.append('idOrden', idOrden);
-        
-        $.ajax({
-        url: './procesadores/ReciboOrdenCompra.process.php',
-        //dataType: 'json',
-        cache: false,
-        contentType: false,
-        processData: false,
-        data: form_data,
-        type: 'post',
-        success: function(data){
-           
-          if (data == "OK") { 
-              alertify.success("Orden de Compra Recibida");
-              document.getElementById('DivItemsOrden').innerHTML="";
-              BorrarSeleccionActual();
-          
-          }else{
-              alertify.alert(data);
-          }
-          
-        },
-        error: function (xhr, ajaxOptions, thrownError) {
-            alert(xhr.status);
-            alert(thrownError);
-          }
-      })  
-  
-    }else{
-        alertify.error("Accion cancelada");
+    if(Listado==2){ //Opcion para buscar un servicio
+        document.getElementById('CmbBusquedas').value="";
+        document.getElementById('CodigoBarras').value="";
+        document.getElementById('TxtDescripcion').value="";
+        document.getElementById('ValorUnitario').value="";
+        document.getElementById('Cantidad').value="1";
+        document.getElementById('TxtDescripcion').disabled=false;
+        $('#CmbBusquedas').select2({
+            
+            placeholder: 'Selecciona una cuenta PUC para este servicio',
+            ajax: {
+              url: 'buscadores/CuentaPUC.search.php',
+              dataType: 'json',
+              delay: 250,
+              processResults: function (data) {
+
+                return {                     
+                  results: data
+                };
+              },
+             cache: true
+            }
+          });
     }
-    });
+    
+    if(Listado==3){ //Opcion para buscar un insumo
+        document.getElementById('CmbBusquedas').value="";
+        document.getElementById('CodigoBarras').value="";
+        document.getElementById('TxtDescripcion').value="";
+        document.getElementById('ValorUnitario').value="";
+        document.getElementById('Cantidad').value="1";
+        document.getElementById('TxtDescripcion').disabled=true;
+        $('#CmbBusquedas').select2({
+            
+            placeholder: 'Buscar insumo',
+            ajax: {
+              url: 'buscadores/insumos.search.php',
+              dataType: 'json',
+              delay: 250,
+              processResults: function (data) {
+
+                return {                     
+                  results: data
+                };
+              },
+             cache: true
+            }
+          });
+    }
 }
 
-/**
- * Borra la opcion del Select de la orden seleccionada actualmente, 
- * @returns {undefined}
- */
-function BorrarSeleccionActual() {
+ConvertirSelectBusquedas();
 
-  var sel = document.getElementById("CmbOrdenCompra");
-  sel.remove(sel.selectedIndex);
+$('#CmbBusquedas').bind('change', function() {
+    
+    document.getElementById('CodigoBarras').value = document.getElementById('CmbBusquedas').value;
+    
+});
 
-}
+$('#ValorUnitario').mask('#.##0,00', {reverse: true});
+$('#Cantidad').mask('#.##0,00', {reverse: true});

@@ -704,6 +704,7 @@ class PageConstruct extends html_estruct_class{
      */
     public function AgregaJS(){
         print('<script src="../../componentes/jquery/dist/jquery.min.js"></script>');
+        print('<script src="../../componentes/jquery/dist/jquery.mask.min.js"></script>');
         print('<script src="../../componentes/bootstrap/dist/js/bootstrap.min.js"></script>');
         print('<script src="../../componentes/datatables.net/js/jquery.dataTables.min.js"></script>');
         print('<script src="../../componentes/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>');

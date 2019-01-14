@@ -55,8 +55,90 @@ $css->PageInit($myTitulo);
                     $css->legend("", "");
                         print("<a href='#'>Agregar items a esta compra</a>");
                     $css->Clegend();    
-        $css->CrearDiv("DivDatosGeneralesCompra", "", "center", 1, 1);   
+        $css->CrearDiv("DivAgregarItems", "", "center", 1, 1);   
+            $css->CrearDiv("", "col-md-3", "center", 1, 1);
+                $css->select("CmbListado", "form-control", "CmbListado", "Listado", "", "", "onchange=ConvertirSelectBusquedas()");
+                    $css->option("", "", "", 1, "", "");
+                        print("Productos para la venta");
+                    $css->Coption();
+                    $css->option("", "", "", 2, "", "");
+                        print("Servicios y otros");
+                    $css->Coption();
+                    $css->option("", "", "", 3, "", "");
+                        print("Insumos");
+                    $css->Coption();
+                    //$css->option("", "", "", 4, "", "");
+                      //  print("Otros");
+                    //$css->Coption();
+                $css->Cselect();
+            $css->CerrarDiv();
             
+            $css->CrearDiv("", "col-md-5", "center", 1, 1);
+                $css->select("CmbBusquedas", "form-control", "CmbBusquedas", "Búsquedas", "", "", "");
+                   
+                    $css->option("", "", "", "", "", "");
+                        print("Buscar");
+                    $css->Coption();
+                    
+                    
+                $css->Cselect();
+            $css->CerrarDiv();
+            
+            $css->CrearDiv("", "col-md-2", "center", 1, 1);
+                $css->select("CmbImpuestosIncluidos", "form-control", "CmbImpuestosIncluidos", "Impuestos incluidos?", "", "", "");
+                    $css->option("", "", "", 1, "", "");
+                        print("SI");
+                    $css->Coption();
+                    $css->option("", "", "", 2, "", "");
+                        print("NO");
+                    $css->Coption();
+                    
+                $css->Cselect();
+            $css->CerrarDiv();
+            
+            
+            $css->CrearDiv("", "col-md-2", "center", 1, 1);
+            
+                $css->select("CmbTipoImpuesto", "form-control", "CmbTipoImpuesto", "Tipo de Impuesto", "", "", "");
+                    
+                    $Consulta=$obCon->ConsultarTabla("porcentajes_iva", " WHERE Habilitado='SI'");
+                    while($DatosTipoImpuestos=$obCon->FetchAssoc($Consulta)){
+                        $css->option("", "", "", $DatosTipoImpuestos["ID"], "", "");
+                            print($DatosTipoImpuestos["Nombre"]);
+                        $css->Coption();
+                    }
+                    
+                $css->Cselect();   
+            $css->CerrarDiv();
+            print("<br><br><br><br>");
+            $css->CrearDiv("", "col-md-3", "center", 1, 1);
+                print("<strong>Código</strong>");
+               $css->input("text", "CodigoBarras", "form-control", "CodigoBarras", "Codigo de barras", "", "Código", "off", "", "onchange=AgregaItemPorCodigo()");
+            $css->CerrarDiv();
+            
+            $css->CrearDiv("", "col-md-5", "center", 1, 1);
+               print("<strong>Descripción</strong>");
+               $css->input("text", "TxtDescripcion", "form-control", "TxtDescripcion", "Descripción", "", "Descripción", "off", "", "");
+            $css->CerrarDiv();
+            
+            $css->CrearDiv("", "col-md-2", "center", 1, 1);
+               print("<strong>Cantidad</strong>");
+               $css->input("text", "Cantidad", "form-control", "Cantidad", "Cantidad", "", "Cantidad", "off", "", "");
+            $css->CerrarDiv();
+            
+            $css->CrearDiv("", "col-md-2", "center", 1, 1);
+               print("<strong>Valor Unitario</strong>");
+               $css->input("text", "ValorUnitario", "form-control", "ValorUnitario", "Valor Unitario", "", "Valor Unitario", "off", "", "");
+            $css->CerrarDiv();
+            print("<br><br><br><br>");
+            $css->CrearDiv("DivBtnEditar", "col-md-8", "left", 1, 1); 
+                
+            $css->CerrarDiv();
+            $css->CrearDiv("DivBtnEditar", "col-md-4", "left", 1, 1); 
+                $css->CrearBotonEvento("BtnAgregarItem", "Agregar Item", 1, "onClick", "AgregarItem()", "verde", "");
+            $css->CerrarDiv();
+            
+        
         $css->CerrarDiv();       
             $css->Cfieldset();
     $css->CerrarDiv();
