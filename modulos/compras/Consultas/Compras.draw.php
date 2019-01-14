@@ -189,8 +189,14 @@ if( !empty($_REQUEST["Accion"]) ){
                     $css->ColTabla("<strong>Impuestos</strong>", 1, "C");
                     $css->ColTabla("<strong>Total</strong>", 1, "C");
                     $css->ColTabla("<strong>% Impuestos</strong>", 1, "C");
-                    $css->ColTabla("<strong>Acciones</strong>", 1, "C");
+                    print("<td style=text-align:center;width:100px>");
+                        print("<strong>Devolver</strong>");
+                        $css->input("number", "CantidadDevolucion", "form-control", "CantidadDevolucion", "Devolver", 0, "Devolver", "off", "", "min=1 max=100");
+                    print("</td>");
+                    $css->ColTabla("<strong>Eliminar</strong>", 1, "C");
+                    
                 $css->CierraFilaTabla();
+                //Dibujo los productos
                 $sql="SELECT *,(SELECT Nombre FROM productosventa WHERE idProductosVenta=factura_compra_items.idProducto) as NombreProducto
                          FROM factura_compra_items WHERE idFacturaCompra='$idCompra' ORDER BY ID DESC";
                 $Consulta=$obCon->Query($sql);
@@ -218,6 +224,13 @@ if( !empty($_REQUEST["Accion"]) ){
                         $css->ColTabla(number_format($DatosItems["ImpuestoCompra"],2,",","."), 1, "C");
                         $css->ColTabla(number_format($DatosItems["TotalCompra"],2,",","."), 1, "C");
                         $css->ColTabla($PorcentajeImpuestos, 1, "C");
+                        
+                       print("<td style='font-size:16px;text-align:center;color:red' title='Devolver'>");   
+                            
+                            $css->li("", "fa fa-reply-all", "", "onclick=DevolverItem(`$idItem`) style=font-size:16px;cursor:pointer;text-align:center;color:red");
+                            $css->Cli();
+                        print("</td>");
+                        
                         print("<td style='font-size:16px;text-align:center;color:red' title='Borrar'>");   
                             
                             $css->li("", "fa  fa-remove", "", "onclick=EliminarItem(`1`,`$idItem`) style=font-size:16px;cursor:pointer;text-align:center;color:red");
@@ -225,7 +238,7 @@ if( !empty($_REQUEST["Accion"]) ){
                         print("</td>");
                     $css->CierraFilaTabla();
                 }
-                
+                //Dibujo los insumos
                 $sql="SELECT *,(SELECT Nombre FROM insumos WHERE ID=factura_compra_insumos.idProducto) as NombreProducto
                          FROM factura_compra_insumos WHERE idFacturaCompra='$idCompra' ORDER BY ID DESC";
                 $Consulta=$obCon->Query($sql);
@@ -235,10 +248,9 @@ if( !empty($_REQUEST["Accion"]) ){
                     $css->FilaTabla(12);
                         $css->ColTabla($DatosItems["idProducto"], 1, "C");
                         
-                        print("<td style='font-size:16px;cursor:pointer;text-align:center;color:green' title='Imprimir Tiquete'>");
+                        print("<td style='font-size:16px;cursor:pointer;text-align:center;color:green' title='Insumos'>");
                         
-                            //$css->li("", "fa fa-print", "", "");
-                            //$css->Cli();
+                           print("Insumo");
                         print("</td>");
                         if(is_numeric($DatosItems["Tipo_Impuesto"])){
                             $PorcentajeImpuestos=$DatosItems["Tipo_Impuesto"]*100;
@@ -253,6 +265,7 @@ if( !empty($_REQUEST["Accion"]) ){
                         $css->ColTabla(number_format($DatosItems["ImpuestoCompra"],2,",","."), 1, "C");
                         $css->ColTabla(number_format($DatosItems["TotalCompra"],2,",","."), 1, "C");
                         $css->ColTabla($PorcentajeImpuestos, 1, "C");
+                        $css->ColTabla("NA", 1, "C");
                         print("<td style='font-size:16px;text-align:center;color:red' title='Borrar'>");   
                             
                             $css->li("", "fa  fa-remove", "", "onclick=EliminarItem(`3`,`$idItem`) style=font-size:16px;cursor:pointer;text-align:center;color:red");
@@ -261,6 +274,88 @@ if( !empty($_REQUEST["Accion"]) ){
                     $css->CierraFilaTabla();
                 }
                 
+                //Dibujo los servicios
+                
+                $sql="SELECT * FROM factura_compra_servicios WHERE idFacturaCompra='$idCompra' ORDER BY ID DESC";
+                $Consulta=$obCon->Query($sql);
+                while ($DatosItems = $obCon->FetchAssoc($Consulta)) {
+                    $idItem=$DatosItems["ID"];
+                    
+                    $css->FilaTabla(12);
+                        $css->ColTabla($DatosItems["CuentaPUC_Servicio"], 1, "C");
+                        
+                        print("<td style='font-size:16px;cursor:pointer;text-align:center;color:blue' title='Servicios'>");
+                        
+                            print("Servicio");
+                        print("</td>");
+                        if(is_numeric($DatosItems["Tipo_Impuesto"])){
+                            $PorcentajeImpuestos=$DatosItems["Tipo_Impuesto"]*100;
+                            $PorcentajeImpuestos=$PorcentajeImpuestos."%";
+                        }else{
+                            $PorcentajeImpuestos=$DatosItems["Tipo_Impuesto"];
+                        }
+                        $css->ColTabla($DatosItems["Concepto_Servicio"], 1, "C");
+                        $css->ColTabla(1, 1, "C");
+                        $css->ColTabla(number_format($DatosItems["Subtotal_Servicio"],2,",","."), 1, "C");
+                        $css->ColTabla(number_format($DatosItems["Subtotal_Servicio"],2,",","."), 1, "C");
+                        $css->ColTabla(number_format($DatosItems["Impuesto_Servicio"],2,",","."), 1, "C");
+                        $css->ColTabla(number_format($DatosItems["Total_Servicio"],2,",","."), 1, "C");
+                        $css->ColTabla($PorcentajeImpuestos, 1, "C");
+                        $css->ColTabla("NA", 1, "C");
+                        print("<td style='font-size:16px;text-align:center;color:red' title='Borrar'>");   
+                            
+                            $css->li("", "fa  fa-remove", "", "onclick=EliminarItem(`2`,`$idItem`) style=font-size:16px;cursor:pointer;text-align:center;color:red");
+                            $css->Cli();
+                        print("</td>");
+                    $css->CierraFilaTabla();
+                }
+                //dibujo los productos devueltos
+                $sql="SELECT *,(SELECT Nombre FROM productosventa WHERE idProductosVenta=factura_compra_items_devoluciones.idProducto) as NombreProducto
+                         FROM factura_compra_items_devoluciones WHERE idFacturaCompra='$idCompra' ORDER BY ID DESC";
+                $Consulta=$obCon->Query($sql);
+                $FlagTitulo=1;
+                while ($DatosItems = $obCon->FetchAssoc($Consulta)) {
+                    if($FlagTitulo==1){
+                        $css->FilaTabla(12);
+                            $css->ColTabla("<strong>Devoluciones</strong>", 11, "C");
+                        $css->CierraFilaTabla(); 
+                        $FlagTitulo=0;
+                    }
+                    $idItem=$DatosItems["ID"];
+                    $idProducto=$DatosItems["idProducto"];
+                    $css->FilaTabla(12);
+                        $css->ColTabla($DatosItems["idProducto"], 1, "C");
+                        
+                        print("<td style='font-size:16px;cursor:pointer;text-align:center;color:red' title='Insumos'>");
+                        
+                           print("Devolución");
+                        print("</td>");
+                        if(is_numeric($DatosItems["Tipo_Impuesto"])){
+                            $PorcentajeImpuestos=$DatosItems["Tipo_Impuesto"]*100;
+                            $PorcentajeImpuestos=$PorcentajeImpuestos."%";
+                        }else{
+                            $PorcentajeImpuestos=$DatosItems["Tipo_Impuesto"];
+                        }
+                        $css->ColTabla($DatosItems["NombreProducto"], 1, "C");
+                        $css->ColTabla(number_format($DatosItems["Cantidad"]), 1, "C");
+                        $css->ColTabla(number_format($DatosItems["CostoUnitarioCompra"],2,",","."), 1, "C");
+                        $css->ColTabla(number_format($DatosItems["SubtotalCompra"],2,",","."), 1, "C");
+                        $css->ColTabla(number_format($DatosItems["ImpuestoCompra"],2,",","."), 1, "C");
+                        $css->ColTabla(number_format($DatosItems["TotalCompra"],2,",","."), 1, "C");
+                        $css->ColTabla($PorcentajeImpuestos, 1, "C");
+                        
+                       print("<td style='text-align:center' title=''>");   
+                            
+                            print("NA");
+                        print("</td>");
+                        
+                        print("<td style='font-size:16px;text-align:center;color:red' title='Borrar'>");   
+                            
+                            $css->li("", "fa  fa-remove", "", "onclick=EliminarItem(`4`,`$idItem`) style=font-size:16px;cursor:pointer;text-align:center;color:red");
+                            $css->Cli();
+                        print("</td>");
+                    $css->CierraFilaTabla();
+                }
             $css->CerrarTabla();
         break;    
         

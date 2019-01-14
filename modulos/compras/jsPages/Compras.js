@@ -481,6 +481,42 @@ function EliminarItem(Tabla,idItem){
       });
 }
 
+function DevolverItem(idItem,Cantidad=""){
+    if(Cantidad==""){
+        var Cantidad = parseFloat(document.getElementById('CantidadDevolucion').value);
+    }  
+        
+    if(isNaN(Cantidad) || Cantidad<=0){
+        alertify.alert("El campo debe ser un valor numerico mayor a cero");
+        document.getElementById('CantidadDevolucion').style.backgroundColor="pink";
+        return;
+    }else{
+        document.getElementById('CantidadDevolucion').style.backgroundColor="white";
+    }
+    var form_data = new FormData();
+        form_data.append('Accion', 6);        
+        form_data.append('idItem', idItem);
+        form_data.append('Cantidad', Cantidad);
+        $.ajax({
+        url: './procesadores/Compras.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            alertify.error(data);
+            DibujeCompra();
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      });
+}
+
 ConvertirSelectBusquedas();
 
 $('#CmbBusquedas').bind('change', function() {

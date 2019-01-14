@@ -126,12 +126,27 @@ if( !empty($_REQUEST["Accion"]) ){
             if($Tabla==1){
                 $Tabla="factura_compra_items";
             }
+            if($Tabla==2){
+                $Tabla="factura_compra_servicios";
+            }
             if($Tabla==3){
                 $Tabla="factura_compra_insumos";
             }
+            if($Tabla==4){
+                $Tabla="factura_compra_items_devoluciones";
+            }
             $obCon->BorraReg($Tabla, "ID", $idItem);
             print("Item Eliminado");
+        break;//Fin caso 5
+        
+        case 6://Se devuelve un producto
+            $idItem=$obCon->normalizar($_REQUEST["idItem"]);
+            $Cantidad=$obCon->normalizar($_REQUEST["Cantidad"]);
+            $obCon->DevolverProductoCompra($Cantidad, $idItem, "");
+            print("Item Devuelto");
         break;//Fin caso 6
+        
+        
     }
     
     

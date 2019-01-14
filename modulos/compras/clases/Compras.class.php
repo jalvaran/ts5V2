@@ -156,6 +156,33 @@ class Compras extends ProcesoVenta{
         $this->InsertarRegistro($tab,$NumRegistros,$Columnas,$Valores);
     }
     
+    //Clase para devolver un item a una compra
+    public function DevolverProductoCompra($Cantidad,$idFacturaItems,$Vector) {
+        //Proceso la informacion
+        $DatosFacturaItems= $this->DevuelveValores("factura_compra_items", "ID", $idFacturaItems);
+        $idCompra=$DatosFacturaItems["idFacturaCompra"];
+        $idProducto=$DatosFacturaItems["idProducto"];
+        $CostoUnitario=$DatosFacturaItems["CostoUnitarioCompra"];
+        $TipoIVA=$DatosFacturaItems["Tipo_Impuesto"];
+        $Subtotal=round($CostoUnitario*$Cantidad);
+        $Impuestos= round($Subtotal*$TipoIVA);
+        $Total=$Subtotal+$Impuestos;
+        //////Agrego el registro           
+        $tab="factura_compra_items_devoluciones";
+        $NumRegistros=8;
+
+        $Columnas[0]="idFacturaCompra";     $Valores[0]=$idCompra;
+        $Columnas[1]="idProducto";          $Valores[1]=$idProducto;
+        $Columnas[2]="Cantidad";            $Valores[2]=$Cantidad;
+        $Columnas[3]="CostoUnitarioCompra"; $Valores[3]=$CostoUnitario;
+        $Columnas[4]="SubtotalCompra";      $Valores[4]=$Subtotal;
+        $Columnas[5]="ImpuestoCompra";      $Valores[5]=$Impuestos;
+        $Columnas[6]="TotalCompra";         $Valores[6]=$Total;
+        $Columnas[7]="Tipo_Impuesto";       $Valores[7]=$TipoIVA;
+                    
+        $this->InsertarRegistro($tab,$NumRegistros,$Columnas,$Valores);
+    }
+    
     /**
      * Fin Clase
      */

@@ -183,7 +183,7 @@ class Barras extends ProcesoVenta{
         `mode $Puerto: BAUD=9600 PARITY=N data=8 stop=1 xon=off`;  //inicializamos el puerto
         $enter="\r\n";
         if(($handle = @fopen("$Puerto", "w")) === FALSE){
-            die("<script>alert( 'ERROR:\nNo se puedo Imprimir, Verifique la conexion de la IMPRESORA')</script>");
+            die("No se puedo Imprimir, Verifique la conexion de la IMPRESORA");
         }
         if(!isset($DatosCB["CodigoBarras"])){
             $sql="SELECT CodigoBarras FROM prod_codbarras WHERE ProductosVenta_idProductosVenta='$idProducto' LIMIT 1";
