@@ -4,7 +4,7 @@
  * Julian Alvaran
  * Techno Soluciones SAS
  */
-//include_once 'php_conexion.php';
+include_once 'php_conexion.php';
 class Barras extends ProcesoVenta{
     public function ImprimirCBZebraLP2814($Tabla,$idProducto,$Cantidad,$Puerto,$DatosCB){
         `mode $Puerto: BAUD=9600 PARITY=N data=8 stop=1 xon=off`;  //inicializamos el puerto

@@ -131,11 +131,14 @@ $css->PageInit($myTitulo);
                $css->input("text", "ValorUnitario", "form-control", "ValorUnitario", "Valor Unitario", "", "Valor Unitario", "off", "", "");
             $css->CerrarDiv();
             print("<br><br><br><br>");
+            
+            
+            
             $css->CrearDiv("DivBtnEditar", "col-md-8", "left", 1, 1); 
                 
             $css->CerrarDiv();
             $css->CrearDiv("DivBtnEditar", "col-md-4", "left", 1, 1); 
-                $css->CrearBotonEvento("BtnAgregarItem", "Agregar Item", 1, "onClick", "AgregarItem()", "verde", "");
+                $css->CrearBotonEvento("BtnAgregarItem", "Agregar Item", 1, "onClick", "AgregarItem(event)", "verde", "");
             $css->CerrarDiv();
             
         
@@ -146,7 +149,7 @@ $css->PageInit($myTitulo);
 
     print("<br>");
     $css->CrearDiv("DivDatosCompras", "col-md-11", "left", 1, 1); //Datos para la creacion de la compra
-        $css->fieldset("", "", "FieldDatosCompra", "DatosCompra", "", "");
+        $css->fieldset("", "", "FieldDatosCompra", "items en esta compra", "", "");
                     $css->legend("", "");
                         print("<a href='#'>Items Agregados a esta Compra</a>");
                     $css->Clegend();    

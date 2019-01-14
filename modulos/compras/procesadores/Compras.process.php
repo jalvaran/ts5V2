@@ -6,7 +6,7 @@ if (!isset($_SESSION['username'])){
   
 }
 $idUser=$_SESSION['idUser'];
-
+include_once("../../../modelo/PrintBarras.php");
 include_once("../clases/Compras.class.php");
 
 if( !empty($_REQUEST["Accion"]) ){
@@ -65,7 +65,73 @@ if( !empty($_REQUEST["Accion"]) ){
             print("OK;$DatosTercero[RazonSocial];$Concepto;$NumeroFactura");
             
         break; 
-    
+        case 3://Agregar un item
+            
+            $idCompra=$obCon->normalizar($_REQUEST["idCompra"]); 
+            $CmbListado=$obCon->normalizar($_REQUEST["CmbListado"]); 
+            $CmbBusquedas=$obCon->normalizar($_REQUEST["CmbBusquedas"]); 
+            $CmbImpuestosIncluidos=$obCon->normalizar($_REQUEST["CmbImpuestosIncluidos"]); 
+            $CmbTipoImpuesto=$obCon->normalizar($_REQUEST["CmbTipoImpuesto"]); 
+            $CodigoBarras=$obCon->normalizar($_REQUEST["CodigoBarras"]);
+            $TxtDescripcion=$obCon->normalizar($_REQUEST["TxtDescripcion"]); 
+            $Cantidad=$obCon->normalizar($_REQUEST["Cantidad"]); 
+            $ValorUnitario=$obCon->normalizar($_REQUEST["ValorUnitario"]); 
+            if($CmbListado==1){
+                $idProducto=$CodigoBarras;
+                $DatosCodigos=$obCon->DevuelveValores("prod_codbarras", "CodigoBarras", $CodigoBarras);
+                if($DatosCodigos["ProductosVenta_idProductosVenta"]<>''){
+                    $idProducto=$DatosCodigos["ProductosVenta_idProductosVenta"];
+                }
+                $DatosProducto=$obCon->DevuelveValores("productosventa", "idProductosVenta", $idProducto);
+                if($DatosProducto["idProductosVenta"]==''){
+                    exit("Este producto no existe en la base de datos");
+                }
+                $obCon->AgregueProductoCompra($idCompra, $idProducto, $Cantidad, $ValorUnitario, $CmbTipoImpuesto, $CmbImpuestosIncluidos, "");
+            
+            }
+            
+            if($CmbListado==3){ //Insumos
+                $idProducto=$CodigoBarras;
+                $DatosProducto=$obCon->DevuelveValores("insumos", "ID", $idProducto);
+                if($DatosProducto["ID"]==''){
+                    exit("Este insumo no existe en la base de datos");
+                }
+                $obCon->AgregueInsumoCompra($idCompra, $idProducto, $Cantidad, $ValorUnitario, $CmbTipoImpuesto, $CmbImpuestosIncluidos, "");
+            }
+            
+            if($CmbListado==2){ //Servicios
+                $CuentaPUC=$CodigoBarras;                
+                $obCon->AgregueServicioCompra($idCompra, $CuentaPUC, $TxtDescripcion, $ValorUnitario, $CmbTipoImpuesto,$CmbImpuestosIncluidos, "");
+            }
+            print("OK");
+            
+        break;//Fin caso 3
+        
+        case 4://Se envia a imprimir un tiquete para codigo de barras
+            $obPrintBarras = new Barras($idUser);
+            $idProducto=$obCon->normalizar($_REQUEST["idProducto"]);
+            $Cantidad=$obCon->normalizar($_REQUEST["Cantidad"]);
+            $Tabla="productosventa";
+            $DatosCB["EmpresaPro"]=1;
+            $DatosPuerto=$obCon->DevuelveValores("config_puertos", "ID", 2);
+            if($DatosPuerto["Habilitado"]=='SI'){
+                $obPrintBarras->ImprimirCodigoBarrasMonarch9416TM($Tabla,$idProducto,$Cantidad,$DatosPuerto["Puerto"],$DatosCB);
+           
+            }
+            print("$Cantidad Tiquetes impresos para el producto $idProducto ");
+        break;//fin caso 4
+        case 5://Se elimina un item
+            $idItem=$obCon->normalizar($_REQUEST["idItem"]);
+            $Tabla=$obCon->normalizar($_REQUEST["Tabla"]);
+            if($Tabla==1){
+                $Tabla="factura_compra_items";
+            }
+            if($Tabla==3){
+                $Tabla="factura_compra_insumos";
+            }
+            $obCon->BorraReg($Tabla, "ID", $idItem);
+            print("Item Eliminado");
+        break;//Fin caso 6
     }
     
     

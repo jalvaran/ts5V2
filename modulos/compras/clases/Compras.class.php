@@ -57,6 +57,105 @@ class Compras extends ProcesoVenta{
         return $idCompra;
     }
     
+    //Clase para agregar un item a una compra
+    public function AgregueProductoCompra($idCompra,$idProducto,$Cantidad,$CostoUnitario,$TipoIVA,$IVAIncluido,$Vector) {
+        
+        $DatosTipoImpuesto= $this->DevuelveValores("porcentajes_iva", "ID", $TipoIVA);
+        $TipoIVA=$DatosTipoImpuesto["Valor"];
+        if($IVAIncluido==1){
+            if(is_numeric($TipoIVA)){
+                $CostoUnitario=round($CostoUnitario/(1+$TipoIVA),2);
+            }            
+        }
+        $Subtotal= round($CostoUnitario*$Cantidad,2);
+        if(is_numeric($TipoIVA)){
+            $Impuestos=round($Subtotal*$TipoIVA,2);
+        }else{
+            $Impuestos=0;
+        }
+        $Total=round($Subtotal+$Impuestos,2);
+        //////Agrego el registro           
+        $tab="factura_compra_items";
+        $NumRegistros=8;
+
+        $Columnas[0]="idFacturaCompra";     $Valores[0]=$idCompra;
+        $Columnas[1]="idProducto";          $Valores[1]=$idProducto;
+        $Columnas[2]="Cantidad";            $Valores[2]=$Cantidad;
+        $Columnas[3]="CostoUnitarioCompra"; $Valores[3]=$CostoUnitario;
+        $Columnas[4]="SubtotalCompra";      $Valores[4]=$Subtotal;
+        $Columnas[5]="ImpuestoCompra";      $Valores[5]=$Impuestos;
+        $Columnas[6]="TotalCompra";         $Valores[6]=$Total;
+        $Columnas[7]="Tipo_Impuesto";       $Valores[7]=$TipoIVA;
+                    
+        $this->InsertarRegistro($tab,$NumRegistros,$Columnas,$Valores);
+    }
+    
+    //Clase para agregar un insumo a una compra
+    public function AgregueInsumoCompra($idCompra,$idProducto,$Cantidad,$CostoUnitario,$TipoIVA,$IVAIncluido,$Vector) {
+        $DatosTipoImpuesto= $this->DevuelveValores("porcentajes_iva", "ID", $TipoIVA);
+        $TipoIVA=$DatosTipoImpuesto["Valor"];
+        if($IVAIncluido==1){
+            if(is_numeric($TipoIVA)){
+                $CostoUnitario=round($CostoUnitario/(1+$TipoIVA),2);
+            }            
+        }
+        $Subtotal= round($CostoUnitario*$Cantidad,2);
+        if(is_numeric($TipoIVA)){
+            $Impuestos=round($Subtotal*$TipoIVA,2);
+        }else{
+            $Impuestos=0;
+        }
+        $Total=round($Subtotal+$Impuestos,2);
+        //////Agrego el registro           
+        $tab="factura_compra_insumos";
+        $NumRegistros=8;
+
+        $Columnas[0]="idFacturaCompra";     $Valores[0]=$idCompra;
+        $Columnas[1]="idProducto";          $Valores[1]=$idProducto;
+        $Columnas[2]="Cantidad";            $Valores[2]=$Cantidad;
+        $Columnas[3]="CostoUnitarioCompra"; $Valores[3]=$CostoUnitario;
+        $Columnas[4]="SubtotalCompra";      $Valores[4]=$Subtotal;
+        $Columnas[5]="ImpuestoCompra";      $Valores[5]=$Impuestos;
+        $Columnas[6]="TotalCompra";         $Valores[6]=$Total;
+        $Columnas[7]="Tipo_Impuesto";       $Valores[7]=$TipoIVA;
+                    
+        $this->InsertarRegistro($tab,$NumRegistros,$Columnas,$Valores);
+    }
+    
+    //Agregar Un Servicio
+    public function AgregueServicioCompra($idCompra,$CuentaPUC,$Concepto,$CostoUnitario,$TipoIVA,$IVAIncluido,$Vector) {
+        $DatosTipoImpuesto= $this->DevuelveValores("porcentajes_iva", "ID", $TipoIVA);
+        $TipoIVA=$DatosTipoImpuesto["Valor"];
+        $DatosCuenta= $this->DevuelveValores("subcuentas", "PUC", $CuentaPUC);
+        if($IVAIncluido==1){
+            if(is_numeric($TipoIVA)){
+                $CostoUnitario=round($CostoUnitario/(1+$TipoIVA),2);
+            }            
+        }
+        $Subtotal= round($CostoUnitario,2);
+        if(is_numeric($TipoIVA)){
+            $Impuestos=round($Subtotal*$TipoIVA,2);
+        }else{
+            $Impuestos=0;
+        }
+        $Total=round($Subtotal+$Impuestos,2);
+        
+        //////Agrego el registro           
+        $tab="factura_compra_servicios";
+        $NumRegistros=8;
+
+        $Columnas[0]="idFacturaCompra";     $Valores[0]=$idCompra;
+        $Columnas[1]="CuentaPUC_Servicio";  $Valores[1]=$CuentaPUC;
+        $Columnas[2]="Nombre_Cuenta";       $Valores[2]=$DatosCuenta["Nombre"];
+        $Columnas[3]="Concepto_Servicio";   $Valores[3]=$Concepto;
+        $Columnas[4]="Subtotal_Servicio";   $Valores[4]=$Subtotal;
+        $Columnas[5]="Impuesto_Servicio";   $Valores[5]=$Impuestos;
+        $Columnas[6]="Total_Servicio";      $Valores[6]=$Total;
+        $Columnas[7]="Tipo_Impuesto";       $Valores[7]=$TipoIVA;
+                    
+        $this->InsertarRegistro($tab,$NumRegistros,$Columnas,$Valores);
+    }
+    
     /**
      * Fin Clase
      */

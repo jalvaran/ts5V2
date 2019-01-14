@@ -169,6 +169,99 @@ if( !empty($_REQUEST["Accion"]) ){
             
             print("<br><br><br><br><br><br><br><br><br><br>");
             
+        break;  
+        
+        case 3://Dibuja los items de una compra
+            $idCompra=$obCon->normalizar($_REQUEST["idCompra"]);
+            $css->CrearTabla();
+                $css->FilaTabla(12);
+                    $css->ColTabla("<strong>ID</strong>", 1, "C");
+                    
+                    print("<td style=text-align:center;width:100px>");
+                        print("<strong>Tiquetes</strong>");
+                        $css->input("number", "CantidadTiquetes", "form-control", "CantidadTiquetes", "Tiquetes", 1, "Tiquetes", "off", "", "min=1 max=100");
+                    print("</td>");
+                    
+                    $css->ColTabla("<strong>Nombre</strong>", 1, "C");
+                    $css->ColTabla("<strong>Cantidad</strong>", 1, "C");
+                    $css->ColTabla("<strong>Costo Unitario</strong>", 1, "C");
+                    $css->ColTabla("<strong>Subtotal</strong>", 1, "C");
+                    $css->ColTabla("<strong>Impuestos</strong>", 1, "C");
+                    $css->ColTabla("<strong>Total</strong>", 1, "C");
+                    $css->ColTabla("<strong>% Impuestos</strong>", 1, "C");
+                    $css->ColTabla("<strong>Acciones</strong>", 1, "C");
+                $css->CierraFilaTabla();
+                $sql="SELECT *,(SELECT Nombre FROM productosventa WHERE idProductosVenta=factura_compra_items.idProducto) as NombreProducto
+                         FROM factura_compra_items WHERE idFacturaCompra='$idCompra' ORDER BY ID DESC";
+                $Consulta=$obCon->Query($sql);
+                while ($DatosItems = $obCon->FetchAssoc($Consulta)) {
+                    $idItem=$DatosItems["ID"];
+                    $idProducto=$DatosItems["idProducto"];
+                    $css->FilaTabla(12);
+                        $css->ColTabla($DatosItems["idProducto"], 1, "C");
+                        
+                        print("<td onclick=PrintEtiqueta($idProducto) style='font-size:16px;cursor:pointer;text-align:center;color:green' title='Imprimir Tiquete'>");
+                        
+                            $css->li("", "fa fa-print", "", "");
+                            $css->Cli();
+                        print("</td>");
+                        if(is_numeric($DatosItems["Tipo_Impuesto"])){
+                            $PorcentajeImpuestos=$DatosItems["Tipo_Impuesto"]*100;
+                            $PorcentajeImpuestos=$PorcentajeImpuestos."%";
+                        }else{
+                            $PorcentajeImpuestos=$DatosItems["Tipo_Impuesto"];
+                        }
+                        $css->ColTabla($DatosItems["NombreProducto"], 1, "C");
+                        $css->ColTabla(number_format($DatosItems["Cantidad"]), 1, "C");
+                        $css->ColTabla(number_format($DatosItems["CostoUnitarioCompra"],2,",","."), 1, "C");
+                        $css->ColTabla(number_format($DatosItems["SubtotalCompra"],2,",","."), 1, "C");
+                        $css->ColTabla(number_format($DatosItems["ImpuestoCompra"],2,",","."), 1, "C");
+                        $css->ColTabla(number_format($DatosItems["TotalCompra"],2,",","."), 1, "C");
+                        $css->ColTabla($PorcentajeImpuestos, 1, "C");
+                        print("<td style='font-size:16px;text-align:center;color:red' title='Borrar'>");   
+                            
+                            $css->li("", "fa  fa-remove", "", "onclick=EliminarItem(`1`,`$idItem`) style=font-size:16px;cursor:pointer;text-align:center;color:red");
+                            $css->Cli();
+                        print("</td>");
+                    $css->CierraFilaTabla();
+                }
+                
+                $sql="SELECT *,(SELECT Nombre FROM insumos WHERE ID=factura_compra_insumos.idProducto) as NombreProducto
+                         FROM factura_compra_insumos WHERE idFacturaCompra='$idCompra' ORDER BY ID DESC";
+                $Consulta=$obCon->Query($sql);
+                while ($DatosItems = $obCon->FetchAssoc($Consulta)) {
+                    $idItem=$DatosItems["ID"];
+                    $idProducto=$DatosItems["idProducto"];
+                    $css->FilaTabla(12);
+                        $css->ColTabla($DatosItems["idProducto"], 1, "C");
+                        
+                        print("<td style='font-size:16px;cursor:pointer;text-align:center;color:green' title='Imprimir Tiquete'>");
+                        
+                            //$css->li("", "fa fa-print", "", "");
+                            //$css->Cli();
+                        print("</td>");
+                        if(is_numeric($DatosItems["Tipo_Impuesto"])){
+                            $PorcentajeImpuestos=$DatosItems["Tipo_Impuesto"]*100;
+                            $PorcentajeImpuestos=$PorcentajeImpuestos."%";
+                        }else{
+                            $PorcentajeImpuestos=$DatosItems["Tipo_Impuesto"];
+                        }
+                        $css->ColTabla($DatosItems["NombreProducto"], 1, "C");
+                        $css->ColTabla(number_format($DatosItems["Cantidad"]), 1, "C");
+                        $css->ColTabla(number_format($DatosItems["CostoUnitarioCompra"],2,",","."), 1, "C");
+                        $css->ColTabla(number_format($DatosItems["SubtotalCompra"],2,",","."), 1, "C");
+                        $css->ColTabla(number_format($DatosItems["ImpuestoCompra"],2,",","."), 1, "C");
+                        $css->ColTabla(number_format($DatosItems["TotalCompra"],2,",","."), 1, "C");
+                        $css->ColTabla($PorcentajeImpuestos, 1, "C");
+                        print("<td style='font-size:16px;text-align:center;color:red' title='Borrar'>");   
+                            
+                            $css->li("", "fa  fa-remove", "", "onclick=EliminarItem(`3`,`$idItem`) style=font-size:16px;cursor:pointer;text-align:center;color:red");
+                            $css->Cli();
+                        print("</td>");
+                    $css->CierraFilaTabla();
+                }
+                
+            $css->CerrarTabla();
         break;    
         
     }
