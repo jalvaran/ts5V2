@@ -363,7 +363,7 @@ if( !empty($_REQUEST["Accion"]) ){
         case 4://Dibujo los Totales
             $idCompra=$obCon->normalizar($_REQUEST["idCompra"]);
             $TotalesCompras=$obCon->CalculeTotalesCompra($idCompra);
-            
+            if(($TotalesCompras["Subtotal_Productos_Add"]+$TotalesCompras["Subtotal_Insumos"]+$TotalesCompras["Subtotal_Servicios"])>0){ //Verifico que hayan productos, servicios o insumos agregados
             $css->div("", "col-md-8", "", "", "","", "style=text-align:left");
                 $css->CrearTabla();
                     $css->FilaTabla(16);
@@ -657,6 +657,14 @@ if( !empty($_REQUEST["Accion"]) ){
                         $css->ColTabla("<strong>CONSOLIDADO</strong>", 6,"C");
                         
                     $css->CierraFilaTabla();
+                    if($TotalesCompras["Total_Productos_Dev"]>0){
+                        $css->FilaTabla(16);
+                            $css->ColTabla("<strong>Total Devoluciones:</strong>", 1,"R");
+                            $css->ColTabla(number_format($TotalesCompras["Total_Productos_Dev"]), 1,"R");
+                            $css->ColTabla("", 4);
+                        $css->CierraFilaTabla();
+                    }
+                    
                     
                     $css->FilaTabla(16);
                         $css->ColTabla("<strong>Subtotal Factura:</strong>", 1,"R");
@@ -669,32 +677,33 @@ if( !empty($_REQUEST["Accion"]) ){
                         $css->ColTabla(number_format($TotalesCompras["Gran_Impuestos"]), 1,"R");
                         $css->ColTabla("", 4);
                     $css->CierraFilaTabla();
-                    
-                    $css->FilaTabla(16);
-                        $css->ColTabla("<strong>Impuestos Adicionales:</strong>", 1,"R");
-                        $css->ColTabla(number_format($TotalesCompras["ImpuestosAdicionales"]), 1,"R");
-                        $css->ColTabla("", 4);
-                    $css->CierraFilaTabla();
-                    
-                    $css->FilaTabla(16);
-                        $css->ColTabla("<strong>Descuentos Globales:</strong>", 1,"R");
-                        $css->ColTabla(number_format($TotalesCompras["DescuentosGlobales"]), 1,"R");
-                        $css->ColTabla("", 4);
-                    $css->CierraFilaTabla();
-                    
+                    if($TotalesCompras["ImpuestosAdicionales"]>0){
+                        $css->FilaTabla(16);
+                            $css->ColTabla("<strong>Impuestos Adicionales:</strong>", 1,"R");
+                            $css->ColTabla(number_format($TotalesCompras["ImpuestosAdicionales"]), 1,"R");
+                            $css->ColTabla("", 4);
+                        $css->CierraFilaTabla();
+                    }
+                    if($TotalesCompras["DescuentosGlobales"]>0){
+                        $css->FilaTabla(16);
+                            $css->ColTabla("<strong>Descuentos Globales:</strong>", 1,"R");
+                            $css->ColTabla(number_format($TotalesCompras["DescuentosGlobales"]), 1,"R");
+                            $css->ColTabla("", 4);
+                        $css->CierraFilaTabla();
+                    }
                     $css->FilaTabla(16);
                         $css->ColTabla("<strong>Total Factura:</strong>", 1,"R");
                         $css->ColTabla(number_format($TotalesCompras["Gran_Total"]), 1,"R");
                         $css->ColTabla("", 4);
                     $css->CierraFilaTabla();
                     
-                    
-                    $css->FilaTabla(16);
-                        $css->ColTabla("<strong>Retenciones:</strong>", 1,"R");
-                        $css->ColTabla(number_format($TotalesCompras["Total_Retenciones"]), 1,"R");
-                        $css->ColTabla("", 4);
-                    $css->CierraFilaTabla();
-                    
+                    if($TotalesCompras["Total_Retenciones"]>0){
+                        $css->FilaTabla(16);
+                            $css->ColTabla("<strong>Retenciones:</strong>", 1,"R");
+                            $css->ColTabla(number_format($TotalesCompras["Total_Retenciones"]), 1,"R");
+                            $css->ColTabla("", 4);
+                        $css->CierraFilaTabla();
+                    }
                     
                     $css->FilaTabla(16);
                         $css->ColTabla("<strong>Total a Pagar:</strong>", 1,"R");
@@ -780,7 +789,12 @@ if( !empty($_REQUEST["Accion"]) ){
                             
                      print("</td>");
                      print("<tr><td>");
-                     $css->CrearBotonEvento("BtnGuardarCompra", "Guardar", 1, "onclick", "GuardarCompra($idCompra)", "verde", "style=widht:40px");
+                     $Habilidato=1;
+                     if($TotalesCompras["Total_Pago"]<0){
+                         $Habilidato=0;
+                         print("<strong style=color:red>No es posible guardar una factura negativa</strong><br>");
+                     }
+                     $css->CrearBotonEvento("BtnGuardarCompra", "Guardar", $Habilidato, "onclick", "GuardarCompra($idCompra)", "verde", "style=widht:40px");
                      print("</td></tr>"); 
                     $css->CierraFilaTabla();
                     
@@ -894,7 +908,7 @@ if( !empty($_REQUEST["Accion"]) ){
                     }
                $css->CerrarTabla();
             $css->Cdiv();//Cierra div de retenciones e impuestos adicionales
-            
+            }
         break;    
         
     }

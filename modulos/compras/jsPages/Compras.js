@@ -184,6 +184,7 @@ function DibujeCompra(idCompra=""){
         var idCompra = document.getElementById('idCompra').value;
         
     }
+    document.getElementById('TxtPrintFactura').value=idCompra;
     DibujeItemsCompra(idCompra);
     DibujeTotalesCompra(idCompra);
 }
@@ -1251,7 +1252,7 @@ function GuardarCompra(idCompra=''){
         var idCompra = document.getElementById('idCompra').value;
     }
         
-    var CmbTipoPago = document.getElementById("CmbTipoPago").selectedIndex;
+    var CmbTipoPago = document.getElementById("CmbTipoPago").value;
     var CmbCuentaOrigen = document.getElementById("CmbCuentaOrigen").value;
     var CmbCuentaPUCCXP = document.getElementById("CmbCuentaPUCCXP").value;
     var TxtFechaProgramada = document.getElementById("TxtFechaProgramada").value;
@@ -1285,8 +1286,12 @@ function GuardarCompra(idCompra=''){
         data: form_data,
         type: 'post',
         success: function(data){
-            if(data=="OK"){
-                alertify.success("Factura Guardada");
+            var respuestas = data.split(';'); 
+            if(respuestas[0]=="OK"){
+                var mensaje=respuestas[1];
+                
+                alertify.alert(mensaje);
+                
             }else{
                 alertify.error(data,10000);
                 document.getElementById('BtnGuardarCompra').disabled=false;
@@ -1302,6 +1307,15 @@ function GuardarCompra(idCompra=''){
       });
     
     
+}
+
+function abrirEnPestana(url) {
+
+    var a = document.createElement("a");
+    a.target = "_blank";
+    a.href = url;
+    a.click();
+
 }
 
 ConvertirSelectBusquedas();

@@ -21,14 +21,19 @@ $css->PageInit($myTitulo);
                 print("<strong>Registro de Compras</strong>");
     $css->Ch3();
     $css->CrearDiv("DivOpcionesCrearCompras", "col-md-11", "left", 1, 1); 
+    
+    $css->CrearInputText("TxtPrintFactura", "text", "", "", "", "", "onchange", "CambieTextoBotonPrint(1)", 100, 30, 0, 1);
+    $css->CrearInputText("TxtPrintTraslado", "text", "", "", "", "", "onchange", "CambieTextoBotonPrint(2)", 100, 30, 0, 1);  
+    
         $css->fieldset("", "", "FieldDatosCompra", "DatosCompra", "", "");
             $css->legend("", "");
-                print("<a href='#'>Cree o Seleccione una Compra</a>");
+                print("<a href='#'>Cree, Seleccione o imprima una Factura de Compra</a>");
             $css->Clegend();   
+            
         $css->CrearDiv("DivBtnCrear", "col-md-2", "left", 1, 1); 
             $css->CrearBotonEvento("BtnNuevaCompra", "Crear Compra", 1, "onClick", "AbrirModalNuevaCompra()", "azul", "");
         $css->CerrarDiv();
-        $css->CrearDiv("DivDatosCompras", "col-md-8", "left", 1, 1); 
+        $css->CrearDiv("DivDatosCompras", "col-md-4", "left", 1, 1); 
             $css->select("idCompra", "form-control", "idCompra", "", "", "onchange=DibujeCompra()", "");
             $css->option("", "", "","", "", "");
                 print("Seleccione una Compra");
@@ -45,7 +50,16 @@ $css->PageInit($myTitulo);
            
         $css->CerrarDiv();
         $css->CrearDiv("DivBtnEditar", "col-md-2", "left", 1, 1); 
-            $css->CrearBotonEvento("BtnEditarCompra", "Editar Datos", 0, "onClick", "AbrirModalNuevaCompra('Editar')", "verde", "");
+            $css->CrearBotonEvento("BtnEditarCompra", "Editar Datos", 0, "onClick", "AbrirModalNuevaCompra('Editar')", "azul", "");
+        $css->CerrarDiv();
+        
+        $css->CrearDiv("DivBtnPrintFactura", "col-md-2", "left", 1, 1); 
+            
+            $css->CrearBotonEvento("BtnPrintCompra", "Imprimir Factura", 0, "onClick", "ImprimirFactura()", "azul", "");
+        $css->CerrarDiv();
+        
+        $css->CrearDiv("DivBtnPrintTraslado", "col-md-2", "left", 1, 1); 
+            $css->CrearBotonEvento("BtnPrintTraslado", "Imprimir Traslado", 0, "onClick", "ImprimirTraslado()", "azul", "");
         $css->CerrarDiv();
         $css->Cfieldset(); 
     $css->CerrarDiv();

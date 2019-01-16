@@ -194,13 +194,18 @@ if( !empty($_REQUEST["Accion"]) ){
             $CuentaPUCCXP=$obCon->normalizar($_REQUEST["CmbCuentaPUCCXP"]);
             $FechaProgramada=$obCon->normalizar($_REQUEST["TxtFechaProgramada"]);
             $obCon->GuardarFacturaCompra($idCompra, $TipoPago, $CuentaOrigen,$CuentaPUCCXP, $FechaProgramada,"");
-            $idTraslado="";
+            $LinkTraslado="";
+            $LinkFactura="../../VAtencion/PDF_FCompra.php?ID=$idCompra";
+            $MensajeTraslado="";
             if($_REQUEST["CmbTraslado"]>0){
                 $idSede=$obCon->normalizar($_REQUEST["CmbTraslado"]);
                 $idTraslado=$obCon->CrearTrasladoDesdeCompra($idCompra,$idSede, "");
+                $LinkTraslado="../../tcpdf/examples/imprimirTraslado.php?idTraslado=$idTraslado";
+                $MensajeTraslado="<br><strong>Traslado $idTraslado Creado Correctamente </strong><a href='$LinkTraslado'  target='blank'> Imprimir</a>";
             }
-            
-            print("OK");
+            $Mensaje="<strong>Factura $idCompra Creada Correctamente </strong><a href='$LinkFactura'  target='blank'> Imprimir</a>";
+            $Mensaje.=$MensajeTraslado;
+            print("OK;$Mensaje");
         break;//Fin caso 9
         
     }
