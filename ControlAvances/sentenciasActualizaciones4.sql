@@ -588,3 +588,25 @@ ALTER TABLE `ori_facturas` ADD `ReporteFacturaElectronica` INT(1) NOT NULL COMME
 UPDATE `facturas` SET `ReporteFacturaElectronica`=1;
 ALTER TABLE `facturas` ADD INDEX(`ReporteFacturaElectronica`);
 
+INSERT INTO `parametros_contables` (`ID`, `Descripcion`, `CuentaPUC`, `NombreCuenta`, `Updated`, `Sync`) VALUES ('24', 'Retefuente por compra de productos', '236540', 'Retencion en la fuente por compras', CURRENT_TIMESTAMP, '0000-00-00 00:00:00.000000');
+INSERT INTO `parametros_contables` (`ID`, `Descripcion`, `CuentaPUC`, `NombreCuenta`, `Updated`, `Sync`) VALUES ('25', 'ReteICA por compra de productos', '236801', 'Retencion de industria y comercio', CURRENT_TIMESTAMP, '0000-00-00 00:00:00.000000');
+INSERT INTO `parametros_contables` (`ID`, `Descripcion`, `CuentaPUC`, `NombreCuenta`, `Updated`, `Sync`) VALUES ('26', 'ReteIVA en Compras', '236701', 'ReteIVA', CURRENT_TIMESTAMP, '0000-00-00 00:00:00.000000');
+INSERT INTO `parametros_contables` (`ID`, `Descripcion`, `CuentaPUC`, `NombreCuenta`, `Updated`, `Sync`) VALUES ('27', 'Retefuente por compra de servicios', '236525', 'Retencion en la fuente por servicios', CURRENT_TIMESTAMP, '0000-00-00 00:00:00.000000');
+INSERT INTO `parametros_contables` (`ID`, `Descripcion`, `CuentaPUC`, `NombreCuenta`, `Updated`, `Sync`) VALUES ('28', 'Descuentos Comerciales en compras', '421040', 'Descuentos comerciales condicionados', CURRENT_TIMESTAMP, '0000-00-00 00:00:00.000000');
+INSERT INTO `parametros_contables` (`ID`, `Descripcion`, `CuentaPUC`, `NombreCuenta`, `Updated`, `Sync`) VALUES ('29', 'Impuestos asumidos, aplica para el impoconsumo cuando no se puede descontar', '531520', 'Impuestos Asumidos', CURRENT_TIMESTAMP, '0000-00-00 00:00:00.000000');
+
+ALTER TABLE `factura_compra_descuentos` ADD `PorcentajeDescuento` DOUBLE NOT NULL AFTER `ValorDescuento`;
+
+CREATE TABLE `factura_compra_impuestos_adicionales` (
+  `ID` bigint(20) NOT NULL AUTO_INCREMENT,
+  `idCompra` bigint(20) NOT NULL,
+  `CuentaPUC` bigint(20) NOT NULL,
+  `NombreCuenta` varchar(100) COLLATE utf8_spanish_ci NOT NULL,
+  `Valor` double NOT NULL,
+  `Porcentaje` double NOT NULL,
+  `Updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Sync` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+

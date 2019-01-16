@@ -185,6 +185,7 @@ function DibujeCompra(idCompra=""){
         
     }
     DibujeItemsCompra(idCompra);
+    DibujeTotalesCompra(idCompra);
 }
 
 
@@ -221,6 +222,8 @@ function DibujeItemsCompra(idCompra=""){
       
       
 }
+
+
 /**
  * cambia el select para realizar busquedas según el listado seleccionado
  * @returns {undefined}
@@ -515,6 +518,155 @@ function DevolverItem(idItem,Cantidad=""){
             alert(thrownError);
           }
       });
+}
+/**
+ * Muestra las opciones para agregar retenciones, descuentos o impuestos 
+ * adicionales a alguno de los montos del total de una factura
+ * @param {type} Monto
+ * @returns {undefined}
+ */
+function MuestreOpcionesEnTotales(Monto){
+    var Selector = document.getElementById('CmbImpRetDesProductos').value;
+    if(Selector == ''){
+       //document.getElementById("DivImpRetDesPro1").style.display="none";
+        document.getElementById("DivImpRetDesPro2").style.display="none";
+        document.getElementById("DivImpRetDesPro3").style.display="none";
+        document.getElementById("DivImpRetDesPro4").style.display="none";
+    }else{
+        //document.getElementById("DivImpRetDesPro1").style.display="block";
+        document.getElementById("DivImpRetDesPro2").style.display="block";
+        document.getElementById("DivImpRetDesPro3").style.display="block";
+        document.getElementById("DivImpRetDesPro4").style.display="block";
+    }
+}
+/**
+ * Calcula el valor o porcentaje de una retencion o descuento
+ * @param {type} Opcion
+ * @returns {undefined}
+ */
+function CalculeRetencionDescuento(Opcion){
+    var Selector = document.getElementById('CmbImpRetDesProductos').value;
+    //Se Calcula el valor de la retencion o descuento en el subtotal del producto
+    // dependiendo del porcentaje digitado
+    if(Opcion==1){
+        
+        var idInputPorcentaje="TxtCargosPorcentajeProductos";
+        var idInputValor="TxtCargosValorProductos";
+        var idBaseCalculo="TxtSubtotalProductos";
+        var BaseCalculo = document.getElementById(idBaseCalculo).value;
+        var Porcentaje = document.getElementById(idInputPorcentaje).value;
+        var Valor = Porcentaje/100 * BaseCalculo;
+        document.getElementById(idInputValor).value=Valor.toFixed(2);
+    }
+    //Se Calcula el valor de la retencion o descuento en el subtotal del producto
+    // dependiendo del valor digitado
+    if(Opcion==2){
+        
+        var idInputPorcentaje="TxtCargosPorcentajeProductos";
+        var idInputValor="TxtCargosValorProductos";
+        var idBaseCalculo="TxtSubtotalProductos";
+        var BaseCalculo = document.getElementById(idBaseCalculo).value;
+        var Valor = document.getElementById(idInputValor).value;
+        var Porcentaje = 100/BaseCalculo * Valor;
+        document.getElementById(idInputPorcentaje).value=Porcentaje.toFixed(1);
+    }
+        
+}
+/**
+ * Se dibujan los totales generales de una compra 
+ * @param {type} idCompra
+ * @returns {undefined}
+ */
+function DibujeTotalesCompra(idCompra=""){
+    if(idCompra==""){
+        var idCompra = document.getElementById('idCompra').value;
+    }
+    
+    var form_data = new FormData();
+        form_data.append('Accion', 4);
+        form_data.append('idCompra', idCompra);
+        $.ajax({
+        url: './Consultas/Compras.draw.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            document.getElementById('DivTotalesCompra').innerHTML=data;
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      });
+      
+      
+}
+
+function AgregarCargosProductos(event){
+    event.preventDefault();
+    
+    var idCompra = document.getElementById('idCompra').value;
+    var idSelector="CmbImpRetDesProductos";
+    var idPorcentaje="TxtCargosPorcentajeProductos";
+    var idValor="TxtCargosValorProductos";
+        
+    var Selector = document.getElementById(idSelector).selectedIndex;
+    var CuentaPUC = document.getElementById(idSelector).value;
+    var Porcentaje = parseFloat(document.getElementById(idPorcentaje).value);
+    var Valor = parseFloat(document.getElementById(idValor).value);
+    
+    if(isNaN(Porcentaje) || Porcentaje<=0){
+        alertify.alert("El campo debe ser un valor numerico mayor a cero");
+        document.getElementById(idPorcentaje).style.backgroundColor="pink";
+        return;
+    }else{
+        document.getElementById(idPorcentaje).style.backgroundColor="white";
+    }
+    
+    if(isNaN(Valor) || Valor<=0){
+        alertify.alert("El campo debe ser un valor numerico mayor a cero");
+        document.getElementById(idValor).style.backgroundColor="pink";
+        return;
+    }else{
+        document.getElementById(idValor).style.backgroundColor="white";
+    }
+    document.getElementById(idValor).value='';
+    var form_data = new FormData();
+        form_data.append('Accion', 7); 
+        form_data.append('idCompra', idCompra);
+        form_data.append('Selector', Selector);
+        form_data.append('CuentaPUC', CuentaPUC);
+        form_data.append('Porcentaje', Porcentaje);
+        form_data.append('Valor', Valor);
+        $.ajax({
+        url: './procesadores/Compras.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            if(data=="OK"){
+                alertify.success("Registro realizado");
+            }else{
+                alertify.error(data,10000);
+            }
+            
+            DibujeTotalesCompra(idCompra);
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      });
+    
+    
 }
 
 ConvertirSelectBusquedas();

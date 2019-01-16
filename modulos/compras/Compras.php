@@ -150,17 +150,28 @@ $css->PageInit($myTitulo);
     print("<br>");
     $css->CrearDiv("DivDatosCompras", "col-md-11", "left", 1, 1); //Datos para la creacion de la compra
         $css->fieldset("", "", "FieldDatosCompra", "items en esta compra", "", "");
-                    $css->legend("", "");
-                        print("<a href='#'>Items Agregados a esta Compra</a>");
-                    $css->Clegend();    
-        $css->CrearDiv("DivItemsCompra", "", "center", 1, 1);   
+            $css->legend("", "");
+                print("<a href='#'>Items Agregados a esta Compra</a>");
+            $css->Clegend();    
+            $css->CrearDiv("DivItemsCompra", "", "center", 1, 1);   
+
+            $css->CerrarDiv();       
+        $css->Cfieldset();
             
-        $css->CerrarDiv();       
-            $css->Cfieldset();
-        $css->CerrarDiv();
+        $css->fieldset("", "", "FieldDatosCompra", "Totales de esta compra", "", "");
+            $css->legend("", "");
+                print("<a href='#'>Totales de esta compra</a>");
+            $css->Clegend();    
+           
+            $css->CrearDiv("DivTotalesCompra", "", "center", 1, 1);   
+                
+            $css->CerrarDiv(); 
+        $css->Cfieldset();    
+    $css->CerrarDiv();
     //$css->CerrarDiv();
     
-    $css->Cdiv();    
+    $css->Cdiv();
+
 $css->PageFin();
 
 print('<script src="jsPages/Compras.js"></script>');  //script propio de la pagina

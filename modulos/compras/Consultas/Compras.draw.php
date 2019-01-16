@@ -7,12 +7,12 @@ if (!isset($_SESSION['username'])){
 }
 $idUser=$_SESSION['idUser'];
 
-include_once("../clases/ReciboOrdenCompra.class.php");
+include_once("../clases/Compras.class.php");
 include_once("../../../constructores/paginas_constructor.php");
 
 if( !empty($_REQUEST["Accion"]) ){
     $css =  new PageConstruct("", "", 1, "", 1, 0);
-    $obCon = new ReciboOrdenCompra($idUser);
+    $obCon = new Compras($idUser);
     
     switch ($_REQUEST["Accion"]) {
         case 1: //dibujar el formulario para crear una compra nueva
@@ -356,7 +356,73 @@ if( !empty($_REQUEST["Accion"]) ){
                         print("</td>");
                     $css->CierraFilaTabla();
                 }
+                
             $css->CerrarTabla();
+        break;// fin caso 3
+        
+        case 4://Dibujo los Totales
+            $idCompra=$obCon->normalizar($_REQUEST["idCompra"]);
+            $TotalesCompras=$obCon->CalculeTotalesCompra($idCompra);
+            $css->div("", "col-md-2", "", "", "","", "style=text-align:center;color:blue;font-size:18px");
+               
+            $css->Cdiv();
+            $css->div("", "col-md-10", "", "", "","", "style=text-align:right");
+                $css->CrearTabla();
+                    $css->FilaTabla(16);
+                        $css->ColTabla("<strong>PRODUCTOS</strong>", 7,'C');
+                    $css->CierraFilaTabla();
+                    $css->FilaTabla(16);
+                        $css->ColTabla("<strong>Subtotal:</strong>", 1,'R');
+                        $css->input("hidden", "TxtSubtotalProductos", "", "", "", $TotalesCompras["Subtotal_Productos_Add"], "", "", "", "");
+                        $css->ColTabla(number_format($TotalesCompras["Subtotal_Productos_Add"]), 1,'R');
+                        print("<td>");
+                            
+                            $css->select("CmbImpRetDesProductos", "form-control", "CmbImpRetDesProductos", "", "", "", "onclick=MuestreOpcionesEnTotales(1)");
+                                $css->option("", "", "", "", "", "");
+                                    print("Elija una opción para aplicar:");
+                                $css->Coption();
+                                $Parametros=$obCon->DevuelveValores("parametros_contables", "ID", 24);
+                                $css->option("", "", "", $Parametros["CuentaPUC"], "", "");
+                                    print("Retefuente ".$Parametros["CuentaPUC"]);
+                                $css->Coption();
+                                $Parametros=$obCon->DevuelveValores("parametros_contables", "ID", 25);
+                                $css->option("", "", "", $Parametros["CuentaPUC"], "", "");
+                                    print("ReteICA ".$Parametros["CuentaPUC"]);
+                                $css->Coption();   
+                                $Parametros=$obCon->DevuelveValores("parametros_contables", "ID", 28);
+                                $css->option("", "", "", $Parametros["CuentaPUC"], "", "");
+                                    print("Descuentos Generales ".$Parametros["CuentaPUC"]);
+                                $css->Coption();
+                                $Parametros=$obCon->DevuelveValores("parametros_contables", "ID", 29);
+                                $css->option("", "", "", $Parametros["CuentaPUC"], "", "");
+                                    print("Impoconsumo ".$Parametros["CuentaPUC"]);
+                                $css->Coption();
+                            $css->Cselect();
+                                
+                        print("</td>");
+                            
+                                                
+                        print("<td>");
+                            $css->CrearDiv("DivImpRetDesPro2", "", "", 0, 0);
+                            
+                                $css->CrearInputText("TxtCargosPorcentajeProductos", "text", "", "", "%", "", "onkeyup", "CalculeRetencionDescuento(1)", 60, 30, 0, 1);
+                            $css->CerrarDiv();    
+                        print("</td>");                        
+                        print("<td>"); 
+                            $css->CrearDiv("DivImpRetDesPro3", "", "", 0, 0);
+                                $css->CrearInputText("TxtCargosValorProductos", "text", "", "", "Valor", "", "onkeyup", "CalculeRetencionDescuento(2)", 100, 30, 0, 1);
+                            $css->CerrarDiv();
+                        print("</td>");
+                        print("<td>"); 
+                            $css->CrearDiv("DivImpRetDesPro4", "", "", 0, 0);
+                                $css->CrearBotonEvento("BtnAgregarCargosProductos", "Agregar", 1, "onclick", "AgregarCargosProductos(event)", "naranja", "");
+                            $css->CerrarDiv();
+                        print("</td>");
+                    $css->CierraFilaTabla();
+                $css->CerrarTabla();
+                
+            $css->Cdiv();
+            
         break;    
         
     }

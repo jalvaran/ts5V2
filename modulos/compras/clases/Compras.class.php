@@ -183,6 +183,107 @@ class Compras extends ProcesoVenta{
         $this->InsertarRegistro($tab,$NumRegistros,$Columnas,$Valores);
     }
     
+    
+    //Calcule totales de la compra
+    
+    public function CalculeTotalesCompra($idCompra) {
+        $sql="SELECT SUM(SubtotalDescuento) as SubtotalDescuento,SUM(SubtotalCompra) as Subtotal, sum(ImpuestoCompra) as IVA, SUM(TotalCompra) AS Total FROM factura_compra_items "
+                    . " WHERE idFacturaCompra='$idCompra'";
+        $consulta= $this->Query($sql);
+        $TotalesCompraProductos=$this->FetchArray($consulta);
+        
+        $sql="SELECT SUM(SubtotalDescuento) as SubtotalDescuento,SUM(SubtotalCompra) as Subtotal, sum(ImpuestoCompra) as IVA, SUM(TotalCompra) AS Total FROM factura_compra_insumos "
+                    . " WHERE idFacturaCompra='$idCompra'";
+        $consulta= $this->Query($sql);
+        $TotalesCompraInsumos=$this->FetchArray($consulta);
+        
+        $sql="SELECT SUM(SubtotalCompra) as Subtotal, sum(ImpuestoCompra) as IVA, SUM(TotalCompra) AS Total FROM factura_compra_items_devoluciones "
+                    . " WHERE idFacturaCompra='$idCompra'";
+        $consulta= $this->Query($sql);
+        $TotalesItemsDevueltos=$this->FetchArray($consulta);
+        $TotalRetenciones= $this->SumeColumna("factura_compra_retenciones", "ValorRetencion", "idCompra", $idCompra);
+        
+        $sql="SELECT SUM(Subtotal_Servicio) as Subtotal, sum(Impuesto_Servicio) as IVA, SUM(Total_Servicio) AS Total FROM factura_compra_servicios "
+                    . " WHERE idFacturaCompra='$idCompra'";
+        $consulta= $this->Query($sql);
+        $TotalesServicios=$this->FetchArray($consulta);
+        $TotalesCompra["Subtotal_Productos_Add"]=$TotalesCompraProductos["Subtotal"];
+        $TotalesCompra["Impuestos_Productos_Add"]=$TotalesCompraProductos["IVA"];
+        $TotalesCompra["Total_Productos_Add"]=$TotalesCompraProductos["Total"];
+        $TotalesCompra["Subtotal_Descuentos_Productos_Add"]=$TotalesCompraProductos["SubtotalDescuento"];
+        
+        $TotalesCompra["Subtotal_Insumos"]=$TotalesCompraInsumos["Subtotal"];
+        $TotalesCompra["Impuestos_Insumos"]=$TotalesCompraInsumos["IVA"];
+        $TotalesCompra["Total_Insumos"]=$TotalesCompraInsumos["Total"];
+        $TotalesCompra["Subtotal_Descuentos_Insumos"]=$TotalesCompraInsumos["SubtotalDescuento"];
+        
+        $TotalesCompra["Subtotal_Servicios"]=$TotalesServicios["Subtotal"];
+        $TotalesCompra["Impuestos_Servicios"]=$TotalesServicios["IVA"];
+        $TotalesCompra["Total_Servicios"]=$TotalesServicios["Total"];
+        $TotalesCompra["Total_Retenciones"]=$TotalRetenciones;
+        $TotalesCompra["Subtotal_Productos_Dev"]=$TotalesItemsDevueltos["Subtotal"];
+        $TotalesCompra["Impuestos_Productos_Dev"]=$TotalesItemsDevueltos["IVA"];
+        $TotalesCompra["Total_Productos_Dev"]=$TotalesItemsDevueltos["Total"];
+        $TotalesCompra["Subtotal_Productos"]=$TotalesCompra["Subtotal_Productos_Add"]-$TotalesCompra["Subtotal_Productos_Dev"];
+        $TotalesCompra["Impuestos_Productos"]=$TotalesCompra["Impuestos_Productos_Add"]-$TotalesCompra["Impuestos_Productos_Dev"];
+        $TotalesCompra["Total_Productos"]=$TotalesCompra["Total_Productos_Add"]-$TotalesCompra["Total_Productos_Dev"];
+        $TotalesCompra["Gran_Subtotal"]=$TotalesCompra["Subtotal_Productos"]+$TotalesCompra["Subtotal_Servicios"]+$TotalesCompra["Subtotal_Insumos"];
+        $TotalesCompra["Gran_Impuestos"]=$TotalesCompra["Impuestos_Productos"]+$TotalesCompra["Impuestos_Servicios"]+$TotalesCompra["Impuestos_Insumos"];
+        $TotalesCompra["Gran_Total"]=$TotalesCompra["Total_Productos"]+$TotalesCompra["Total_Servicios"]+$TotalesCompra["Total_Insumos"];
+        $TotalesCompra["Total_Pago"]=$TotalesCompra["Gran_Total"]-$TotalesCompra["Total_Retenciones"];
+        return($TotalesCompra);
+    }
+    
+    //Clase para agregar un item a una compra
+    public function AgregueRetencionCompra($idCompra,$Cuenta,$Valor,$Porcentaje,$Vector) {
+        //Proceso la informacion
+        $DatosCuentas= $this->DevuelveValores("subcuentas", "PUC", $Cuenta);
+        //////Agrego el registro           
+        $tab="factura_compra_retenciones";
+        $NumRegistros=5;
+
+        $Columnas[0]="idCompra";            $Valores[0]=$idCompra;
+        $Columnas[1]="CuentaPUC";           $Valores[1]=$Cuenta;
+        $Columnas[2]="NombreCuenta";        $Valores[2]=$DatosCuentas["Nombre"];
+        $Columnas[3]="ValorRetencion";      $Valores[3]=$Valor;
+        $Columnas[4]="PorcentajeRetenido";  $Valores[4]=$Porcentaje;       
+                            
+        $this->InsertarRegistro($tab,$NumRegistros,$Columnas,$Valores);
+    }
+    
+    //Clase para agregar un item a una compra
+    public function AgregueDescuentoCompra($idCompra,$Cuenta,$Valor,$Porcentaje,$Vector) {
+        //Proceso la informacion
+        $DatosCuentas= $this->DevuelveValores("subcuentas", "PUC", $Cuenta);
+        //////Agrego el registro           
+        $tab="factura_compra_descuentos";
+        $NumRegistros=5;
+
+        $Columnas[0]="idCompra";                $Valores[0]=$idCompra;
+        $Columnas[1]="CuentaPUCDescuento";      $Valores[1]=$Cuenta;
+        $Columnas[2]="NombreCuentaDescuento";   $Valores[2]=$DatosCuentas["Nombre"];
+        $Columnas[3]="ValorDescuento";          $Valores[3]=$Valor;
+        $Columnas[4]="PorcentajeDescuento";     $Valores[4]=$Porcentaje;       
+                            
+        $this->InsertarRegistro($tab,$NumRegistros,$Columnas,$Valores);
+    }
+    
+    //Clase para agregar un item a una compra
+    public function AgregueImpuestoAdicionalCompra($idCompra,$Cuenta,$Valor,$Porcentaje,$Vector) {
+        //Proceso la informacion
+        $DatosCuentas= $this->DevuelveValores("subcuentas", "PUC", $Cuenta);
+        //////Agrego el registro           
+        $tab="factura_compra_impuestos_adicionales";
+        $NumRegistros=5;
+
+        $Columnas[0]="idCompra";       $Valores[0]=$idCompra;
+        $Columnas[1]="CuentaPUC";      $Valores[1]=$Cuenta;
+        $Columnas[2]="NombreCuenta";   $Valores[2]=$DatosCuentas["Nombre"];
+        $Columnas[3]="Valor";          $Valores[3]=$Valor;
+        $Columnas[4]="Porcentaje";     $Valores[4]=$Porcentaje;       
+                            
+        $this->InsertarRegistro($tab,$NumRegistros,$Columnas,$Valores);
+    }
     /**
      * Fin Clase
      */

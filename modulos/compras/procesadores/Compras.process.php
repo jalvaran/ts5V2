@@ -146,6 +146,23 @@ if( !empty($_REQUEST["Accion"]) ){
             print("Item Devuelto");
         break;//Fin caso 6
         
+        case 7://Se registra un cargo adicional para los totales en compra de productos
+            $idCompra=$obCon->normalizar($_REQUEST["idCompra"]);
+            $Selector=$obCon->normalizar($_REQUEST["Selector"]);
+            $CuentaPUC=$obCon->normalizar($_REQUEST["CuentaPUC"]);
+            $Porcentaje=$obCon->normalizar($_REQUEST["Porcentaje"]);
+            $Valor=$obCon->normalizar($_REQUEST["Valor"]);
+            if($Selector==1 or $Selector==2){ //Retefuente o ReteICA
+                $obCon->AgregueRetencionCompra($idCompra, $CuentaPUC, $Valor, $Porcentaje, "");
+            }
+            if($Selector==3){ //Descuentos Comerciales en compras
+                $obCon->AgregueDescuentoCompra($idCompra, $CuentaPUC, $Valor, $Porcentaje, "");
+            }
+            if($Selector==4){ //Agrega un impuesto adicional
+                $obCon->AgregueImpuestoAdicionalCompra($idCompra, $CuentaPUC, $Valor, $Porcentaje, "");
+            }
+            print("OK");
+        break;//Fin caso 7
         
     }
     
