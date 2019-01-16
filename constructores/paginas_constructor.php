@@ -1367,7 +1367,7 @@ class PageConstruct extends html_estruct_class{
          * @param type $ColSpan
          * @param type $align-> alineacion: L izquierda, R Derecha, C centro
          */
-	function ColTabla($Contenido,$ColSpan,$align="L"){
+	function ColTabla($Contenido,$ColSpan,$align="L",$AdicionalStyles=""){
             if($align=="L"){
               $align="left";  
             }
@@ -1377,7 +1377,7 @@ class PageConstruct extends html_estruct_class{
             if($align=="C"){
               $align="center";  
             }
-            print('<td colspan="'.$ColSpan.' " style="text-align:'.$align.'"   >'.$Contenido.'</td>');
+            print('<td colspan="'.$ColSpan.' " style="text-align:'.$align.';'.$AdicionalStyles.'"   >'.$Contenido.'</td>');
 		
 	}
 	/**

@@ -525,19 +525,97 @@ function DevolverItem(idItem,Cantidad=""){
  * @param {type} Monto
  * @returns {undefined}
  */
-function MuestreOpcionesEnTotales(Monto){
-    var Selector = document.getElementById('CmbImpRetDesProductos').value;
-    if(Selector == ''){
-       //document.getElementById("DivImpRetDesPro1").style.display="none";
-        document.getElementById("DivImpRetDesPro2").style.display="none";
-        document.getElementById("DivImpRetDesPro3").style.display="none";
-        document.getElementById("DivImpRetDesPro4").style.display="none";
-    }else{
-        //document.getElementById("DivImpRetDesPro1").style.display="block";
-        document.getElementById("DivImpRetDesPro2").style.display="block";
-        document.getElementById("DivImpRetDesPro3").style.display="block";
-        document.getElementById("DivImpRetDesPro4").style.display="block";
+function MuestreOpcionesEnTotales(Opcion){
+    if(Opcion==1){//Selector de Subtotal de productos
+        var Selector = document.getElementById('CmbImpRetDesProductos').value;
+        if(Selector == ''){
+           //document.getElementById("DivImpRetDesPro1").style.display="none";
+            document.getElementById("DivImpRetDesPro2").style.display="none";
+            document.getElementById("DivImpRetDesPro3").style.display="none";
+            document.getElementById("DivImpRetDesPro4").style.display="none";
+        }else{//Selector de Impuestos de productos
+            //document.getElementById("DivImpRetDesPro1").style.display="block";
+            document.getElementById("DivImpRetDesPro2").style.display="block";
+            document.getElementById("DivImpRetDesPro3").style.display="block";
+            document.getElementById("DivImpRetDesPro4").style.display="block";
+        }
     }
+    
+    if(Opcion==2){//Selector de IVA en Productos
+        var Selector = document.getElementById('CmbImpuestosProductos').value;
+        if(Selector == ''){
+           //document.getElementById("DivImpRetDesPro1").style.display="none";
+            document.getElementById("DivImpRetDesPro5").style.display="none";
+            document.getElementById("DivImpRetDesPro6").style.display="none";
+            document.getElementById("DivImpRetDesPro7").style.display="none";
+        }else{
+            //document.getElementById("DivImpRetDesPro1").style.display="block";
+            document.getElementById("DivImpRetDesPro5").style.display="block";
+            document.getElementById("DivImpRetDesPro6").style.display="block";
+            document.getElementById("DivImpRetDesPro7").style.display="block";
+        }
+    }
+    
+    if(Opcion==3){//Selector de Subtotal de insumos
+        var Selector = document.getElementById('CmbImpRetDesInsumos').value;
+        if(Selector == ''){
+           //document.getElementById("DivImpRetDesPro1").style.display="none";
+            document.getElementById("DivImpRetDesPro8").style.display="none";
+            document.getElementById("DivImpRetDesPro9").style.display="none";
+            document.getElementById("DivImpRetDesPro10").style.display="none";
+        }else{//Selector de Impuestos de productos
+            //document.getElementById("DivImpRetDesPro1").style.display="block";
+            document.getElementById("DivImpRetDesPro8").style.display="block";
+            document.getElementById("DivImpRetDesPro9").style.display="block";
+            document.getElementById("DivImpRetDesPro10").style.display="block";
+        }
+    }
+    
+    if(Opcion==4){//Selector de IVA en insumos
+        var Selector = document.getElementById('CmbImpuestosInsumos').value;
+        if(Selector == ''){
+           //document.getElementById("DivImpRetDesPro1").style.display="none";
+            document.getElementById("DivImpRetDesPro11").style.display="none";
+            document.getElementById("DivImpRetDesPro12").style.display="none";
+            document.getElementById("DivImpRetDesPro13").style.display="none";
+        }else{
+            //document.getElementById("DivImpRetDesPro1").style.display="block";
+            document.getElementById("DivImpRetDesPro11").style.display="block";
+            document.getElementById("DivImpRetDesPro12").style.display="block";
+            document.getElementById("DivImpRetDesPro13").style.display="block";
+        }
+    }
+    
+    if(Opcion==5){//Selector de Subtotal de servicios
+        var Selector = document.getElementById('CmbImpRetDesServicios').value;
+        if(Selector == ''){
+           //document.getElementById("DivImpRetDesPro1").style.display="none";
+            document.getElementById("DivImpRetDesPro14").style.display="none";
+            document.getElementById("DivImpRetDesPro15").style.display="none";
+            document.getElementById("DivImpRetDesPro16").style.display="none";
+        }else{//Selector de Subtotal de servicios
+            //document.getElementById("DivImpRetDesPro1").style.display="block";
+            document.getElementById("DivImpRetDesPro14").style.display="block";
+            document.getElementById("DivImpRetDesPro15").style.display="block";
+            document.getElementById("DivImpRetDesPro16").style.display="block";
+        }
+    }
+    
+    if(Opcion==6){//Selector de IVA en servicios
+        var Selector = document.getElementById('CmbImpuestosServicios').value;
+        if(Selector == ''){
+           //document.getElementById("DivImpRetDesPro1").style.display="none";
+            document.getElementById("DivImpRetDesPro17").style.display="none";
+            document.getElementById("DivImpRetDesPro18").style.display="none";
+            document.getElementById("DivImpRetDesPro19").style.display="none";
+        }else{
+            //document.getElementById("DivImpRetDesPro1").style.display="block";
+            document.getElementById("DivImpRetDesPro17").style.display="block";
+            document.getElementById("DivImpRetDesPro18").style.display="block";
+            document.getElementById("DivImpRetDesPro19").style.display="block";
+        }
+    }
+    
 }
 /**
  * Calcula el valor o porcentaje de una retencion o descuento
@@ -545,7 +623,7 @@ function MuestreOpcionesEnTotales(Monto){
  * @returns {undefined}
  */
 function CalculeRetencionDescuento(Opcion){
-    var Selector = document.getElementById('CmbImpRetDesProductos').value;
+    
     //Se Calcula el valor de la retencion o descuento en el subtotal del producto
     // dependiendo del porcentaje digitado
     if(Opcion==1){
@@ -570,6 +648,134 @@ function CalculeRetencionDescuento(Opcion){
         var Porcentaje = 100/BaseCalculo * Valor;
         document.getElementById(idInputPorcentaje).value=Porcentaje.toFixed(1);
     }
+    
+     //Se Calcula el valor del reteiva 
+    // dependiendo del porcentaje digitado
+    if(Opcion==3){
+        
+        var idInputPorcentaje="TxtCargosPorcentajeProductosImpuestos";
+        var idInputValor="TxtCargosValorProductosImpuestos";
+        var idBaseCalculo="TxtImpuestosProductos";
+        var BaseCalculo = document.getElementById(idBaseCalculo).value;
+        var Porcentaje = document.getElementById(idInputPorcentaje).value;
+        var Valor = Porcentaje/100 * BaseCalculo;
+        document.getElementById(idInputValor).value=Valor.toFixed(2);
+    }
+    //Se Calcula el valor del reteiva de los productos
+    // dependiendo del valor digitado
+    if(Opcion==4){
+        
+        var idInputPorcentaje="TxtCargosPorcentajeProductosImpuestos";
+        var idInputValor="TxtCargosValorProductosImpuestos";
+        var idBaseCalculo="TxtImpuestosProductos";
+        var BaseCalculo = document.getElementById(idBaseCalculo).value;
+        var Valor = document.getElementById(idInputValor).value;
+        var Porcentaje = 100/BaseCalculo * Valor;
+        document.getElementById(idInputPorcentaje).value=Porcentaje.toFixed(1);
+    }
+    
+    //Se Calcula el valor de la retencion o descuento en el subtotal de los insumos
+    // dependiendo del porcentaje digitado
+    if(Opcion==5){
+        
+        var idInputPorcentaje="TxtCargosPorcentajeInsumos";
+        var idInputValor="TxtCargosValorInsumos";
+        var idBaseCalculo="TxtSubtotalInsumos";
+        var BaseCalculo = document.getElementById(idBaseCalculo).value;
+        var Porcentaje = document.getElementById(idInputPorcentaje).value;
+        var Valor = Porcentaje/100 * BaseCalculo;
+        document.getElementById(idInputValor).value=Valor.toFixed(2);
+    }
+    //Se Calcula el valor de la retencion o descuento en el subtotal del insumo
+    // dependiendo del valor digitado
+    if(Opcion==6){
+        
+        var idInputPorcentaje="TxtCargosPorcentajeInsumos";
+        var idInputValor="TxtCargosValorInsumos";
+        var idBaseCalculo="TxtSubtotalInsumos";
+        var BaseCalculo = document.getElementById(idBaseCalculo).value;
+        var Valor = document.getElementById(idInputValor).value;
+        var Porcentaje = 100/BaseCalculo * Valor;
+        document.getElementById(idInputPorcentaje).value=Porcentaje.toFixed(1);
+    }
+    
+     //Se Calcula el valor del reteiva 
+    // dependiendo del porcentaje digitado
+    if(Opcion==7){
+        
+        var idInputPorcentaje="TxtCargosPorcentajeInsumosImpuestos";
+        var idInputValor="TxtCargosValorInsumosImpuestos";
+        var idBaseCalculo="TxtImpuestosInsumos";
+        var BaseCalculo = document.getElementById(idBaseCalculo).value;
+        var Porcentaje = document.getElementById(idInputPorcentaje).value;
+        var Valor = Porcentaje/100 * BaseCalculo;
+        document.getElementById(idInputValor).value=Valor.toFixed(2);
+    }
+    //Se Calcula el valor del reteiva
+    // dependiendo del valor digitado
+    if(Opcion==8){
+        
+        var idInputPorcentaje="TxtCargosPorcentajeInsumosImpuestos";
+        var idInputValor="TxtCargosValorInsumosImpuestos";
+        var idBaseCalculo="TxtImpuestosInsumos";
+        var BaseCalculo = document.getElementById(idBaseCalculo).value;
+        var Valor = document.getElementById(idInputValor).value;
+        var Porcentaje = 100/BaseCalculo * Valor;
+        document.getElementById(idInputPorcentaje).value=Porcentaje.toFixed(1);
+    }
+    
+    
+     //Se Calcula el valor de la retencion o descuento en el subtotal de los servicios
+    // dependiendo del porcentaje digitado
+    if(Opcion==9){
+        
+        var idInputPorcentaje="TxtCargosPorcentajeServicios";
+        var idInputValor="TxtCargosValorServicios";
+        var idBaseCalculo="TxtSubtotalServicios";
+        var BaseCalculo = document.getElementById(idBaseCalculo).value;
+        var Porcentaje = document.getElementById(idInputPorcentaje).value;
+        var Valor = Porcentaje/100 * BaseCalculo;
+        document.getElementById(idInputValor).value=Valor.toFixed(2);
+    }
+    //Se Calcula el valor de la retencion o descuento en el subtotal del servicios
+    // dependiendo del valor digitado
+    if(Opcion==10){
+        
+        var idInputPorcentaje="TxtCargosPorcentajeServicios";
+        var idInputValor="TxtCargosValorServicios";
+        var idBaseCalculo="TxtSubtotalServicios";
+        var BaseCalculo = document.getElementById(idBaseCalculo).value;
+        var Valor = document.getElementById(idInputValor).value;
+        var Porcentaje = 100/BaseCalculo * Valor;
+        document.getElementById(idInputPorcentaje).value=Porcentaje.toFixed(1);
+    }
+    
+     //Se Calcula el valor del reteiva  de servicios
+    // dependiendo del porcentaje digitado
+    if(Opcion==11){
+        
+        var idInputPorcentaje="TxtCargosPorcentajeServiciosImpuestos";
+        var idInputValor="TxtCargosValorServiciosImpuestos";
+        var idBaseCalculo="TxtImpuestosServicios";
+        var BaseCalculo = document.getElementById(idBaseCalculo).value;
+        var Porcentaje = document.getElementById(idInputPorcentaje).value;
+        var Valor = Porcentaje/100 * BaseCalculo;
+        document.getElementById(idInputValor).value=Valor.toFixed(2);
+    }
+    //Se Calcula el valor del reteiva de servicios
+    // dependiendo del valor digitado
+    if(Opcion==12){
+        
+        var idInputPorcentaje="TxtCargosPorcentajeServiciosImpuestos";
+        var idInputValor="TxtCargosValorServiciosImpuestos";
+        var idBaseCalculo="TxtImpuestosServicios";
+        var BaseCalculo = document.getElementById(idBaseCalculo).value;
+        var Valor = document.getElementById(idInputValor).value;
+        var Porcentaje = 100/BaseCalculo * Valor;
+        document.getElementById(idInputPorcentaje).value=Porcentaje.toFixed(1);
+    }
+    
+    
         
 }
 /**
@@ -606,6 +812,11 @@ function DibujeTotalesCompra(idCompra=""){
       
 }
 
+/**
+ * Agrega los cargos al subtotal de los productos
+ * @param {type} event
+ * @returns {undefined}
+ */
 function AgregarCargosProductos(event){
     event.preventDefault();
     
@@ -627,7 +838,7 @@ function AgregarCargosProductos(event){
         document.getElementById(idPorcentaje).style.backgroundColor="white";
     }
     
-    if(isNaN(Valor) || Valor<=0){
+    if(isNaN(Valor) || Valor<=0 || Porcentaje>100){
         alertify.alert("El campo debe ser un valor numerico mayor a cero");
         document.getElementById(idValor).style.backgroundColor="pink";
         return;
@@ -658,6 +869,430 @@ function AgregarCargosProductos(event){
             }
             
             DibujeTotalesCompra(idCompra);
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      });
+    
+    
+}
+
+/**
+ * Agrega los cargos al iva de los productos
+ * @param {type} event
+ * @returns {undefined}
+ */
+function AgregarCargosProductosImpuestos(event){
+    event.preventDefault();
+    
+    var idCompra = document.getElementById('idCompra').value;
+    var idSelector="CmbImpuestosProductos";
+    var idPorcentaje="TxtCargosPorcentajeProductosImpuestos";
+    var idValor="TxtCargosValorProductosImpuestos";
+        
+    var Selector = document.getElementById(idSelector).selectedIndex;
+    var CuentaPUC = document.getElementById(idSelector).value;
+    var Porcentaje = parseFloat(document.getElementById(idPorcentaje).value);
+    var Valor = parseFloat(document.getElementById(idValor).value);
+    
+    if(isNaN(Porcentaje) || Porcentaje<=0 || Porcentaje>100){
+        alertify.alert("El campo debe ser un valor numerico mayor a cero y menor a 100");
+        document.getElementById(idPorcentaje).style.backgroundColor="pink";
+        return;
+    }else{
+        document.getElementById(idPorcentaje).style.backgroundColor="white";
+    }
+    
+    if(isNaN(Valor) || Valor<=0){
+        alertify.alert("El campo debe ser un valor numerico mayor a cero");
+        document.getElementById(idValor).style.backgroundColor="pink";
+        return;
+    }else{
+        document.getElementById(idValor).style.backgroundColor="white";
+    }
+    document.getElementById(idValor).value='';
+    var form_data = new FormData();
+        form_data.append('Accion', 8); 
+        form_data.append('idCompra', idCompra);
+        form_data.append('Selector', Selector);
+        form_data.append('CuentaPUC', CuentaPUC);
+        form_data.append('Porcentaje', Porcentaje);
+        form_data.append('Valor', Valor);
+        $.ajax({
+        url: './procesadores/Compras.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            if(data=="OK"){
+                alertify.success("Registro realizado");
+            }else{
+                alertify.error(data,10000);
+            }
+            
+            DibujeTotalesCompra(idCompra);
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      });
+    
+    
+}
+
+
+/**
+ * Agrega los cargos al subtotal de los insumos
+ * @param {type} event
+ * @returns {undefined}
+ */
+function AgregarCargosSubtotalInsumos(event){
+    event.preventDefault();
+    
+    var idCompra = document.getElementById('idCompra').value;
+    var idSelector="CmbImpRetDesInsumos";
+    var idPorcentaje="TxtCargosPorcentajeInsumos";
+    var idValor="TxtCargosValorInsumos";
+        
+    var Selector = document.getElementById(idSelector).selectedIndex;
+    var CuentaPUC = document.getElementById(idSelector).value;
+    var Porcentaje = parseFloat(document.getElementById(idPorcentaje).value);
+    var Valor = parseFloat(document.getElementById(idValor).value);
+    
+    if(isNaN(Porcentaje) || Porcentaje<=0){
+        alertify.alert("El campo debe ser un valor numerico mayor a cero");
+        document.getElementById(idPorcentaje).style.backgroundColor="pink";
+        return;
+    }else{
+        document.getElementById(idPorcentaje).style.backgroundColor="white";
+    }
+    
+    if(isNaN(Valor) || Valor<=0 || Porcentaje>100){
+        alertify.alert("El campo debe ser un valor numerico mayor a cero");
+        document.getElementById(idValor).style.backgroundColor="pink";
+        return;
+    }else{
+        document.getElementById(idValor).style.backgroundColor="white";
+    }
+    document.getElementById(idValor).value='';
+    var form_data = new FormData();
+        form_data.append('Accion', 7); 
+        form_data.append('idCompra', idCompra);
+        form_data.append('Selector', Selector);
+        form_data.append('CuentaPUC', CuentaPUC);
+        form_data.append('Porcentaje', Porcentaje);
+        form_data.append('Valor', Valor);
+        $.ajax({
+        url: './procesadores/Compras.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            if(data=="OK"){
+                alertify.success("Registro realizado");
+            }else{
+                alertify.error(data,10000);
+            }
+            
+            DibujeTotalesCompra(idCompra);
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      });
+    
+    
+}
+
+/**
+ * Agrega los cargos al iva de los insumos
+ * @param {type} event
+ * @returns {undefined}
+ */
+function AgregarCargosInsumosImpuestos(event){
+    event.preventDefault();
+    
+    var idCompra = document.getElementById('idCompra').value;
+    var idSelector="CmbImpuestosInsumos";
+    var idPorcentaje="TxtCargosPorcentajeInsumosImpuestos";
+    var idValor="TxtCargosValorInsumosImpuestos";
+        
+    var Selector = document.getElementById(idSelector).selectedIndex;
+    var CuentaPUC = document.getElementById(idSelector).value;
+    var Porcentaje = parseFloat(document.getElementById(idPorcentaje).value);
+    var Valor = parseFloat(document.getElementById(idValor).value);
+    
+    if(isNaN(Porcentaje) || Porcentaje<=0 || Porcentaje>100){
+        alertify.alert("El campo debe ser un valor numerico mayor a cero y menor a 100");
+        document.getElementById(idPorcentaje).style.backgroundColor="pink";
+        return;
+    }else{
+        document.getElementById(idPorcentaje).style.backgroundColor="white";
+    }
+    
+    if(isNaN(Valor) || Valor<=0){
+        alertify.alert("El campo debe ser un valor numerico mayor a cero");
+        document.getElementById(idValor).style.backgroundColor="pink";
+        return;
+    }else{
+        document.getElementById(idValor).style.backgroundColor="white";
+    }
+    document.getElementById(idValor).value='';
+    var form_data = new FormData();
+        form_data.append('Accion', 8); 
+        form_data.append('idCompra', idCompra);
+        form_data.append('Selector', Selector);
+        form_data.append('CuentaPUC', CuentaPUC);
+        form_data.append('Porcentaje', Porcentaje);
+        form_data.append('Valor', Valor);
+        $.ajax({
+        url: './procesadores/Compras.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            if(data=="OK"){
+                alertify.success("Registro realizado");
+            }else{
+                alertify.error(data,10000);
+            }
+            
+            DibujeTotalesCompra(idCompra);
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      });
+    
+    
+}
+
+/**
+ * Agrega los cargos al subtotal de los insumos
+ * @param {type} event
+ * @returns {undefined}
+ */
+function AgregarCargosSubtotalServicios(event){
+    event.preventDefault();
+    
+    var idCompra = document.getElementById('idCompra').value;
+    var idSelector="CmbImpRetDesServicios";
+    var idPorcentaje="TxtCargosPorcentajeServicios";
+    var idValor="TxtCargosValorServicios";
+        
+    var Selector = document.getElementById(idSelector).selectedIndex;
+    var CuentaPUC = document.getElementById(idSelector).value;
+    var Porcentaje = parseFloat(document.getElementById(idPorcentaje).value);
+    var Valor = parseFloat(document.getElementById(idValor).value);
+    
+    if(isNaN(Porcentaje) || Porcentaje<=0){
+        alertify.alert("El campo debe ser un valor numerico mayor a cero");
+        document.getElementById(idPorcentaje).style.backgroundColor="pink";
+        return;
+    }else{
+        document.getElementById(idPorcentaje).style.backgroundColor="white";
+    }
+    
+    if(isNaN(Valor) || Valor<=0 || Porcentaje>100){
+        alertify.alert("El campo debe ser un valor numerico mayor a cero");
+        document.getElementById(idValor).style.backgroundColor="pink";
+        return;
+    }else{
+        document.getElementById(idValor).style.backgroundColor="white";
+    }
+    document.getElementById(idValor).value='';
+    var form_data = new FormData();
+        form_data.append('Accion', 7); 
+        form_data.append('idCompra', idCompra);
+        form_data.append('Selector', Selector);
+        form_data.append('CuentaPUC', CuentaPUC);
+        form_data.append('Porcentaje', Porcentaje);
+        form_data.append('Valor', Valor);
+        $.ajax({
+        url: './procesadores/Compras.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            if(data=="OK"){
+                alertify.success("Registro realizado");
+            }else{
+                alertify.error(data,10000);
+            }
+            
+            DibujeTotalesCompra(idCompra);
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      });
+    
+    
+}
+
+/**
+ * Agrega los cargos al iva de los insumos
+ * @param {type} event
+ * @returns {undefined}
+ */
+function AgregarCargosServiciosImpuestos(event){
+    event.preventDefault();
+    
+    var idCompra = document.getElementById('idCompra').value;
+    var idSelector="CmbImpuestosServicios";
+    var idPorcentaje="TxtCargosPorcentajeServiciosImpuestos";
+    var idValor="TxtCargosValorServiciosImpuestos";
+        
+    var Selector = document.getElementById(idSelector).selectedIndex;
+    var CuentaPUC = document.getElementById(idSelector).value;
+    var Porcentaje = parseFloat(document.getElementById(idPorcentaje).value);
+    var Valor = parseFloat(document.getElementById(idValor).value);
+    
+    if(isNaN(Porcentaje) || Porcentaje<=0 || Porcentaje>100){
+        alertify.alert("El campo debe ser un valor numerico mayor a cero y menor a 100");
+        document.getElementById(idPorcentaje).style.backgroundColor="pink";
+        return;
+    }else{
+        document.getElementById(idPorcentaje).style.backgroundColor="white";
+    }
+    
+    if(isNaN(Valor) || Valor<=0){
+        alertify.alert("El campo debe ser un valor numerico mayor a cero");
+        document.getElementById(idValor).style.backgroundColor="pink";
+        return;
+    }else{
+        document.getElementById(idValor).style.backgroundColor="white";
+    }
+    document.getElementById(idValor).value='';
+    var form_data = new FormData();
+        form_data.append('Accion', 8); 
+        form_data.append('idCompra', idCompra);
+        form_data.append('Selector', Selector);
+        form_data.append('CuentaPUC', CuentaPUC);
+        form_data.append('Porcentaje', Porcentaje);
+        form_data.append('Valor', Valor);
+        $.ajax({
+        url: './procesadores/Compras.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            if(data=="OK"){
+                alertify.success("Registro realizado");
+            }else{
+                alertify.error(data,10000);
+            }
+            
+            DibujeTotalesCompra(idCompra);
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      });
+    
+    
+}
+
+
+/**
+ * Muestra u oculta un elemento por su id
+ * @param {type} id
+ * @returns {undefined}
+ */
+
+function MuestraOcultaXIDCompras(id){
+    
+    var estado=document.getElementById(id).style.display;
+    if(estado=="none" | estado==""){
+        document.getElementById(id).style.display="block";
+    }
+    if(estado=="block"){
+        document.getElementById(id).style.display="none";
+    }
+    
+}
+
+/**
+ * Agrega los cargos al subtotal de los insumos
+ * @param {type} event
+ * @returns {undefined}
+ */
+function GuardarCompra(idCompra=''){
+    document.getElementById('BtnGuardarCompra').disabled=true;
+    if(idCompra==''){
+        var idCompra = document.getElementById('idCompra').value;
+    }
+        
+    var CmbTipoPago = document.getElementById("CmbTipoPago").selectedIndex;
+    var CmbCuentaOrigen = document.getElementById("CmbCuentaOrigen").value;
+    var CmbCuentaPUCCXP = document.getElementById("CmbCuentaPUCCXP").value;
+    var TxtFechaProgramada = document.getElementById("TxtFechaProgramada").value;
+    var CmbTraslado = document.getElementById("CmbTraslado").value;
+    
+    
+    if(TxtFechaProgramada==''){
+        alertify.alert("El campo fecha programada no puede estar vacío");
+        document.getElementById("TxtFechaProgramada").style.backgroundColor="pink";
+        return;
+    }else{
+        document.getElementById("TxtFechaProgramada").style.backgroundColor="white";
+    }
+    
+    
+    document.getElementById("TxtFechaProgramada").value='';
+    var form_data = new FormData();
+        form_data.append('Accion', '9'); 
+        form_data.append('idCompra', idCompra);
+        form_data.append('CmbTipoPago', CmbTipoPago);
+        form_data.append('CmbCuentaOrigen', CmbCuentaOrigen);
+        form_data.append('CmbCuentaPUCCXP', CmbCuentaPUCCXP);
+        form_data.append('TxtFechaProgramada', TxtFechaProgramada);
+        form_data.append('CmbTraslado', CmbTraslado);
+        $.ajax({
+        url: './procesadores/Compras.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            if(data=="OK"){
+                alertify.success("Factura Guardada");
+            }else{
+                alertify.error(data,10000);
+                document.getElementById('BtnGuardarCompra').disabled=false;
+            }
+            
+            //DibujeTotalesCompra(idCompra);
             
         },
         error: function (xhr, ajaxOptions, thrownError) {

@@ -410,13 +410,7 @@ print("<body>");
                     print("<td>");
                     print("<strong>Traslado?</strong><br>");
                     $css->CrearSelectTable("CmbTraslado", "empresa_pro_sucursales", "", "ID", "Nombre", "Ciudad", "", "", "", 0);
-                    /*
-                    $css->CrearSelect("CmbTraslado", "",60);
-                            $css->CrearOptionSelect("NO", "NO", 1);
-                            $css->CrearOptionSelect("SI", "SI", 0);
-                        $css->CerrarSelect();
-                     * 
-                     */
+                    
                     $css->CrearBotonConfirmado("BtnGuardarCompra", "Guardar");
                     print("</td>");
                 $css->CierraFilaTabla();

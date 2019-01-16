@@ -363,10 +363,8 @@ if( !empty($_REQUEST["Accion"]) ){
         case 4://Dibujo los Totales
             $idCompra=$obCon->normalizar($_REQUEST["idCompra"]);
             $TotalesCompras=$obCon->CalculeTotalesCompra($idCompra);
-            $css->div("", "col-md-2", "", "", "","", "style=text-align:center;color:blue;font-size:18px");
-               
-            $css->Cdiv();
-            $css->div("", "col-md-10", "", "", "","", "style=text-align:right");
+            
+            $css->div("", "col-md-8", "", "", "","", "style=text-align:left");
                 $css->CrearTabla();
                     $css->FilaTabla(16);
                         $css->ColTabla("<strong>PRODUCTOS</strong>", 7,'C');
@@ -419,9 +417,483 @@ if( !empty($_REQUEST["Accion"]) ){
                             $css->CerrarDiv();
                         print("</td>");
                     $css->CierraFilaTabla();
+                    
+                    if($TotalesCompras["Impuestos_Productos_Add"]>0){
+                        $css->FilaTabla(16);
+                            $css->ColTabla("<strong>Impuestos:</strong>", 1,'R');
+                            $css->input("hidden", "TxtImpuestosProductos", "", "", "", $TotalesCompras["Impuestos_Productos_Add"], "", "", "", "");
+                            $css->ColTabla(number_format($TotalesCompras["Impuestos_Productos_Add"]), 1,'R');
+                            print("<td>");
+
+                                $css->select("CmbImpuestosProductos", "form-control", "CmbImpuestosProductos", "", "", "", "onclick=MuestreOpcionesEnTotales(2)");
+                                    $css->option("", "", "", "", "", "");
+                                        print("Elija una opción para aplicar:");
+                                    $css->Coption();
+                                    $Parametros=$obCon->DevuelveValores("parametros_contables", "ID", 26);
+                                    $css->option("", "", "", $Parametros["CuentaPUC"], "", "");
+                                        print("ReteIVA ".$Parametros["CuentaPUC"]);
+                                    $css->Coption();
+                                    
+                                $css->Cselect();
+
+                            print("</td>");
+
+
+                            print("<td>");
+                                $css->CrearDiv("DivImpRetDesPro5", "", "", 0, 0);
+
+                                    $css->CrearInputText("TxtCargosPorcentajeProductosImpuestos", "text", "", "", "%", "", "onkeyup", "CalculeRetencionDescuento(3)", 60, 30, 0, 1);
+                                $css->CerrarDiv();    
+                            print("</td>");                        
+                            print("<td>"); 
+                                $css->CrearDiv("DivImpRetDesPro6", "", "", 0, 0);
+                                    $css->CrearInputText("TxtCargosValorProductosImpuestos", "text", "", "", "Valor", "", "onkeyup", "CalculeRetencionDescuento(4)", 100, 30, 0, 1);
+                                $css->CerrarDiv();
+                            print("</td>");
+                            print("<td>"); 
+                                $css->CrearDiv("DivImpRetDesPro7", "", "", 0, 0);
+                                    $css->CrearBotonEvento("BtnAgregarCargosProductos", "Agregar", 1, "onclick", "AgregarCargosProductosImpuestos(event)", "naranja", "");
+                                $css->CerrarDiv();
+                            print("</td>");
+                        $css->CierraFilaTabla();
+                    }
+                    
+                    // dibujo el total de lss insumos
+                    
+                    if($TotalesCompras["Subtotal_Insumos"]>0){
+                        
+                        $css->FilaTabla(16);
+                            $css->ColTabla("<strong>INSUMOS</strong>", 7,'C');
+                        $css->CierraFilaTabla();
+                        $css->FilaTabla(16);
+                            $css->ColTabla("<strong>Subtotal:</strong>", 1,'R');
+                            $css->input("hidden", "TxtSubtotalInsumos", "", "", "", $TotalesCompras["Subtotal_Insumos"], "", "", "", "");
+                            $css->ColTabla(number_format($TotalesCompras["Subtotal_Insumos"]), 1,'R');
+                            print("<td>");
+
+                                $css->select("CmbImpRetDesInsumos", "form-control", "CmbImpRetDesInsumos", "", "", "", "onclick=MuestreOpcionesEnTotales(3)");
+                                    $css->option("", "", "", "", "", "");
+                                        print("Elija una opción para aplicar:");
+                                    $css->Coption();
+                                    $Parametros=$obCon->DevuelveValores("parametros_contables", "ID", 24);
+                                    $css->option("", "", "", $Parametros["CuentaPUC"], "", "");
+                                        print("Retefuente ".$Parametros["CuentaPUC"]);
+                                    $css->Coption();
+                                    $Parametros=$obCon->DevuelveValores("parametros_contables", "ID", 25);
+                                    $css->option("", "", "", $Parametros["CuentaPUC"], "", "");
+                                        print("ReteICA ".$Parametros["CuentaPUC"]);
+                                    $css->Coption();   
+                                    $Parametros=$obCon->DevuelveValores("parametros_contables", "ID", 28);
+                                    $css->option("", "", "", $Parametros["CuentaPUC"], "", "");
+                                        print("Descuentos Generales ".$Parametros["CuentaPUC"]);
+                                    $css->Coption();
+                                    $Parametros=$obCon->DevuelveValores("parametros_contables", "ID", 29);
+                                    $css->option("", "", "", $Parametros["CuentaPUC"], "", "");
+                                        print("Impoconsumo ".$Parametros["CuentaPUC"]);
+                                    $css->Coption();
+                                $css->Cselect();
+
+                            print("</td>");
+
+
+                            print("<td>");
+                                $css->CrearDiv("DivImpRetDesPro8", "", "", 0, 0);
+
+                                    $css->CrearInputText("TxtCargosPorcentajeInsumos", "text", "", "", "%", "", "onkeyup", "CalculeRetencionDescuento(5)", 60, 30, 0, 1);
+                                $css->CerrarDiv();    
+                            print("</td>");                        
+                            print("<td>"); 
+                                $css->CrearDiv("DivImpRetDesPro9", "", "", 0, 0);
+                                    $css->CrearInputText("TxtCargosValorInsumos", "text", "", "", "Valor", "", "onkeyup", "CalculeRetencionDescuento(6)", 100, 30, 0, 1);
+                                $css->CerrarDiv();
+                            print("</td>");
+                            print("<td>"); 
+                                $css->CrearDiv("DivImpRetDesPro10", "", "", 0, 0);
+                                    $css->CrearBotonEvento("BtnAgregarCargosInsumos", "Agregar", 1, "onclick", "AgregarCargosSubtotalInsumos(event)", "naranja", "");
+                                $css->CerrarDiv();
+                            print("</td>");
+                        $css->CierraFilaTabla();
+
+                        if($TotalesCompras["Impuestos_Insumos"]>0){
+                            $css->FilaTabla(16);
+                                $css->ColTabla("<strong>Impuestos:</strong>", 1,'R');
+                                $css->input("hidden", "TxtImpuestosInsumos", "", "", "", $TotalesCompras["Impuestos_Insumos"], "", "", "", "");
+                                $css->ColTabla(number_format($TotalesCompras["Impuestos_Insumos"]), 1,'R');
+                                print("<td>");
+
+                                    $css->select("CmbImpuestosInsumos", "form-control", "CmbImpuestosInsumos", "", "", "", "onclick=MuestreOpcionesEnTotales(4)");
+                                        $css->option("", "", "", "", "", "");
+                                            print("Elija una opción para aplicar:");
+                                        $css->Coption();
+                                        $Parametros=$obCon->DevuelveValores("parametros_contables", "ID", 26);
+                                        $css->option("", "", "", $Parametros["CuentaPUC"], "", "");
+                                            print("ReteIVA ".$Parametros["CuentaPUC"]);
+                                        $css->Coption();
+
+                                    $css->Cselect();
+
+                                print("</td>");
+
+
+                                print("<td>");
+                                    $css->CrearDiv("DivImpRetDesPro11", "", "", 0, 0);
+
+                                        $css->CrearInputText("TxtCargosPorcentajeInsumosImpuestos", "text", "", "", "%", "", "onkeyup", "CalculeRetencionDescuento(7)", 60, 30, 0, 1);
+                                    $css->CerrarDiv();    
+                                print("</td>");                        
+                                print("<td>"); 
+                                    $css->CrearDiv("DivImpRetDesPro12", "", "", 0, 0);
+                                        $css->CrearInputText("TxtCargosValorInsumosImpuestos", "text", "", "", "Valor", "", "onkeyup", "CalculeRetencionDescuento(8)", 100, 30, 0, 1);
+                                    $css->CerrarDiv();
+                                print("</td>");
+                                print("<td>"); 
+                                    $css->CrearDiv("DivImpRetDesPro13", "", "", 0, 0);
+                                        $css->CrearBotonEvento("BtnAgregarCargosInsumos", "Agregar", 1, "onclick", "AgregarCargosInsumosImpuestos(event)", "naranja", "");
+                                    $css->CerrarDiv();
+                                print("</td>");
+                            $css->CierraFilaTabla();
+                        }
+                    }
+                    
+                    
+                    // dibujo el total de lss servicios
+                    
+                    if($TotalesCompras["Subtotal_Servicios"]>0){
+                        
+                        $css->FilaTabla(16);
+                            $css->ColTabla("<strong>SERVICIOS</strong>", 7,'C');
+                        $css->CierraFilaTabla();
+                        $css->FilaTabla(16);
+                            $css->ColTabla("<strong>Subtotal:</strong>", 1,'R');
+                            $css->input("hidden", "TxtSubtotalServicios", "", "", "", $TotalesCompras["Subtotal_Servicios"], "", "", "", "");
+                            $css->ColTabla(number_format($TotalesCompras["Subtotal_Servicios"]), 1,'R');
+                            print("<td>");
+
+                                $css->select("CmbImpRetDesServicios", "form-control", "CmbImpRetDesServicios", "", "", "", "onclick=MuestreOpcionesEnTotales(5)");
+                                    $css->option("", "", "", "", "", "");
+                                        print("Elija una opción para aplicar:");
+                                    $css->Coption();
+                                    $Parametros=$obCon->DevuelveValores("parametros_contables", "ID", 27);
+                                    $css->option("", "", "", $Parametros["CuentaPUC"], "", "");
+                                        print("Retefuente ".$Parametros["CuentaPUC"]);
+                                    $css->Coption();
+                                    $Parametros=$obCon->DevuelveValores("parametros_contables", "ID", 25);
+                                    $css->option("", "", "", $Parametros["CuentaPUC"], "", "");
+                                        print("ReteICA ".$Parametros["CuentaPUC"]);
+                                    $css->Coption();   
+                                    $Parametros=$obCon->DevuelveValores("parametros_contables", "ID", 28);
+                                    $css->option("", "", "", $Parametros["CuentaPUC"], "", "");
+                                        print("Descuentos Generales ".$Parametros["CuentaPUC"]);
+                                    $css->Coption();
+                                    $Parametros=$obCon->DevuelveValores("parametros_contables", "ID", 29);
+                                    $css->option("", "", "", $Parametros["CuentaPUC"], "", "");
+                                        print("Impoconsumo ".$Parametros["CuentaPUC"]);
+                                    $css->Coption();
+                                $css->Cselect();
+
+                            print("</td>");
+
+
+                            print("<td>");
+                                $css->CrearDiv("DivImpRetDesPro14", "", "", 0, 0);
+
+                                    $css->CrearInputText("TxtCargosPorcentajeServicios", "text", "", "", "%", "", "onkeyup", "CalculeRetencionDescuento(9)", 60, 30, 0, 1);
+                                $css->CerrarDiv();    
+                            print("</td>");                        
+                            print("<td>"); 
+                                $css->CrearDiv("DivImpRetDesPro15", "", "", 0, 0);
+                                    $css->CrearInputText("TxtCargosValorServicios", "text", "", "", "Valor", "", "onkeyup", "CalculeRetencionDescuento(10)", 100, 30, 0, 1);
+                                $css->CerrarDiv();
+                            print("</td>");
+                            print("<td>"); 
+                                $css->CrearDiv("DivImpRetDesPro16", "", "", 0, 0);
+                                    $css->CrearBotonEvento("BtnAgregarCargosServicios", "Agregar", 1, "onclick", "AgregarCargosSubtotalServicios(event)", "naranja", "");
+                                $css->CerrarDiv();
+                            print("</td>");
+                        $css->CierraFilaTabla();
+
+                        if($TotalesCompras["Impuestos_Servicios"]>0){
+                            $css->FilaTabla(16);
+                                $css->ColTabla("<strong>Impuestos:</strong>", 1,'R');
+                                $css->input("hidden", "TxtImpuestosServicios", "", "", "", $TotalesCompras["Impuestos_Servicios"], "", "", "", "");
+                                $css->ColTabla(number_format($TotalesCompras["Impuestos_Servicios"]), 1,'R');
+                                print("<td>");
+
+                                    $css->select("CmbImpuestosServicios", "form-control", "CmbImpuestosServicios", "", "", "", "onclick=MuestreOpcionesEnTotales(6)");
+                                        $css->option("", "", "", "", "", "");
+                                            print("Elija una opción para aplicar:");
+                                        $css->Coption();
+                                        $Parametros=$obCon->DevuelveValores("parametros_contables", "ID", 26);
+                                        $css->option("", "", "", $Parametros["CuentaPUC"], "", "");
+                                            print("ReteIVA ".$Parametros["CuentaPUC"]);
+                                        $css->Coption();
+
+                                    $css->Cselect();
+
+                                print("</td>");
+
+
+                                print("<td>");
+                                    $css->CrearDiv("DivImpRetDesPro17", "", "", 0, 0);
+
+                                        $css->CrearInputText("TxtCargosPorcentajeServiciosImpuestos", "text", "", "", "%", "", "onkeyup", "CalculeRetencionDescuento(11)", 60, 30, 0, 1);
+                                    $css->CerrarDiv();    
+                                print("</td>");                        
+                                print("<td>"); 
+                                    $css->CrearDiv("DivImpRetDesPro18", "", "", 0, 0);
+                                        $css->CrearInputText("TxtCargosValorServiciosImpuestos", "text", "", "", "Valor", "", "onkeyup", "CalculeRetencionDescuento(12)", 100, 30, 0, 1);
+                                    $css->CerrarDiv();
+                                print("</td>");
+                                print("<td>"); 
+                                    $css->CrearDiv("DivImpRetDesPro19", "", "", 0, 0);
+                                        $css->CrearBotonEvento("BtnAgregarCargosServiciosImpuestos", "Agregar", 1, "onclick", "AgregarCargosServiciosImpuestos(event)", "naranja", "");
+                                    $css->CerrarDiv();
+                                print("</td>");
+                            $css->CierraFilaTabla();
+                        }
+                    }
+                    
+                    $css->FilaTabla(16);
+                        $css->ColTabla("<strong>CONSOLIDADO</strong>", 6,"C");
+                        
+                    $css->CierraFilaTabla();
+                    
+                    $css->FilaTabla(16);
+                        $css->ColTabla("<strong>Subtotal Factura:</strong>", 1,"R");
+                        $css->ColTabla(number_format($TotalesCompras["Gran_Subtotal"]), 1,"R");
+                        $css->ColTabla("", 4);
+                    $css->CierraFilaTabla();
+                                        
+                    $css->FilaTabla(16);
+                        $css->ColTabla("<strong>Impuestos Factura:</strong>", 1,"R");
+                        $css->ColTabla(number_format($TotalesCompras["Gran_Impuestos"]), 1,"R");
+                        $css->ColTabla("", 4);
+                    $css->CierraFilaTabla();
+                    
+                    $css->FilaTabla(16);
+                        $css->ColTabla("<strong>Impuestos Adicionales:</strong>", 1,"R");
+                        $css->ColTabla(number_format($TotalesCompras["ImpuestosAdicionales"]), 1,"R");
+                        $css->ColTabla("", 4);
+                    $css->CierraFilaTabla();
+                    
+                    $css->FilaTabla(16);
+                        $css->ColTabla("<strong>Descuentos Globales:</strong>", 1,"R");
+                        $css->ColTabla(number_format($TotalesCompras["DescuentosGlobales"]), 1,"R");
+                        $css->ColTabla("", 4);
+                    $css->CierraFilaTabla();
+                    
+                    $css->FilaTabla(16);
+                        $css->ColTabla("<strong>Total Factura:</strong>", 1,"R");
+                        $css->ColTabla(number_format($TotalesCompras["Gran_Total"]), 1,"R");
+                        $css->ColTabla("", 4);
+                    $css->CierraFilaTabla();
+                    
+                    
+                    $css->FilaTabla(16);
+                        $css->ColTabla("<strong>Retenciones:</strong>", 1,"R");
+                        $css->ColTabla(number_format($TotalesCompras["Total_Retenciones"]), 1,"R");
+                        $css->ColTabla("", 4);
+                    $css->CierraFilaTabla();
+                    
+                    
+                    $css->FilaTabla(16);
+                        $css->ColTabla("<strong>Total a Pagar:</strong>", 1,"R");
+                        $css->ColTabla(number_format($TotalesCompras["Total_Pago"]), 1,"R");
+                        $css->ColTabla("", 4);
+                    $css->CierraFilaTabla();
+                    
+                    //Formas de pago y opciones
+                    
+                    $css->FilaTabla(16);
+                        $css->ColTabla("<strong>OPCIONES</strong>", 6,"C");
+                        
+                    $css->CierraFilaTabla();
+                    
+                    $css->FilaTabla(14);
+                        
+                        print("<td colspan=6>");
+                        print("<strong>Tipo de Pago:</strong><br>");
+                        $css->select("CmbTipoPago", "form-control", "CmbTipoPago", "", "", "onchange=MuestraOcultaXIDCompras('DivCuentaOrigen');MuestraOcultaXIDCompras('DivCuentaXPagar')", "");
+                            $css->option("", "", "", "Contado", "", "",1);
+                                print("Contado");
+                            $css->Coption();                            
+                            $css->option("", "", "", "Credito", "", "");
+                                print("Credito");
+                            $css->Coption();
+                            
+                        $css->Cselect();
+                        
+                        $css->CrearDiv("DivCuentaOrigen", "", "left", 1, 1);
+                        print("<strong>Cuenta Origen: </strong><br>");
+                            $css->select("CmbCuentaOrigen", "form-control","CmbTipoPago", "", "","","");
+                            $consulta=$obCon->ConsultarTabla("subcuentas", " WHERE PUC LIKE '11%'");
+                            while($DatosCuenta=$obCon->FetchArray($consulta)){
+                                $sel=0;
+                                if($DatosCuenta["PUC"]==1105){
+                                    $sel=1;
+                                }
+                                $css->option("", "", "", $DatosCuenta["PUC"], "", "",$sel);
+                                    print($DatosCuenta["Nombre"]." ".$DatosCuenta["PUC"]);
+                                $css->Coption(); 
+                                
+                            }
+                            
+                        $css->Cselect();
+                        $css->CerrarDiv();
+                        $css->CrearDiv("DivCuentaXPagar", "", "left", 0, 1);
+                            
+                            print("<strong>Llevar Cuenta X Pagar a: </strong><br>");
+                            $css->select("CmbCuentaPUCCXP", "form-control","CmbCuentaPUCCXP", "", "","","");
+                            
+                            $consulta=$obCon->ConsultarTabla("subcuentas", " WHERE PUC LIKE '22%' or PUC LIKE '23%' or PUC LIKE '24%'");
+                            while($DatosCuenta=$obCon->FetchArray($consulta)){
+                                $sel=0;
+                                if($DatosCuenta["PUC"]==220505){
+                                    $sel=1;
+                                }
+                                $css->option("", "", "", $DatosCuenta["PUC"], "", "",$sel);
+                                    print($DatosCuenta["Nombre"]." ".$DatosCuenta["PUC"]);
+                                $css->Coption(); 
+                                
+                            }
+                            
+                        $css->Cselect();
+                        print("<strong>Fecha Programada:</strong><br>");
+                        $css->input("date", "TxtFechaProgramada", "form-control", "TxtFechaProgramada", "Fecha", date("Y-m-d"), "Fecha programada", "off", "", "","style='line-height: 15px;'");
+                        //$css->CrearInputText("TxtFechaProgramada", "date", "Fecha Programada <br>", date("Y-m-d"), "Fecha Programada", "", "", "", 150, 30, 0, 0);
+                        $css->CerrarDiv();
+                   
+                    print("<strong>Trasladar?</strong><br>");
+                    $css->select("CmbTraslado", "form-control","CmbTraslado", "", "","","");
+                        $css->option("", "", "", "", "", "",$sel);
+                            print("NO");
+                        $css->Coption();     
+                            $consulta=$obCon->ConsultarTabla("empresa_pro_sucursales", "");
+                            while($DatosCuenta=$obCon->FetchArray($consulta)){
+                                
+                                $css->option("", "", "", $DatosCuenta["ID"], "", "",$sel);
+                                    print($DatosCuenta["Nombre"]." ".$DatosCuenta["Ciudad"]);
+                                $css->Coption(); 
+                                
+                            }
+                         
+                            
+                     print("</td>");
+                     print("<tr><td>");
+                     $css->CrearBotonEvento("BtnGuardarCompra", "Guardar", 1, "onclick", "GuardarCompra($idCompra)", "verde", "style=widht:40px");
+                     print("</td></tr>"); 
+                    $css->CierraFilaTabla();
+                    
+                    
                 $css->CerrarTabla();
                 
-            $css->Cdiv();
+            $css->Cdiv();//Cierra div general de totales
+            
+            $css->div("", "col-md-4", "", "", "","", "style=text-align:left");
+               $css->CrearTabla();
+                    //Dibujo las retenciones
+                    $sql="SELECT * FROM factura_compra_retenciones WHERE idCompra='$idCompra' ORDER BY ID DESC";
+                    $Consulta=$obCon->Query($sql);
+                    $FlagEncabezado=1;
+                    while($DatosConsulta=$obCon->FetchAssoc($Consulta)){
+                        $idItem=$DatosConsulta["ID"];
+                        if($FlagEncabezado==1){
+                            $css->FilaTabla(16);
+                                $css->ColTabla("<strong>RETENCIONES</strong>", 5,'C');
+                            $css->CierraFilaTabla();
+                            
+                            $css->FilaTabla(12);
+                                $css->ColTabla("<strong>Cuenta</strong>", 1,'C');
+                                $css->ColTabla("<strong>Nombre Cuenta</strong>", 1,'C');
+                                $css->ColTabla("<strong>%</strong>", 1,'C');
+                                $css->ColTabla("<strong>Valor</strong>", 1,'C');
+                                $css->ColTabla("<strong>Eliminar</strong>", 1,'C');
+                            $css->CierraFilaTabla();
+                            $FlagEncabezado=0;
+                        }
+                        $css->FilaTabla(12);
+                            $css->ColTabla($DatosConsulta["CuentaPUC"], 1,'C');
+                            $css->ColTabla($DatosConsulta["NombreCuenta"], 1,'C');
+                            $css->ColTabla($DatosConsulta["PorcentajeRetenido"], 1,'C');
+                            $css->ColTabla($DatosConsulta["ValorRetencion"], 1,'C');
+                            print("<td style='font-size:16px;text-align:center;color:red' title='Borrar'>");   
+                            
+                                $css->li("", "fa  fa-remove", "", "onclick=EliminarItem(`5`,`$idItem`) style=font-size:16px;cursor:pointer;text-align:center;color:red");
+                                $css->Cli();
+                            print("</td>");
+                        $css->CierraFilaTabla();
+                        
+                    }
+                    
+                    //Dibujo los descuentos
+                    $sql="SELECT * FROM factura_compra_descuentos WHERE idCompra='$idCompra' ORDER BY ID DESC";
+                    $Consulta=$obCon->Query($sql);
+                    $FlagEncabezado=1;
+                    while($DatosConsulta=$obCon->FetchAssoc($Consulta)){
+                        $idItem=$DatosConsulta["ID"];
+                        if($FlagEncabezado==1){
+                            $css->FilaTabla(16);
+                                $css->ColTabla("<strong>DESCUENTOS GLOBALES</strong>", 5,'C');
+                            $css->CierraFilaTabla();
+                            
+                            $css->FilaTabla(12);
+                                $css->ColTabla("<strong>Cuenta</strong>", 1,'C');
+                                $css->ColTabla("<strong>Nombre Cuenta</strong>", 1,'C');
+                                $css->ColTabla("<strong>%</strong>", 1,'C');
+                                $css->ColTabla("<strong>Valor</strong>", 1,'C');
+                                $css->ColTabla("<strong>Eliminar</strong>", 1,'C');
+                            $css->CierraFilaTabla();
+                            $FlagEncabezado=0;
+                        }
+                        $css->FilaTabla(12);
+                            $css->ColTabla($DatosConsulta["CuentaPUCDescuento"], 1,'C');
+                            $css->ColTabla($DatosConsulta["NombreCuentaDescuento"], 1,'C');
+                            $css->ColTabla($DatosConsulta["PorcentajeDescuento"], 1,'C');
+                            $css->ColTabla($DatosConsulta["ValorDescuento"], 1,'C');
+                            print("<td style='font-size:16px;text-align:center;color:red' title='Borrar'>");   
+                            
+                                $css->li("", "fa  fa-remove", "", "onclick=EliminarItem(`6`,`$idItem`) style=font-size:16px;cursor:pointer;text-align:center;color:red");
+                                $css->Cli();
+                            print("</td>");
+                        $css->CierraFilaTabla();
+                        
+                    }
+                    
+                    //Dibujo los impuestos adicionales
+                    $sql="SELECT * FROM factura_compra_impuestos_adicionales WHERE idCompra='$idCompra' ORDER BY ID DESC";
+                    $Consulta=$obCon->Query($sql);
+                    $FlagEncabezado=1;
+                    while($DatosConsulta=$obCon->FetchAssoc($Consulta)){
+                        $idItem=$DatosConsulta["ID"];
+                        if($FlagEncabezado==1){
+                            $css->FilaTabla(16);
+                                $css->ColTabla("<strong>IMPUESTOS ADICIONALES</strong>", 5,'C');
+                            $css->CierraFilaTabla();
+                            
+                            $css->FilaTabla(12);
+                                $css->ColTabla("<strong>Cuenta</strong>", 1,'C');
+                                $css->ColTabla("<strong>Nombre Cuenta</strong>", 1,'C');
+                                $css->ColTabla("<strong>%</strong>", 1,'C');
+                                $css->ColTabla("<strong>Valor</strong>", 1,'C');
+                                $css->ColTabla("<strong>Eliminar</strong>", 1,'C');
+                            $css->CierraFilaTabla();
+                            $FlagEncabezado=0;
+                        }
+                        $css->FilaTabla(12);
+                            $css->ColTabla($DatosConsulta["CuentaPUC"], 1,'C');
+                            $css->ColTabla($DatosConsulta["NombreCuenta"], 1,'C');
+                            $css->ColTabla($DatosConsulta["Porcentaje"], 1,'C');
+                            $css->ColTabla($DatosConsulta["Valor"], 1,'C');
+                            print("<td style='font-size:16px;text-align:center;color:red' title='Borrar'>");   
+                            
+                                $css->li("", "fa  fa-remove", "", "onclick=EliminarItem(`7`,`$idItem`) style=font-size:16px;cursor:pointer;text-align:center;color:red");
+                                $css->Cli();
+                            print("</td>");
+                        $css->CierraFilaTabla();
+                        
+                    }
+               $css->CerrarTabla();
+            $css->Cdiv();//Cierra div de retenciones e impuestos adicionales
             
         break;    
         

@@ -135,6 +135,15 @@ if( !empty($_REQUEST["Accion"]) ){
             if($Tabla==4){
                 $Tabla="factura_compra_items_devoluciones";
             }
+            if($Tabla==5){
+                $Tabla="factura_compra_retenciones";
+            }
+            if($Tabla==6){
+                $Tabla="factura_compra_descuentos";
+            }
+            if($Tabla==7){
+                $Tabla="factura_compra_impuestos_adicionales";
+            }
             $obCon->BorraReg($Tabla, "ID", $idItem);
             print("Item Eliminado");
         break;//Fin caso 5
@@ -163,6 +172,36 @@ if( !empty($_REQUEST["Accion"]) ){
             }
             print("OK");
         break;//Fin caso 7
+        
+        case 8://Se registra cargos adicionales al iva de los productos
+            $idCompra=$obCon->normalizar($_REQUEST["idCompra"]);
+            $Selector=$obCon->normalizar($_REQUEST["Selector"]);
+            $CuentaPUC=$obCon->normalizar($_REQUEST["CuentaPUC"]);
+            $Porcentaje=$obCon->normalizar($_REQUEST["Porcentaje"]);
+            $Valor=$obCon->normalizar($_REQUEST["Valor"]);
+            if($Selector==1){ //Retefuente o ReteICA
+                $obCon->AgregueRetencionCompra($idCompra, $CuentaPUC, $Valor, $Porcentaje, "");
+            }
+            
+            print("OK");
+        break;//Fin caso 8
+        
+        case 9://Guardo la factura
+            $idCompra=$obCon->normalizar($_REQUEST["idCompra"]);
+            
+            $TipoPago=$obCon->normalizar($_REQUEST["CmbTipoPago"]);
+            $CuentaOrigen=$obCon->normalizar($_REQUEST["CmbCuentaOrigen"]);
+            $CuentaPUCCXP=$obCon->normalizar($_REQUEST["CmbCuentaPUCCXP"]);
+            $FechaProgramada=$obCon->normalizar($_REQUEST["TxtFechaProgramada"]);
+            $obCon->GuardarFacturaCompra($idCompra, $TipoPago, $CuentaOrigen,$CuentaPUCCXP, $FechaProgramada,"");
+            $idTraslado="";
+            if($_REQUEST["CmbTraslado"]>0){
+                $idSede=$obCon->normalizar($_REQUEST["CmbTraslado"]);
+                $idTraslado=$obCon->CrearTrasladoDesdeCompra($idCompra,$idSede, "");
+            }
+            
+            print("OK");
+        break;//Fin caso 9
         
     }
     

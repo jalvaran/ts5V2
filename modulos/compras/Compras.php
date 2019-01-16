@@ -158,9 +158,9 @@ $css->PageInit($myTitulo);
             $css->CerrarDiv();       
         $css->Cfieldset();
             
-        $css->fieldset("", "", "FieldDatosCompra", "Totales de esta compra", "", "");
+        $css->fieldset("", "", "FieldDatosCompra", "Totales, Retenciones y opciones del documento", "", "");
             $css->legend("", "");
-                print("<a href='#'>Totales de esta compra</a>");
+                print("<a href='#'>Totales, Retenciones y opciones del documento</a>");
             $css->Clegend();    
            
             $css->CrearDiv("DivTotalesCompra", "", "center", 1, 1);   
