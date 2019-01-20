@@ -163,7 +163,11 @@ function CrearCompra(event){
           }
       })  
 }
-
+/**
+ * Cierra una ventana modal
+ * @param {type} idModal
+ * @returns {undefined}
+ */
 function CierraModal(idModal) {
     $("#"+idModal).modal('hide');//ocultamos el modal
     $('body').removeClass('modal-open');//eliminamos la clase del body para poder hacer scroll
@@ -184,7 +188,7 @@ function DibujeCompra(idCompra=""){
         var idCompra = document.getElementById('idCompra').value;
         
     }
-    document.getElementById('TxtPrintFactura').value=idCompra;
+    
     DibujeItemsCompra(idCompra);
     DibujeTotalesCompra(idCompra);
 }
@@ -310,7 +314,10 @@ function ConvertirSelectBusquedas(){
           });
     }
 }
-
+/**
+ * Agrega un item a una FC
+ * @returns {undefined}
+ */
 function AgregarItem(){
     
     var idCompra=document.getElementById('idCompra').value;
@@ -484,7 +491,12 @@ function EliminarItem(Tabla,idItem){
           }
       });
 }
-
+/**
+ * Devuelve un item
+ * @param {type} idItem
+ * @param {type} Cantidad
+ * @returns {undefined}
+ */
 function DevolverItem(idItem,Cantidad=""){
     if(Cantidad==""){
         var Cantidad = parseFloat(document.getElementById('CantidadDevolucion').value);
@@ -1289,7 +1301,10 @@ function GuardarCompra(idCompra=''){
             var respuestas = data.split(';'); 
             if(respuestas[0]=="OK"){
                 var mensaje=respuestas[1];
-                
+                LimpiarDivs();
+                var x = document.getElementById("idCompra");
+                x.remove(x.selectedIndex);
+                document.getElementById('BtnEditarCompra').disabled=true;
                 alertify.alert(mensaje);
                 
             }else{
@@ -1308,14 +1323,13 @@ function GuardarCompra(idCompra=''){
     
     
 }
-
-function abrirEnPestana(url) {
-
-    var a = document.createElement("a");
-    a.target = "_blank";
-    a.href = url;
-    a.click();
-
+/**
+ * Limpia los divs de la compra despues de guardar
+ * @returns {undefined}
+ */
+function LimpiarDivs(){
+    document.getElementById('DivItemsCompra').innerHTML='';
+    document.getElementById('DivTotalesCompra').innerHTML='';
 }
 
 ConvertirSelectBusquedas();

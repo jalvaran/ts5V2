@@ -213,3 +213,17 @@ SELECT `Tercero_Identificacion`,`Tercero_Razon_Social`,`CuentaPUC` as Cuenta,
 SUM(`Debito`) AS Debitos,SUM(`Credito`) AS Creditos,(SUM(`Debito`)-SUM(`Credito`)) AS Neto FROM `librodiario`
 WHERE Fecha>='2018-01-01' AND Fecha <='2018-12-31'
 GROUP BY `Tercero_Identificacion` ORDER BY SUBSTRING(`CuentaPUC`,1,8) ;
+
+DROP VIEW IF EXISTS `vista_retenciones`;
+CREATE VIEW vista_retenciones AS
+SELECT `idCompra`,
+(SELECT Fecha FROM factura_compra WHERE ID=`idCompra`) AS Fecha,
+(SELECT Tercero FROM factura_compra WHERE ID=`idCompra`) AS Tercero,
+(SELECT RazonSocial FROM proveedores WHERE Num_Identificacion=(SELECT Tercero) LIMIT 1) AS RazonSocial,
+(SELECT DV FROM proveedores WHERE Num_Identificacion=(SELECT Tercero) LIMIT 1) AS DV,
+(SELECT Direccion FROM proveedores WHERE Num_Identificacion=(SELECT Tercero) LIMIT 1) AS Direccion,
+(SELECT Ciudad FROM proveedores WHERE Num_Identificacion=(SELECT Tercero) LIMIT 1) AS Ciudad,
+`CuentaPUC`,`NombreCuenta` as Cuenta,
+ValorRetencion,PorcentajeRetenido,ROUND(((ValorRetencion/PorcentajeRetenido)*100),2) AS BaseRetencion
+FROM factura_compra_retenciones;
+
