@@ -66,7 +66,7 @@ $css->PageInit($myTitulo);
 $css->PageFin();
 
 print('<script src="../../general/js/notificaciones.js"></script>');
-print('<script src="../../dist/js/jspdf.min.js"></script>');
+//print('<script src="../../dist/js/jspdf.min.js"></script>');
 print('<script src="jsPages/ReportesContabilidad.js"></script>');
 $css->Cbody();
 $css->Chtml();

@@ -1457,7 +1457,8 @@ EOD;
         }
         $this->PDF_Encabezado($FechaActual,$idEmpresa, 34, "",$NumeracionDocumento);
         $DatosTercero=$obCon->DevuelveValores("proveedores", "Num_Identificacion", $CmbTercero);
-        $html="<strong>RETENIDO:</strong> $DatosTercero[RazonSocial] <BR>";
+        $html="<strong>FECHA DE EXPEDICIÓN: </strong>$FechaActual<BR><BR>";
+        $html.="<strong>RETENIDO:</strong> $DatosTercero[RazonSocial] <BR>";
         $html.="<strong>NIT:</strong> $DatosTercero[Num_Identificacion] - $DatosTercero[DV] <BR>";
         $html.="<strong>DIRECCIÓN:</strong> $DatosTercero[Direccion] $DatosTercero[Ciudad]<BR><BR>";
         $html.="<strong>CIUDAD DONDE SE PRACTICÓ LA RETENCIÓN:</strong> $CmbCiudadRetencion<BR>";
@@ -1491,13 +1492,15 @@ EOD;
                     
                 </tr>';
         $sql="SELECT CuentaPUC,Cuenta,PorcentajeRetenido,SUM(BaseRetencion) AS BaseRetencion,SUM(ValorRetencion) AS ValorRetencion"
-                . " FROM vista_retenciones WHERE Fecha >= '$FechaInicial' AND Fecha <= '$FechaFinal' $CondicionAdicional GROUP BY CuentaPUC,PorcentajeRetenido";
+                . " FROM vista_retenciones WHERE Fecha >= '$FechaInicial' AND Fecha <= '$FechaFinal' AND Tercero='$Tercero' $CondicionAdicional GROUP BY CuentaPUC,PorcentajeRetenido";
         $Consulta=$obCon->Query($sql);        
         $h=1;  
-
+        $TotalBase=0;
+        $TotalRetencion=0;
         while($DatosRetenciones=$obCon->FetchAssoc($Consulta)){
             
-            
+            $TotalBase=$TotalBase+$DatosRetenciones["BaseRetencion"];
+            $TotalRetencion=$TotalRetencion+$DatosRetenciones["ValorRetencion"];
             if($h==0){
                 $Back="#f2f2f2";
                 $h=1;
@@ -1516,7 +1519,13 @@ EOD;
             </tr>';        
 
         }
-        
+        $Back='#feeaac';
+        $html.='
+            <tr>                
+                <td align="right" colspan="5" style="border-bottom: 1px solid #ddd;background-color: '.$Back.';"><STRONG>TOTALES</STRONG></td>                
+                <td align="right" style="border-bottom: 1px solid #ddd;background-color: '.$Back.';">'.number_format($TotalBase).'</td>
+                <td align="right" style="border-bottom: 1px solid #ddd;background-color: '.$Back.';">'.number_format($TotalRetencion).'</td>
+            </tr>'; 
         $html.='</table>';
 
         return($html);
