@@ -3280,8 +3280,8 @@ $this->PDF->writeHTML("<br>", true, false, false, false, '');
         $this->PDF->AddPage();
     }     
 //Crear el documento PDF
-    public function PDF_Output($NombreArchivo) {
-        $this->PDF->Output("$NombreArchivo".".pdf", 'I');
+    public function PDF_Output($NombreArchivo,$TipoSalida="I") {
+        $this->PDF->Output("$NombreArchivo".".pdf", $TipoSalida);
     } 
     
     //Crear Estados Financieros en PDF

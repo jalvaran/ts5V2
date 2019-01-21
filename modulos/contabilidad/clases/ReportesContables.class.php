@@ -44,7 +44,36 @@ class Contabilidad extends conexion{
         $this->Query($sql);
         
     }
-    
+    /**
+     * Constuye una vista con la informacion de las retenciones practicadas a un tercero
+     * @param type $FechaInicial
+     * @param type $FechaFinal
+     * @param type $CmbTercero
+     * @param type $Empresa
+     * @param type $CentroCostos
+     * @param type $CmbCiudadRetencion
+     * @param type $CmbCiudadPago
+     * @param type $Vector
+     */
+    public function ConstruirVistaRetencionesXTercero($FechaInicial, $FechaFinal,$CmbTercero, $Empresa, $CentroCostos,$CmbCiudadRetencion,$CmbCiudadPago, $Vector) {
+        $sql="DROP VIEW IF EXISTS `vista_retenciones_tercero`;";
+        $this->Query($sql);
+        $CondicionEmpresa="";
+        $Condicion=" WHERE Fecha>='$FechaInicial' AND Fecha <='$FechaFinal' AND Tercero='$CmbTercero' ";
+        
+        if($Empresa<>"ALL"){
+            $CondicionEmpresa=" AND idEmpresa = '$Empresa'";
+        }
+        
+        $CondicionCentroCostos="";
+        if($CentroCostos<>"ALL"){
+            $CondicionCentroCostos=" AND idCentroCosto = '$CentroCostos'";
+        }
+        $sql="CREATE VIEW vista_retenciones_tercero AS
+            SELECT *
+            FROM vista_retenciones $Condicion;";         
+        $this->Query($sql);
+    }
     
     /**
      * Fin Clase

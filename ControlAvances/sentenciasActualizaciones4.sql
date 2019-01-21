@@ -609,4 +609,8 @@ CREATE TABLE `factura_compra_impuestos_adicionales` (
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
+ALTER TABLE `factura_compra` ADD `idEmpresa` INT NOT NULL DEFAULT '1' AFTER `idUsuario`;
+
+INSERT INTO `formatos_calidad` (`ID`, `Nombre`, `Version`, `Codigo`, `Fecha`, `CuerpoFormato`, `NotasPiePagina`, `Updated`, `Sync`) VALUES (34, 'CERTIFICADO DE RETENCIONES', '001', 'F-GC-006', '2018-05-15', '', '', '2019-01-13 09:11:00', '2019-01-13 09:11:00');
+
 

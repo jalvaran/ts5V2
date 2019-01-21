@@ -19,12 +19,16 @@ $obCon = new conexion($idUser); //Conexion a la base de datos
 
 $css->PageInit($myTitulo);
         
-    $css->CrearDiv("", "col-md-2", "center", 1, 1);   
+    $css->CrearDiv("", "col-md-12", "center", 1, 1);   
+    $css->CrearDiv("", "col-md-4", "center", 1, 1); 
+    $css->CerrarDiv();
+    $css->CrearDiv("", "col-md-4", "center", 1, 1);   
         $css->fieldset("", "", "FieldReporte", "Reporte", "", "");
             $css->legend("", "");
                 print("<a href='#'>Reporte</a>");
             $css->Clegend();
-            $css->select("CmbReporteContable", "form-control", "CmbReporteContable", "", "", "", "");
+            
+            $css->select("CmbReporteContable", "form-control", "CmbReporteContable", "", "", "onchange=DibujeOpcionesReporte()", "");
                 $css->option("", "", "", "", "", "");
                     print("Seleccione");
                 $css->Coption();
@@ -32,94 +36,37 @@ $css->PageInit($myTitulo);
                     print("Balance por Terceros");
                 $css->Coption();
                 
-            $css->Cselect();
-        $css->Cfieldset();
-    $css->CerrarDiv();
-    $css->CrearDiv("", "col-md-2", "center", 1, 1);
-        $css->fieldset("", "", "FieldReporte", "Reporte", "", "");
-            $css->legend("", "");
-                print("<a href='#'>Tipo</a>");
-            $css->Clegend();
-            $css->select("CmbTipo", "form-control", "CmbTipo", "", "", "", "");                
-                $css->option("", "", "Rango", 1, "", "");
-                    print("Rango de fechas");
+                $css->option("", "", "Balance x Terceros", 2, "", "");
+                    print("Certificados de retención");
                 $css->Coption();
-                $css->option("", "", "Fecha de Corte", 2, "", "");
-                    print("Fecha de Corte");
-                $css->Coption();                
+                
             $css->Cselect();
         $css->Cfieldset();
-    $css->CerrarDiv();
-    $css->CrearDiv("", "col-md-2", "center", 1, 1);
-        $css->fieldset("", "", "FieldReporte", "Reporte", "", "");
-            $css->legend("", "");
-                print("<a href='#'>Fecha Inicial</a>");
-            $css->Clegend();           
-            $css->input("date", "TxtFechaInicial", "form-control", "TxtFechaInicial", "", date("Y-m-d"), "Fecha Inicial", "off", "", "style='line-height: 15px;'");
-        $css->Cfieldset();
-    $css->CerrarDiv();
-    $css->CrearDiv("", "col-md-2", "center", 1, 1);
-        $css->fieldset("", "", "FieldReporte", "Reporte", "", "");
-            $css->legend("", "");
-                print("<a href='#'>Fecha Final</a>");
-            $css->Clegend();           
-            $css->input("date", "TxtFechaFinal", "form-control", "TxtFechaFinal", "", date("Y-m-d"), "Fecha Inicial", "off", "", "style='line-height: 15px;'");
-        $css->Cfieldset();
-    $css->CerrarDiv();
-    $css->CrearDiv("", "col-md-2", "center", 1, 1);
-        $css->fieldset("", "", "FieldReporte", "Reporte", "", "");
-            $css->legend("", "");
-                print("<a href='#'>Empresa</a>");
-            $css->Clegend();
-            $css->select("CmbEmpresa", "form-control", "CmbEmpresa", "", "", "", "");                
-                $css->option("", "", "", "ALL", "", "");
-                    print("Completo");
-                $css->Coption();
-                $consulta=$obCon->ConsultarTabla("empresapro", "");
-                while($DatosEmpresa=$obCon->FetchAssoc($consulta)){
-                    $css->option("", "", "", $DatosEmpresa["idEmpresaPro"], "", "");
-                        print($DatosEmpresa["idEmpresaPro"]." ".$DatosEmpresa["RazonSocial"]." ".$DatosEmpresa["NIT"]);
-                    $css->Coption();
-                }
-            $css->Cselect();
-        $css->Cfieldset();
-    $css->CerrarDiv();
-    $css->CrearDiv("", "col-md-2", "center", 1, 1);
-        $css->fieldset("", "", "FieldReporte", "Reporte", "", "");
-            $css->legend("", "");
-                print("<a href='#'>Centro de Costos</a>");
-            $css->Clegend();
-            $css->select("CmbCentroCosto", "form-control", "CmbCentroCosto", "", "", "", "");                
-                $css->option("", "", "", "ALL", "", "");
-                    print("Completo");
-                $css->Coption();
-                $consulta=$obCon->ConsultarTabla("centrocosto", "");
-                while($DatosEmpresa=$obCon->FetchAssoc($consulta)){
-                    $css->option("", "", "", $DatosEmpresa["ID"], "", "");
-                        print($DatosEmpresa["ID"]." ".$DatosEmpresa["Nombre"]);
-                    $css->Coption();
-                }
-            $css->Cselect();
-        $css->Cfieldset();
+        $css->CerrarDiv();
+        $css->CrearDiv("", "col-md-4", "center", 1, 1); 
+        $css->CerrarDiv();
     $css->CerrarDiv();
     print("<br><br><br><br><br>");
-    $css->CrearDiv("DivAccion", "col-md-4", "center", 1, 1);
+    $css->CrearDiv("DivDibujeOpcionesReporte", "col-md-12", "center", 1, 1);   
+    
+    
     $css->CerrarDiv();
-    $css->CrearDiv("DivAccion", "col-md-4", "center", 1, 1);
-        
-        $css->CrearBotonEvento("BtnCrearReporte", "Generar", 1, "onClick", "GenereReporte()", "verde", "");
-        
+    print("<br><br><br><br><br><br><br><br><br><br>");
+    $css->CrearDiv("DivPDFReportes", "col-md-12", "center", 0, 1);
+        print("<iframe id='FramePDF' name='FramePDF' class='col-md-12' style='height:1000px;border:0px;'></iframe>");
     $css->CerrarDiv();
-    $css->CrearDiv("DivAccion", "col-md-4", "center", 1, 1);
-    $css->CerrarDiv();
-    print("<br><br><br><br><br>");
     $css->CrearDiv("DivOpcionesReportes", "", "center", 1, 1);
     $css->CerrarDiv();
+    
     $css->CrearDiv("DivReportesContables", "", "center", 1, 1);
+    
     $css->CerrarDiv();  
+
+    
 $css->PageFin();
 
 print('<script src="../../general/js/notificaciones.js"></script>');
+print('<script src="../../dist/js/jspdf.min.js"></script>');
 print('<script src="jsPages/ReportesContabilidad.js"></script>');
 $css->Cbody();
 $css->Chtml();

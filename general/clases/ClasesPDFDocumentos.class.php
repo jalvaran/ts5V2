@@ -23,10 +23,10 @@ class Documento{
      * @param type $VectorPDF
      * @param type $Margenes
      */
-    public function PDF_Ini($TituloFormato,$FontSize,$VectorPDF,$Margenes=1) {
+    public function PDF_Ini($TituloFormato,$FontSize,$VectorPDF,$Margenes=1,$Patch="../../") {
         
         //require_once('../../librerias/tcpdf/examples/config/tcpdf_config_alt.php');
-        $tcpdf_include_dirs = array(realpath('../../librerias/tcpdf/tcpdf.php'), '/usr/share/php/tcpdf/tcpdf.php', '/usr/share/tcpdf/tcpdf.php', '/usr/share/php-tcpdf/tcpdf.php', '/var/www/tcpdf/tcpdf.php', '/var/www/html/tcpdf/tcpdf.php', '/usr/local/apache2/htdocs/tcpdf/tcpdf.php');
+        $tcpdf_include_dirs = array(realpath($Patch.'librerias/tcpdf/tcpdf.php'), '/usr/share/php/tcpdf/tcpdf.php', '/usr/share/tcpdf/tcpdf.php', '/usr/share/php-tcpdf/tcpdf.php', '/var/www/tcpdf/tcpdf.php', '/var/www/html/tcpdf/tcpdf.php', '/usr/local/apache2/htdocs/tcpdf/tcpdf.php');
         foreach ($tcpdf_include_dirs as $tcpdf_include_path) {
                 if (@file_exists($tcpdf_include_path)) {
                         require_once($tcpdf_include_path);
@@ -1436,6 +1436,95 @@ EOD;
 EOD;
         return($html);
     }
+    /**
+     * Funcion para crear un certificado de retenciones
+     * @param type $FechaInicial
+     * @param type $TxtFechaFinal
+     * @param type $CmbCentroCosto
+     * @param type $CmbEmpresa
+     * @param type $CmbTercero
+     * @param type $CmbCiudadRetencion
+     * @param type $CmbCiudadPago
+     * @param type $Vector
+     */
+    public function PDF_Certificado_Retenciones($FechaInicial,$TxtFechaFinal,$CmbCentroCosto,$CmbEmpresa,$CmbTercero,$CmbCiudadRetencion,$CmbCiudadPago,$Vector) {
+        $obCon= new ProcesoVenta(1);
+        $FechaActual=date("Y-m-d");
+        $NumeracionDocumento="Certificado de Retenciones periodo del $FechaInicial al $TxtFechaFinal";
+        $this->PDF_Ini("Certificado", 8, "");
+        if($CmbEmpresa=='ALL'){
+            $idEmpresa=1;
+        }
+        $this->PDF_Encabezado($FechaActual,$idEmpresa, 34, "",$NumeracionDocumento);
+        $DatosTercero=$obCon->DevuelveValores("proveedores", "Num_Identificacion", $CmbTercero);
+        $html="<strong>RETENIDO:</strong> $DatosTercero[RazonSocial] <BR>";
+        $html.="<strong>NIT:</strong> $DatosTercero[Num_Identificacion] - $DatosTercero[DV] <BR>";
+        $html.="<strong>DIRECCIÓN:</strong> $DatosTercero[Direccion] $DatosTercero[Ciudad]<BR><BR>";
+        $html.="<strong>CIUDAD DONDE SE PRACTICÓ LA RETENCIÓN:</strong> $CmbCiudadRetencion<BR>";
+        $html.="<strong>CIUDAD DONDE SE PAGÓ LA RETENCIÓN:</strong> $CmbCiudadPago<BR>";
+        $this->PDF_Write($html);
+        $html=$this->HTML_Items_Retencion($CmbTercero, $FechaInicial, $TxtFechaFinal, $CmbEmpresa, $CmbCentroCosto);
+        $this->PDF_Write($html);
+        $html= $this->FirmaDocumentos();
+        $this->PDF_Write($html);
+        
+        $this->PDF_Output("Certificado.pdf");
+    }
+    
+    public function HTML_Items_Retencion($Tercero,$FechaInicial,$FechaFinal,$idEmpresa,$idCentroCostos) {
+        $obCon= new ProcesoVenta(1);
+        $CondicionAdicional="";
+        if($idEmpresa<>'ALL'){
+            $CondicionAdicional.=" AND idEmpresa=$idEmpresa ";
+        }
+        if($idCentroCostos<>'ALL'){
+            $CondicionAdicional.=" AND idCentroCostos=$idCentroCostos ";
+        }
+        
+        $html='<table cellspacing="1" cellpadding="2" border="0">
+                <tr>
+                    <td align="center"><strong>CUENTA</strong></td>
+                    <td align="center" colspan="3"><strong>CONCEPTO</strong></td>
+                    <td align="center" ><strong>TASA %</strong></td>
+                    <td align="center" ><strong>VR. BASE</strong></td>
+                    <td align="center" ><strong>VR. RETENIDO</strong></td>
+                    
+                </tr>';
+        $sql="SELECT CuentaPUC,Cuenta,PorcentajeRetenido,SUM(BaseRetencion) AS BaseRetencion,SUM(ValorRetencion) AS ValorRetencion"
+                . " FROM vista_retenciones WHERE Fecha >= '$FechaInicial' AND Fecha <= '$FechaFinal' $CondicionAdicional GROUP BY CuentaPUC,PorcentajeRetenido";
+        $Consulta=$obCon->Query($sql);        
+        $h=1;  
+
+        while($DatosRetenciones=$obCon->FetchAssoc($Consulta)){
+            
+            
+            if($h==0){
+                $Back="#f2f2f2";
+                $h=1;
+            }else{
+                $Back="white";
+                $h=0;
+            }
+
+            $html.='
+            <tr>
+                <td align="left" style="border-bottom: 1px solid #ddd;background-color: '.$Back.' ;">'.$DatosRetenciones["CuentaPUC"].'</td>
+                <td align="left" colspan="3" style="border-bottom: 1px solid #ddd;background-color: '.$Back.';">'.$DatosRetenciones["Cuenta"].'</td>
+                <td align="right" style="border-bottom: 1px solid #ddd;background-color: '.$Back.';">'.$DatosRetenciones["PorcentajeRetenido"].' %</td>
+                <td align="right" style="border-bottom: 1px solid #ddd;background-color: '.$Back.';">'.number_format($DatosRetenciones["BaseRetencion"]).'</td>
+                <td align="right" style="border-bottom: 1px solid #ddd;background-color: '.$Back.';">'.number_format($DatosRetenciones["ValorRetencion"]).'</td>
+            </tr>';        
+
+        }
+        
+        $html.='</table>';
+
+        return($html);
+
+    }
+    
+    
+    
    //Fin Clases
 }
     

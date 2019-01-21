@@ -219,11 +219,15 @@ CREATE VIEW vista_retenciones AS
 SELECT `idCompra`,
 (SELECT Fecha FROM factura_compra WHERE ID=`idCompra`) AS Fecha,
 (SELECT Tercero FROM factura_compra WHERE ID=`idCompra`) AS Tercero,
+
 (SELECT RazonSocial FROM proveedores WHERE Num_Identificacion=(SELECT Tercero) LIMIT 1) AS RazonSocial,
 (SELECT DV FROM proveedores WHERE Num_Identificacion=(SELECT Tercero) LIMIT 1) AS DV,
 (SELECT Direccion FROM proveedores WHERE Num_Identificacion=(SELECT Tercero) LIMIT 1) AS Direccion,
 (SELECT Ciudad FROM proveedores WHERE Num_Identificacion=(SELECT Tercero) LIMIT 1) AS Ciudad,
 `CuentaPUC`,`NombreCuenta` as Cuenta,
-ValorRetencion,PorcentajeRetenido,ROUND(((ValorRetencion/PorcentajeRetenido)*100),2) AS BaseRetencion
+ValorRetencion,PorcentajeRetenido,ROUND(((ValorRetencion/PorcentajeRetenido)*100),2) AS BaseRetencion,
+(SELECT idEmpresa FROM factura_compra WHERE ID=`idCompra`) AS idEmpresa,
+(SELECT idCentroCostos FROM factura_compra WHERE ID=`idCompra`) AS idCentroCostos,
+(SELECT idSucursal FROM factura_compra WHERE ID=`idCompra`) AS idSucursal
 FROM factura_compra_retenciones;
 

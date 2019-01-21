@@ -65,6 +65,17 @@ if(isset($_REQUEST["idDocumento"])){
             $idDocumento=$obCon->normalizar($_REQUEST["idDocEqui"]);
             $obDoc->NominaPDFDocumentoEquivalente($idDocumento,"");            
             break;
+        case 34: //PDF de un certificado de retenciones
+            $FechaInicial=$obCon->normalizar($_REQUEST["TxtFechaInicial"]);
+            $TxtFechaFinal=$obCon->normalizar($_REQUEST["TxtFechaFinal"]);
+            $CmbCentroCosto=$obCon->normalizar($_REQUEST["CmbCentroCosto"]);
+            $CmbEmpresa=$obCon->normalizar($_REQUEST["CmbEmpresa"]);
+            $CmbTercero=$obCon->normalizar($_REQUEST["CmbTercero"]);
+            $CmbCiudadRetencion=$obCon->normalizar($_REQUEST["CmbCiudadRetencion"]);
+            $CmbCiudadPago="";
+            $CmbCiudadPago=$obCon->normalizar($_REQUEST["CmbCiudadPago"]);
+            $obDoc->PDF_Certificado_Retenciones($FechaInicial, $TxtFechaFinal, $CmbCentroCosto, $CmbEmpresa, $CmbTercero, $CmbCiudadRetencion, $CmbCiudadPago, "");         
+            break;
     }
 }else{
     print("No se recibió parametro de documento");
