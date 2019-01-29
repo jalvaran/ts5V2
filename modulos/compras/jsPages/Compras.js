@@ -327,8 +327,10 @@ function AgregarItem(){
     var CmbTipoImpuesto = document.getElementById('CmbTipoImpuesto').value;
     var CodigoBarras = document.getElementById('CodigoBarras').value;
     var TxtDescripcion = document.getElementById('TxtDescripcion').value;
-    var Cantidad = (document.getElementById('Cantidad').value);
-    var ValorUnitario = (document.getElementById('ValorUnitario').value);
+    var Cantidad = parseFloat(document.getElementById('Cantidad').value);
+    var ValorUnitario = parseFloat(document.getElementById('ValorUnitario').value);
+    
+    /*
     Cantidad=Cantidad.replace(".","");
     Cantidad=Cantidad.replace(".","");
     Cantidad=Cantidad.replace(".","");
@@ -340,7 +342,9 @@ function AgregarItem(){
     ValorUnitario=ValorUnitario.replace(".","");
     ValorUnitario=ValorUnitario.replace(".","");
     ValorUnitario=ValorUnitario.replace(",",".");
-    console.log("varlor unitario:"+ ValorUnitario); 
+    
+    */
+   console.log("varlor unitario:"+ ValorUnitario); 
     if(idCompra==""){
         alertify.alert("Debe Seleccionar una compra");
         document.getElementById('idCompra').style.backgroundColor="pink";
@@ -373,7 +377,7 @@ function AgregarItem(){
         document.getElementById('CodigoBarras').style.backgroundColor="white";
     }
     
-    if(Cantidad == ""){
+    if(isNaN(Cantidad) || Cantidad == ""){
         alertify.alert("El campo Cantidad debe ser un número mayor a cero");
         document.getElementById('Cantidad').style.backgroundColor="pink";
         return;
@@ -381,7 +385,7 @@ function AgregarItem(){
         document.getElementById('Cantidad').style.backgroundColor="white";
     }
     
-    if(ValorUnitario == ""){
+    if(isNaN(ValorUnitario) || ValorUnitario == ""){
         alertify.alert("El campo Valor Unitario debe ser un número mayor a cero");
         document.getElementById('ValorUnitario').style.backgroundColor="pink";
         return;
@@ -1340,5 +1344,5 @@ $('#CmbBusquedas').bind('change', function() {
     
 });
 
-$('#ValorUnitario').mask('1.999.999.##0,00', {reverse: true});
-$('#Cantidad').mask('9.999.##0,00', {reverse: true});
+//$('#ValorUnitario').mask('1.999.999.##0,00', {reverse: true});
+//$('#Cantidad').mask('9.999.##0,00', {reverse: true});

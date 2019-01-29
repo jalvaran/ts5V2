@@ -269,7 +269,7 @@ $css->DivGrid("DivItems", "", "center", 1, 1, 3, 90, 58,5,"transparent");
 
 if(isset($_REQUEST['TxtAutorizacion'])){
     	
-    $Clave=$obVenta->normalizar($_REQUEST['TxtAutorizacion']);
+    $Clave=md5($obVenta->normalizar($_REQUEST['TxtAutorizacion']));
     $sql="SELECT Identificacion FROM usuarios WHERE Password='$Clave' AND (Role='ADMINISTRADOR' or Role='SUPERVISOR') LIMIT 1";
     $Datos=$obVenta->Query($sql);
     $DatosAutorizacion=$obVenta->FetchArray($Datos);

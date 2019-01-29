@@ -21,6 +21,7 @@ if( !empty($_REQUEST["idAccion"]) ){
         $i=0;
         $RegistrosXCopiar=0;
         $TablasLocales=[];
+        
         while ($DatosTablas=$obCon->FetchArray($consulta)){
             $Tabla=$DatosTablas[0];
             $sql="SELECT COUNT(*) as TotalRegistros FROM $Tabla WHERE Sync = '0000-00-00 00:00:00' OR Sync<>Updated";
@@ -41,6 +42,11 @@ if( !empty($_REQUEST["idAccion"]) ){
 
     //Funcion para realizar el backup a una tabla
     function BackupTabla($Tabla){
+        
+        if($Tabla=="preventa" or $Tabla=="precotizacion"){
+            print("OK;0");
+            exit();
+        }
         $obCon = new Backups($_SESSION['idUser']);
 
         $DatosServer=$obCon->DevuelveValores("servidores", "ID", 2);

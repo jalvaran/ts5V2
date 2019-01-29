@@ -416,6 +416,7 @@ class Compras extends ProcesoVenta{
             $this->RegistrarCuentaXPagar($DatosFacturaCompra["Fecha"], $DatosFacturaCompra["NumeroFactura"], $FechaProgramada, "factura_compra", $idCompra, $SubtotalCuentaXPagar, $TotalIVACXP, $TotalCompraCXP, $TotalesCompra["Total_Retenciones"], 0, 0, $DatosFacturaCompra["Tercero"], $DatosFacturaCompra["idSucursal"], $DatosFacturaCompra["idCentroCostos"], $DatosFacturaCompra["Concepto"], $DatosFacturaCompra["Soporte"], $VectorCuentas);
         }
         $this->ActualizaRegistro("factura_compra", "Estado", "CERRADA", "ID", $idCompra);
+        $this->ActualizaRegistro("factura_compra", "TipoPago", "$TipoPago", "ID", $idCompra);
     }
     
     

@@ -1,4 +1,5 @@
-
+DROP VIEW IF EXISTS `vista_030_prueba`;
+CREATE VIEW vista_030_prueba AS 
 SELECT '2' as TipoRegistro, @rownum:=@rownum+1 as ConsecutivoRegistro, 
 tipo_ident_prest_servicio as TipoIdentificacionERP, 
 (SELECT nit FROM salud_eps WHERE salud_eps.cod_pagador_min=t1.cod_enti_administradora) as NumeroIdentificacionERP, 

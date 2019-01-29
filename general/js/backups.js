@@ -174,6 +174,7 @@ function BackupTabla(Tablas,IndiceTabla,TotalTablas,TotalRegistros){
                     BackupTabla(Tablas,IndiceTabla,TotalTablas,TotalRegistros);
                 }
           }else {
+                console.log(data);
                 IndiceTabla++;
                 BackupTabla(Tablas,IndiceTabla,TotalTablas,TotalRegistros);
           }
