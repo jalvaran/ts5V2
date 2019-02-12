@@ -8,7 +8,7 @@ function startTime() {
     //Add a zero in front of numbers<10
     min = checkTime(min);
     sec = checkTime(sec);
-    HoraActual=hr + ":" + min + ":" + sec;
+    var HoraActual=hr + ":" + min + ":" + sec;
     document.getElementById("clock").innerHTML = HoraActual;
     var Shapes=document.getElementsByName("Shape");
     var HoraFin=document.getElementsByName("PHoraIni");

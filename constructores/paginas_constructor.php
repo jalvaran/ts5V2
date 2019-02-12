@@ -1341,8 +1341,8 @@ class PageConstruct extends html_estruct_class{
         /**
          * Crea una tabla
          */
-        public function CrearTabla(){
-            print('<div class="table-responsive"><table class="table table-bordered table table-hover" >');		
+        public function CrearTabla($id=""){
+            print('<div  class="table-responsive"><table id='.$id.'  class="table table-bordered table table-hover" >');		
 	}
         
         /**
@@ -1888,6 +1888,15 @@ class PageConstruct extends html_estruct_class{
               </div>');
         }
         
+        /**
+         * Agrega los JS para exportar a excel desde javascript
+         */
+        public function AddJSExcel(){
+            print('<script src="../../componentes/jsexcel/external/jszip.js"></script>');
+            print('<script src="../../componentes/jsexcel/external/FileSaver.js"></script>');
+            print('<script src="../../componentes/jsexcel/external/jszip.js"></script>');
+            print('<script src="../../componentes/jsexcel/scripts/excel-gen.js"></script>');
+        }
         
         //////////////////////////////////FIN
 }

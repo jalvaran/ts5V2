@@ -616,5 +616,9 @@ INSERT INTO `formatos_calidad` (`ID`, `Nombre`, `Version`, `Codigo`, `Fecha`, `C
 ALTER TABLE `factura_compra` ADD `TipoPago` VARCHAR(10) NOT NULL AFTER `TipoCompra`;
 ALTER TABLE `factura_compra` ADD `idCierre` BIGINT NOT NULL AFTER `idSucursal`;
 
+ALTER TABLE `modelos_agenda` ADD `idCierreModelo` BIGINT NOT NULL AFTER `HoraATerminar`;
 
+UPDATE `formatos_calidad` SET `NotasPiePagina` = 'Forma Continua Impresa por Computador no necesita Firma Autografa (Art. 10 D.R. 836/91, recopilado Art. 1.6.1.12.12 del DUT 1625 de 2016-10-11, que regula el contenido del certificado de renta.' WHERE `formatos_calidad`.`ID` = 34;
+
+INSERT INTO `menu_submenus` (`ID`, `Nombre`, `idPestana`, `idCarpeta`, `idMenu`, `TablaAsociada`, `TipoLink`, `JavaScript`, `Pagina`, `Target`, `Estado`, `Image`, `Orden`, `Updated`, `Sync`) VALUES (185, 'Reporte de compras vs ventas', '16', '3', '0', '', '0', '', '../modulos/reportes/ReportesComparativos.php', '_BLANK', '1', 'infventas.png', '5', '2019-01-13 09:12:44', '2019-01-13 09:12:44');
 

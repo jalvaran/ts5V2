@@ -231,3 +231,6 @@ ValorRetencion,PorcentajeRetenido,ROUND(((ValorRetencion/PorcentajeRetenido)*100
 (SELECT idSucursal FROM factura_compra WHERE ID=`idCompra`) AS idSucursal
 FROM factura_compra_retenciones;
 
+
+
+

@@ -94,7 +94,7 @@ class Modelos extends ProcesoVenta{
         if($idModelo > 0){
             $CondicionAdicional=" AND idModelo='$idModelo'";
         }
-        $sql="UPDATE modelos_agenda SET idCierre='$idCierre' WHERE idUser='$idUser' AND idCierre='' $CondicionAdicional";
+        $sql="UPDATE modelos_agenda SET idCierreModelo='$idCierre' WHERE idUser='$idUser' AND idCierreModelo='' $CondicionAdicional";
         $this->Query($sql);
         return($idCierre);
     }

@@ -1466,8 +1466,9 @@ EOD;
         $this->PDF_Write($html);
         $html=$this->HTML_Items_Retencion($CmbTercero, $FechaInicial, $TxtFechaFinal, $CmbEmpresa, $CmbCentroCosto);
         $this->PDF_Write($html);
-        $html= $this->FirmaDocumentos();
-        $this->PDF_Write($html);
+        $DatosFormatoCalidad=$this->obCon->DevuelveValores("formatos_calidad", "ID", 34);
+        $html= $DatosFormatoCalidad["NotasPiePagina"];
+        $this->PDF_Write("<br>".$html);
         
         $this->PDF_Output("Certificado.pdf");
     }

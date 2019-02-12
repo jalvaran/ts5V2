@@ -42,8 +42,16 @@ if(isset($_REQUEST["Accion"])){
             $obVenta->Query($sql);
             break;
         case 2: // se cobra el servicio 
+            
+            
             $idAgenda=$obVenta->normalizar($_REQUEST["idAgenda"]);
-            $sql="UPDATE modelos_agenda SET Estado='Cobrado' WHERE ID='$idAgenda'";
+            $DatosAgenda=$obVenta->DevuelveValores("modelos_agenda", "ID", $idAgenda);
+            
+            $HoraInicial=date("Y-m-d H:i:s");
+            $Tiempo=$DatosAgenda["Minutos"];
+            $HoraFinal=date( "Y-m-d H:i:s" ,strtotime($HoraInicial)+($Tiempo*60));
+            
+            $sql="UPDATE modelos_agenda SET Estado='Cobrado',HoraInicial='$HoraInicial',HoraATerminar='$HoraFinal' WHERE ID='$idAgenda'";
             $obVenta->Query($sql);
             break;
         case 3: // se factura el servicio
@@ -67,6 +75,12 @@ if(isset($_REQUEST["Accion"])){
             $idCierre=$obModel->CerrarTurnoModelos($idModelo, $idUser, "");
             $obPrint->ImprimirCierreModelos($idCierre, "", 2, "");
             $css->CrearNotificacionRoja("Se realizó el cierre Num. $idCierre", 16);
+        break;
+        case 5: // se cobra el servicio 
+            $idAgenda=$obVenta->normalizar($_REQUEST["idAgenda"]);
+            $sql="UPDATE modelos_agenda SET Estado='Finalizado' WHERE ID='$idAgenda'";
+            $obVenta->Query($sql);
+        break;
             
     }
     goto CargarDatos;
@@ -74,7 +88,7 @@ if(isset($_REQUEST["Accion"])){
 
 $idModelo=$obVenta->normalizar($_REQUEST["Modelo"]);
 $DatosModelos=$obVenta->DevuelveValores("modelos_db", "ID", $idModelo);
-$sql="SELECT ID FROM modelos_agenda WHERE idModelo='$idModelo' AND Estado='Abierto' LIMIT 1";
+$sql="SELECT ID FROM modelos_agenda WHERE idModelo='$idModelo' AND (Estado='Abierto' or Estado='Cobrado') LIMIT 1";
 $Datos=$obVenta->Query($sql);
 
 if(!$obVenta->FetchArray($Datos) and isset($_REQUEST["Valor"]) and is_numeric($_REQUEST["Valor"])){
@@ -112,9 +126,10 @@ $css->FilaTabla(16);
     $css->ColTabla("<strong>Estado<strong>", 1);
     $css->ColTabla("<strong>Anular<strong>", 1);
     $css->ColTabla("<strong>Cobrar<strong>", 1);
+    $css->ColTabla("<strong>Terminar<strong>", 1);
     $css->ColTabla("<strong>Facturar<strong>", 1);
 $css->CierraFilaTabla();
-$consulta=$obVenta->ConsultarTabla("modelos_agenda", "WHERE Estado='Abierto' ORDER BY HoraATerminar Asc LIMIT 100");
+$consulta=$obVenta->ConsultarTabla("modelos_agenda", "WHERE Estado='Abierto' OR Estado='Cobrado' ORDER BY HoraATerminar Asc LIMIT 100");
 while ($DatosAgenda=$obVenta->FetchArray($consulta)){
     $idAgenda=$DatosAgenda["ID"];
     $DatosModelos=$obVenta->DevuelveValores("modelos_db", "ID", $DatosAgenda["idModelo"]);
@@ -126,27 +141,44 @@ while ($DatosAgenda=$obVenta->FetchArray($consulta)){
             print("<p name='PHoraIni'>".$DatosAgenda["HoraATerminar"]."</p>");
         print("</td>");
         print("<td style='text-align:center'>");
-            print("<div name='Shape' style='background-color:green;color:green;height:20px;width:20px;border-radius:10px;text-align:center'>_</div>");
+            print("<div name='Shape' style='background-color:green;color:green;height:20px;width:20px;border-radius:10px;text-align:center'></div>");
         print("</td>");
-        print("<td>");
+        print("<td style='text-align:center'>");
         
-        $Page="Consultas/modelos_admin.querys.php?Accion=1&idAgenda=".$idAgenda;      
-        $Javascript="onClick=EnvieConsultaModelos(`$Page`,``,`DivAgenda`,`3`);return false;";
+            $Page="Consultas/modelos_admin.querys.php?Accion=1&idAgenda=".$idAgenda;      
+            $Javascript="onClick=EnvieConsultaModelos(`$Page`,``,`DivAgenda`,`3`);return false;";
 
-        $css->CrearImage("ImgDescartar$idAgenda", "../images/delete.png", "Descartar este evento", 30, 30, $Javascript);
+            $css->CrearImage("ImgDescartar$idAgenda", "../images/delete.png", "Descartar este evento", 30, 30, $Javascript);
+
+       
+        
+        
+                  
+        print("</td>");
+        
+        print("<td style='text-align:center'>");
+        
+        
+        
+        if($DatosAgenda["Estado"]=="Abierto"){
+            $Page="Consultas/modelos_admin.querys.php?Accion=2&idAgenda=".$idAgenda;      
+            $Javascript="onClick=EnvieConsultaModelos(`$Page`,``,`DivAgenda`,`2`);return false;";
+
+            $css->CrearImage("ImgDescartar$idAgenda", "../images/agregar2.png", "Cobrar este servicio", 30, 30, $Javascript);
+        }
+        
                         
         print("</td>");
-        
-        print("<td>");
-        
-        $Page="Consultas/modelos_admin.querys.php?Accion=2&idAgenda=".$idAgenda;      
-        $Javascript="onClick=EnvieConsultaModelos(`$Page`,``,`DivAgenda`,`2`);return false;";
+        print("<td style='text-align:center'>");
+            if($DatosAgenda["Estado"]=="Cobrado"){
+                $Page="Consultas/modelos_admin.querys.php?Accion=5&idAgenda=".$idAgenda;      
+                $Javascript="onClick=EnvieConsultaModelos(`$Page`,``,`DivAgenda`,`2`);return false;";
 
-        $css->CrearImage("ImgDescartar$idAgenda", "../images/agregar2.png", "Descartar este evento", 30, 30, $Javascript);
-                        
+                $css->CrearImage("ImgDescartar$idAgenda", "../images/pause3.png", "Finalizar", 30, 30, $Javascript);
+
+            }
         print("</td>");
-        
-        print("<td>");
+        print("<td style='text-align:center'>");
         
         $Page="Consultas/modelos_admin.querys.php?Accion=3&idAgenda=".$idAgenda;      
         $Javascript="onClick=EnvieConsultaModelos(`$Page`,``,`DivAgenda`,`4`);return false;";
