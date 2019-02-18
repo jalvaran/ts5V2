@@ -176,7 +176,8 @@ function BackupTabla(Tablas,IndiceTabla,TotalTablas,TotalRegistros){
           }else {
                 console.log(data);
                 IndiceTabla++;
-                BackupTabla(Tablas,IndiceTabla,TotalTablas,TotalRegistros);
+                setTimeout('BackupTabla()',60*1000,Tablas,IndiceTabla,TotalTablas,TotalRegistros);
+                //BackupTabla(Tablas,IndiceTabla,TotalTablas,TotalRegistros);
           }
         },
         error: function (xhr, ajaxOptions, thrownError) {

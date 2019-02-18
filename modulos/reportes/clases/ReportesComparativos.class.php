@@ -10,7 +10,7 @@ class Reportes extends ProcesoVenta{
     function ObtengaClasificacionXDepartamento() {
         $sql="SELECT Departamento,
             (SELECT Nombre FROM prod_departamentos WHERE productosventa.Departamento=prod_departamentos.idDepartamentos LIMIT 1) AS NombreDepartamento,
-            ROUND(SUM(Existencias)) as Existencias, ROUND(SUM(CostoTotal)) as CostoTotal, ROUND(SUM(PrecioVenta)) as PrecioVentaTotal 
+            ROUND(SUM(Existencias)) as Existencias, ROUND(SUM(CostoTotal)) as CostoTotal, ROUND(SUM(PrecioVenta*Existencias)) as PrecioVentaTotal 
               FROM productosventa GROUP BY Departamento";
         $Consulta=$this->Query($sql);
         $Clasificacion=[];
@@ -32,7 +32,7 @@ class Reportes extends ProcesoVenta{
         $sql="SELECT Departamento,Sub1,
             (SELECT Nombre FROM prod_departamentos WHERE productosventa.Departamento=prod_departamentos.idDepartamentos LIMIT 1) AS NombreDepartamento,
             (SELECT NombreSub1 FROM prod_sub1 WHERE productosventa.Sub1=prod_sub1.idSub1 LIMIT 1) AS NombreSub1,
-            ROUND(SUM(Existencias)) as Existencias, ROUND(SUM(CostoTotal)) as CostoTotal , ROUND(SUM(PrecioVenta)) as PrecioVentaTotal 
+            ROUND(SUM(Existencias)) as Existencias, ROUND(SUM(CostoTotal)) as CostoTotal , ROUND(SUM(PrecioVenta*Existencias)) as PrecioVentaTotal 
               FROM productosventa GROUP BY Sub1";
         $Consulta=$this->Query($sql);
         $Clasificacion=[];
@@ -58,7 +58,7 @@ class Reportes extends ProcesoVenta{
             (SELECT Nombre FROM prod_departamentos WHERE productosventa.Departamento=prod_departamentos.idDepartamentos LIMIT 1) AS NombreDepartamento,
             (SELECT NombreSub1 FROM prod_sub1 WHERE productosventa.Sub1=prod_sub1.idSub1 LIMIT 1) AS NombreSub1,
             (SELECT NombreSub2 FROM prod_sub2 WHERE productosventa.Sub2=prod_sub2.idSub2 LIMIT 1) AS NombreSub2,
-            ROUND(SUM(Existencias)) as Existencias, ROUND(SUM(CostoTotal)) as CostoTotal, ROUND(SUM(PrecioVenta)) as PrecioVentaTotal  
+            ROUND(SUM(Existencias)) as Existencias, ROUND(SUM(CostoTotal)) as CostoTotal, ROUND(SUM(PrecioVenta*Existencias)) as PrecioVentaTotal  
               FROM productosventa GROUP BY Sub2";
         $Consulta=$this->Query($sql);
         $Clasificacion=[];
