@@ -81,11 +81,11 @@ class Documento{
      * @param type $VectorEncabezado
      * @param type $NumeracionDocumento
      */
-    public function PDF_Encabezado($Fecha,$idEmpresa,$idFormatoCalidad,$VectorEncabezado,$NumeracionDocumento="") {
+    public function PDF_Encabezado($Fecha,$idEmpresa,$idFormatoCalidad,$VectorEncabezado,$NumeracionDocumento="",$Patch='../../') {
         $DatosEmpresaPro=$this->obCon->DevuelveValores("empresapro", "idEmpresaPro", $idEmpresa);
         $DatosFormatoCalidad=$this->obCon->DevuelveValores("formatos_calidad", "ID", $idFormatoCalidad);
         
-        $RutaLogo="../../$DatosEmpresaPro[RutaImagen]";
+        $RutaLogo=$Patch."$DatosEmpresaPro[RutaImagen]";
 ///////////////////////////////////////////////////////
 //////////////encabezado//////////////////
 ////////////////////////////////////////////////////////

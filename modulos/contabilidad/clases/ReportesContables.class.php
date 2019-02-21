@@ -74,6 +74,36 @@ class Contabilidad extends conexion{
             FROM vista_retenciones $Condicion;";         
         $this->Query($sql);
     }
+    /**
+     * Construye la vista para el estado de resultados por año
+     * @param type $FechaInicial
+     * @param type $FechaFinal
+     * @param type $CmbAnio
+     * @param type $Empresa
+     * @param type $CentroCostos
+     * @param type $Vector
+     */
+     public function ConstruirVistaEstadoResultados($CmbAnio, $Empresa, $CentroCostos,$Vector) {
+        $FechaInicial= $CmbAnio."-01-01";
+        $FechaFinal = $CmbAnio."-12-31";
+        $sql="DROP VIEW IF EXISTS `vista_estado_resultados_anio`;";
+        $this->Query($sql);
+        $CondicionEmpresa="";
+        $Condicion=" WHERE Fecha>='$FechaInicial' AND Fecha <='$FechaFinal' ";
+        
+        if($Empresa<>"ALL"){
+            $CondicionEmpresa=" AND idEmpresa = '$Empresa'";
+        }
+        
+        $CondicionCentroCostos="";
+        if($CentroCostos<>"ALL"){
+            $CondicionCentroCostos=" AND idCentroCosto = '$CentroCostos'";
+        }
+        $sql="CREATE VIEW vista_estado_resultados_anio AS
+            SELECT *
+            FROM librodiario $Condicion;";         
+        $this->Query($sql);
+    }
     
     /**
      * Fin Clase

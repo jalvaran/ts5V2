@@ -136,7 +136,7 @@ function VerificaRegistrosXRespaldar(){
  */
 function BackupTabla(Tablas,IndiceTabla,TotalTablas,TotalRegistros){
     if(IndiceTabla>=TotalTablas){
-      VerificaRegistrosXRespaldar();
+      setTimeout('VerificaRegistrosXRespaldar()',60*1000);
       return;
     }
     var tabla=Tablas[IndiceTabla]["Nombre"];

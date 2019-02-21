@@ -36,7 +36,11 @@ $css->PageInit($myTitulo);
                     print("Balance por Terceros");
                 $css->Coption();
                 
-                $css->option("", "", "Balance x Terceros", 2, "", "");
+                $css->option("", "", "Estado de resultados", 3, "", "");
+                    print("Estado de Resultados");
+                $css->Coption();
+                
+                $css->option("", "", "Certificados de retencion", 2, "", "");
                     print("Certificados de retención");
                 $css->Coption();
                 
@@ -52,15 +56,17 @@ $css->PageInit($myTitulo);
     
     $css->CerrarDiv();
     print("<br><br><br><br><br><br><br><br><br><br>");
+    $css->CrearDiv("DivOpcionesReportes", "col-md-9", "center", 1, 1);
+    $css->CerrarDiv();
+    $css->CrearDiv("DivReportesContables", "col-md-12", "center", 1, 1);
+    
+    $css->CerrarDiv();
     $css->CrearDiv("DivPDFReportes", "col-md-12", "center", 0, 1);
         print("<iframe id='FramePDF' name='FramePDF' class='col-md-12' style='height:1000px;border:0px;'></iframe>");
     $css->CerrarDiv();
-    $css->CrearDiv("DivOpcionesReportes", "", "center", 1, 1);
-    $css->CerrarDiv();
     
-    $css->CrearDiv("DivReportesContables", "", "center", 1, 1);
     
-    $css->CerrarDiv();  
+      
 
     
 $css->PageFin();
@@ -68,6 +74,7 @@ $css->PageFin();
 print('<script src="../../general/js/notificaciones.js"></script>');
 //print('<script src="../../dist/js/jspdf.min.js"></script>');
 print('<script src="jsPages/ReportesContabilidad.js"></script>');
+$css->AddJSExcel();
 $css->Cbody();
 $css->Chtml();
 

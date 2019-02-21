@@ -1342,7 +1342,10 @@ class PageConstruct extends html_estruct_class{
          * Crea una tabla
          */
         public function CrearTabla($id=""){
-            print('<div  class="table-responsive"><table id='.$id.'  class="table table-bordered table table-hover" >');		
+            if($id<>''){
+                $id="id=".$id;
+            }
+            print('<div  class="table-responsive"><table '.$id.'  class="table table-bordered table table-hover" >');		
 	}
         
         /**
