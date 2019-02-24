@@ -173,20 +173,20 @@ function DibujeCotizacion(idCotizacion=""){
 
 
 /**
- * Se dibujan los datos generales de una compra 
+ * Se dibujan items de una cotizacion
  * @param {type} idCompra
  * @returns {undefined}
  */
-function DibujeItemsCompra(idCompra=""){
-    if(idCompra==""){
-        var idCompra = document.getElementById('idCompra').value;
+function DibujeItems(idCotizacion=""){
+    if(idCotizacion==""){
+        var idCotizacion = document.getElementById('idCotizacion').value;
     }
     
     var form_data = new FormData();
         form_data.append('Accion', 3);
-        form_data.append('idCompra', idCompra);
+        form_data.append('idCotizacion', idCotizacion);
         $.ajax({
-        url: './Consultas/Compras.draw.php',
+        url: './Consultas/Cotizaciones.draw.php',
         //dataType: 'json',
         cache: false,
         contentType: false,
@@ -194,7 +194,7 @@ function DibujeItemsCompra(idCompra=""){
         data: form_data,
         type: 'post',
         success: function(data){
-            document.getElementById('DivItemsCompra').innerHTML=data;
+            document.getElementById('DivItems').innerHTML=data;
             
         },
         error: function (xhr, ajaxOptions, thrownError) {
@@ -291,64 +291,30 @@ function ConvertirSelectBusquedas(){
  */
 function AgregarItem(){
     
-    var idCompra=document.getElementById('idCompra').value;
+    var idCotizacion=document.getElementById('idCotizacion').value;
     var CmbListado=document.getElementById('CmbListado').value;
     var CmbBusquedas=document.getElementById('CmbBusquedas').value;    
-    var CmbImpuestosIncluidos = document.getElementById('CmbImpuestosIncluidos').value;
-    var CmbTipoImpuesto = document.getElementById('CmbTipoImpuesto').value;
-    var CodigoBarras = document.getElementById('CodigoBarras').value;
-    var TxtDescripcion = document.getElementById('TxtDescripcion').value;
-    var Cantidad = parseFloat(document.getElementById('Cantidad').value);
-    var ValorUnitario = parseFloat(document.getElementById('ValorUnitario').value);
     
-    /*
-    Cantidad=Cantidad.replace(".","");
-    Cantidad=Cantidad.replace(".","");
-    Cantidad=Cantidad.replace(".","");
-    Cantidad=Cantidad.replace(".","");
-    Cantidad=Cantidad.replace(",",".");
-    ValorUnitario=ValorUnitario.replace(".","");
-    ValorUnitario=ValorUnitario.replace(".","");
-    ValorUnitario=ValorUnitario.replace(".","");
-    ValorUnitario=ValorUnitario.replace(".","");
-    ValorUnitario=ValorUnitario.replace(".","");
-    ValorUnitario=ValorUnitario.replace(",",".");
-    
-    */
-   console.log("varlor unitario:"+ ValorUnitario); 
-    if(idCompra==""){
-        alertify.alert("Debe Seleccionar una compra");
-        document.getElementById('idCompra').style.backgroundColor="pink";
+    var Cantidad = (document.getElementById('Cantidad').value);
+    var ValorUnitario = (document.getElementById('ValorUnitario').value);
+   console.log(ValorUnitario)
+    if(idCotizacion==""){
+        alertify.alert("Debe Seleccionar una cotizacion");
+        document.getElementById('idCotizacion').style.backgroundColor="pink";
         return;
     }else{
-        document.getElementById('idCompra').style.backgroundColor="white";
+        document.getElementById('idCotizacion').style.backgroundColor="white";
     }
     
-    if(TxtDescripcion=="" && CmbListado==2){
-        alertify.alert("El campo descripción no puede estar vacío");
-        document.getElementById('TxtDescripcion').style.backgroundColor="pink";
-        return;
-    }else{
-        document.getElementById('TxtDescripcion').style.backgroundColor="white";
-    }
-    
-    if(CmbListado==2 && CodigoBarras.length<6){
-        alertify.alert("No puedes seleccionar una Cuenta Padre");
+    if(CmbBusquedas==""){
+        alertify.alert("Debe Seleccionar un item");
         document.getElementById('select2-CmbBusquedas-container').style.backgroundColor="pink";
         return;
     }else{
         document.getElementById('select2-CmbBusquedas-container').style.backgroundColor="white";
     }
-    
-    if(CodigoBarras==""){
-        alertify.alert("El campo código no puede estar vacío");
-        document.getElementById('CodigoBarras').style.backgroundColor="pink";
-        return;
-    }else{
-        document.getElementById('CodigoBarras').style.backgroundColor="white";
-    }
-    
-    if(isNaN(Cantidad) || Cantidad == ""){
+        
+    if(!$.isNumeric(Cantidad) || Cantidad == "" || Cantidad <= 0){
         alertify.alert("El campo Cantidad debe ser un número mayor a cero");
         document.getElementById('Cantidad').style.backgroundColor="pink";
         return;
@@ -356,7 +322,7 @@ function AgregarItem(){
         document.getElementById('Cantidad').style.backgroundColor="white";
     }
     
-    if(isNaN(ValorUnitario) || ValorUnitario == ""){
+    if(!$.isNumeric(ValorUnitario) || ValorUnitario == "" || ValorUnitario<=0){
         alertify.alert("El campo Valor Unitario debe ser un número mayor a cero");
         document.getElementById('ValorUnitario').style.backgroundColor="pink";
         return;
@@ -366,18 +332,15 @@ function AgregarItem(){
        
     var form_data = new FormData();
         form_data.append('Accion', 3);
-        form_data.append('idCompra', idCompra);
+        form_data.append('idCotizacion', idCotizacion);
         form_data.append('CmbListado', CmbListado);
         form_data.append('CmbBusquedas', CmbBusquedas);
-        form_data.append('CmbImpuestosIncluidos', CmbImpuestosIncluidos);
-        form_data.append('CmbTipoImpuesto', CmbTipoImpuesto);
-        form_data.append('CodigoBarras', CodigoBarras);
-        form_data.append('TxtDescripcion', TxtDescripcion);
+        
         form_data.append('Cantidad', Cantidad);
         form_data.append('ValorUnitario', ValorUnitario);
          document.getElementById('ValorUnitario').value="";   
         $.ajax({
-        url: './procesadores/Compras.process.php',
+        url: './procesadores/Cotizaciones.process.php',
         //dataType: 'json',
         cache: false,
         contentType: false,
@@ -388,8 +351,8 @@ function AgregarItem(){
           
           if (data == "OK") { 
               
-                alertify.success("Item "+CodigoBarras+" Agregado");
-                DibujeCompra(idCompra);
+                alertify.success("Item "+CmbListado+" Agregado");
+                DibujeCotizacion(idCotizacion);
           
           }else{
               alertify.alert(data);
@@ -416,7 +379,7 @@ function EliminarItem(Tabla,idItem){
         form_data.append('Tabla', Tabla);
         form_data.append('idItem', idItem);
         $.ajax({
-        url: './procesadores/Compras.process.php',
+        url: './procesadores/Cotizaciones.process.php',
         //dataType: 'json',
         cache: false,
         contentType: false,
@@ -425,7 +388,7 @@ function EliminarItem(Tabla,idItem){
         type: 'post',
         success: function(data){
             alertify.error(data);
-            DibujeCompra();
+            DibujeCotizacion();
             
         },
         error: function (xhr, ajaxOptions, thrownError) {
@@ -441,16 +404,16 @@ function EliminarItem(Tabla,idItem){
  * @param {type} idCompra
  * @returns {undefined}
  */
-function DibujeTotalesCompra(idCompra=""){
-    if(idCompra==""){
-        var idCompra = document.getElementById('idCompra').value;
+function DibujeTotales(idCotizacion=""){
+    if(idCotizacion==""){
+        var idCotizacion = document.getElementById('idCotizacion').value;
     }
     
     var form_data = new FormData();
         form_data.append('Accion', 4);
-        form_data.append('idCompra', idCompra);
+        form_data.append('idCotizacion', idCotizacion);
         $.ajax({
-        url: './Consultas/Compras.draw.php',
+        url: './Consultas/Cotizaciones.draw.php',
         //dataType: 'json',
         cache: false,
         contentType: false,
@@ -458,7 +421,7 @@ function DibujeTotalesCompra(idCompra=""){
         data: form_data,
         type: 'post',
         success: function(data){
-            document.getElementById('DivTotalesCompra').innerHTML=data;
+            document.getElementById('DivTotales').innerHTML=data;
             
         },
         error: function (xhr, ajaxOptions, thrownError) {
@@ -494,39 +457,56 @@ function MuestraOcultaXIDCompras(id){
  * @param {type} event
  * @returns {undefined}
  */
-function GuardarCompra(idCompra=''){
-    document.getElementById('BtnGuardarCompra').disabled=true;
-    if(idCompra==''){
-        var idCompra = document.getElementById('idCompra').value;
+function GuardarDocumento(idCotizacion=''){
+    document.getElementById('BtnGuardarDocumento').disabled=true;
+    if(idCotizacion==''){
+        var idCotizacion = document.getElementById('idCotizacion').value;
     }
         
-    var CmbTipoPago = document.getElementById("CmbTipoPago").value;
-    var CmbCuentaOrigen = document.getElementById("CmbCuentaOrigen").value;
-    var CmbCuentaPUCCXP = document.getElementById("CmbCuentaPUCCXP").value;
-    var TxtFechaProgramada = document.getElementById("TxtFechaProgramada").value;
-    var CmbTraslado = document.getElementById("CmbTraslado").value;
+    var CmbCuentaIngreso = document.getElementById("CmbCuentaIngreso").value;
+    var TxtAnticipo = document.getElementById("TxtAnticipo").value;
+    var TxtTotalDocumento = document.getElementById("TxtTotalDocumento").value;
+    var TxtFechaAnticipo = document.getElementById("TxtFechaAnticipo").value;
     
-    
-    if(TxtFechaProgramada==''){
-        alertify.alert("El campo fecha programada no puede estar vacío");
-        document.getElementById("TxtFechaProgramada").style.backgroundColor="pink";
+    if(TxtFechaAnticipo==''){
+        alertify.alert("El campo fecha de anticipo no puede estar vacío");
+        document.getElementById("TxtFechaAnticipo").style.backgroundColor="pink";
+        document.getElementById('BtnGuardarDocumento').disabled=false;
         return;
     }else{
-        document.getElementById("TxtFechaProgramada").style.backgroundColor="white";
+        document.getElementById("TxtFechaAnticipo").style.backgroundColor="white";
     }
     
     
-    document.getElementById("TxtFechaProgramada").value='';
+    
+    if(!$.isNumeric(TxtAnticipo) || TxtAnticipo == "" || TxtAnticipo<0){
+        alertify.alert("El campo Valor Unitario debe ser un número mayor a cero");
+        document.getElementById('TxtAnticipo').style.backgroundColor="pink";
+        document.getElementById('BtnGuardarDocumento').disabled=false;
+        return;
+    }else{
+        document.getElementById('TxtAnticipo').style.backgroundColor="white";
+    }
+    
+    if(TxtAnticipo > TxtTotalDocumento){
+        alertify.alert("El campo Valor del anticipo no puede ser mayor al total de la cotización");
+        document.getElementById('TxtAnticipo').style.backgroundColor="pink";
+        document.getElementById('BtnGuardarDocumento').disabled=false;
+        return;
+    }else{
+        document.getElementById('TxtAnticipo').style.backgroundColor="white";
+    }
+    
+    document.getElementById("TxtAnticipo").value=0;
     var form_data = new FormData();
-        form_data.append('Accion', '9'); 
-        form_data.append('idCompra', idCompra);
-        form_data.append('CmbTipoPago', CmbTipoPago);
-        form_data.append('CmbCuentaOrigen', CmbCuentaOrigen);
-        form_data.append('CmbCuentaPUCCXP', CmbCuentaPUCCXP);
-        form_data.append('TxtFechaProgramada', TxtFechaProgramada);
-        form_data.append('CmbTraslado', CmbTraslado);
+        form_data.append('Accion', '6'); 
+        form_data.append('idCotizacion', idCotizacion);
+        form_data.append('CmbCuentaIngreso', CmbCuentaIngreso);
+        form_data.append('TxtAnticipo', TxtAnticipo);
+        form_data.append('TxtFechaAnticipo', TxtFechaAnticipo);
+        
         $.ajax({
-        url: './procesadores/Compras.process.php',
+        url: './procesadores/Cotizaciones.process.php',
         //dataType: 'json',
         cache: false,
         contentType: false,
@@ -538,14 +518,14 @@ function GuardarCompra(idCompra=''){
             if(respuestas[0]=="OK"){
                 var mensaje=respuestas[1];
                 LimpiarDivs();
-                var x = document.getElementById("idCompra");
+                var x = document.getElementById("idCotizacion");
                 x.remove(x.selectedIndex);
-                document.getElementById('BtnEditarCompra').disabled=true;
+                document.getElementById('BtnEditar').disabled=true;
                 alertify.alert(mensaje);
                 
             }else{
-                alertify.error(data,10000);
-                document.getElementById('BtnGuardarCompra').disabled=false;
+                alertify.alert("Error: <br>"+data);
+                document.getElementById('BtnGuardarDocumento').disabled=false;
             }
             
             //DibujeTotalesCompra(idCompra);
@@ -564,10 +544,13 @@ function GuardarCompra(idCompra=''){
  * @returns {undefined}
  */
 function LimpiarDivs(){
-    document.getElementById('DivItemsCompra').innerHTML='';
-    document.getElementById('DivTotalesCompra').innerHTML='';
+    document.getElementById('DivItems').innerHTML='';
+    document.getElementById('DivTotales').innerHTML='';
 }
-
+/**
+ * Busca el precio de venta de un producto
+ * @returns {undefined}
+ */
 function BusquePrecioVenta(){
    
     var listado = document.getElementById('CmbListado').value;

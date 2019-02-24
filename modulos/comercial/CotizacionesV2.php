@@ -11,7 +11,7 @@ $css =  new PageConstruct($myTitulo, ""); //objeto con las funciones del html
 $obCon = new conexion($idUser); //Conexion a la base de datos
 
 $css->PageInit($myTitulo);
-    $css->Modal("ModalAccionesCotizaciones", "Cotizaciones", "", 1);
+    $css->Modal("ModalAccionesCotizaciones", "Cotizaciones", "", 0);
         $css->div("DivFrmCrearCotizacion", "", "", "", "", "", "");
         $css->Cdiv();
         
@@ -58,7 +58,7 @@ $css->PageInit($myTitulo);
     $css->CrearDiv("DivDatos", "col-md-12", "left", 1, 1); //Datos para la creacion de la compra
         $css->fieldset("", "", "FieldDatos", "Datos", "", "");
                     $css->legend("", "");
-                        print("<a href='#'>Agregar items a esta cotizacíón</a>");
+                        print("<a href='#'>Agregar items</a>");
                     $css->Clegend();    
         $css->CrearDiv("DivAgregarItems", "", "center", 1, 1);   
             $css->CrearDiv("", "col-md-3", "center", 1, 1);
@@ -103,7 +103,7 @@ $css->PageInit($myTitulo);
             $css->CrearDiv("", "col-md-3", "center", 1, 1);
             $css->CerrarDiv();
             $css->CrearDiv("DivBtnAregar", "col-md-5", "left", 1, 1); 
-                $css->CrearBotonEvento("BtnAgregarItem", "Agregar Item", 1, "onClick", "AgregarItem(event)", "verde", "");
+                $css->CrearBotonEvento("BtnAgregarItem", "Agregar Item", 1, "onClick", "AgregarItem()", "verde", "");
             $css->CerrarDiv();
             $css->CrearDiv("", "col-md-4", "center", 1, 1);
             $css->CerrarDiv();
@@ -114,22 +114,24 @@ $css->PageInit($myTitulo);
     //$css->CerrarDiv();
 
     print("<br>");
-    $css->CrearDiv("DivDatosCompras", "col-md-12", "left", 1, 1); //Datos para la creacion de la compra
+    $css->CrearDiv("DivDatosCompras", "col-md-8", "left", 1, 1); //Datos para la creacion de la compra
         $css->fieldset("", "", "FieldDatosCompra", "items en esta compra", "", "");
             $css->legend("", "");
-                print("<a href='#'>Items Agregados a esta Compra</a>");
+                print("<a href='#'>Items Agregados</a>");
             $css->Clegend();    
-            $css->CrearDiv("DivItems", "", "center", 1, 1);   
+            $css->CrearDiv("DivItems", "", "center", 1, 1,"","height: 400px;overflow: auto;");   
 
             $css->CerrarDiv();       
         $css->Cfieldset();
-            
-        $css->fieldset("", "", "FieldDatosCompra", "Totales, Retenciones y opciones del documento", "", "");
+        $css->CerrarDiv();
+        
+        $css->CrearDiv("DivInfoTotales", "col-md-4", "left", 1, 1); //Datos para la creacion de la compra
+        $css->fieldset("", "", "FieldDatosCompra", "Totales", "", "");
             $css->legend("", "");
-                print("<a href='#'>Totales, Retenciones y opciones del documento</a>");
+                print("<a href='#'>Totales y Opciones del Documento</a>");
             $css->Clegend();    
            
-            $css->CrearDiv("DivTotalesCompra", "", "center", 1, 1);   
+            $css->CrearDiv("DivTotales", "", "center", 1, 1);   
                 
             $css->CerrarDiv(); 
         $css->Cfieldset();    

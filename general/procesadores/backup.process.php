@@ -24,17 +24,18 @@ if( !empty($_REQUEST["idAccion"]) ){
         
         while ($DatosTablas=$obCon->FetchArray($consulta)){
             $Tabla=$DatosTablas[0];
-            $sql="SELECT COUNT(*) as TotalRegistros FROM $Tabla WHERE Sync = '0000-00-00 00:00:00' OR Sync<>Updated";
-            $ConsultaConteo=$obCon->Query($sql);
-            $Registros=$obCon->FetchAssoc($ConsultaConteo);
-            $TotalRegistros=$Registros["TotalRegistros"];
-            if($TotalRegistros>0){  
-                $RegistrosXCopiar=$RegistrosXCopiar+$TotalRegistros;
-                $TablasLocales[$i]["Nombre"]=$Tabla;
-                $TablasLocales[$i]["Registros"]=$TotalRegistros;
-                $i++;                
+            if($Tabla<>'precotizacion' and $Tabla<>'preventa'){
+                $sql="SELECT COUNT(*) as TotalRegistros FROM $Tabla WHERE Sync = '0000-00-00 00:00:00' OR Sync<>Updated";
+                $ConsultaConteo=$obCon->Query($sql);
+                $Registros=$obCon->FetchAssoc($ConsultaConteo);
+                $TotalRegistros=$Registros["TotalRegistros"];
+                if($TotalRegistros>0){  
+                    $RegistrosXCopiar=$RegistrosXCopiar+$TotalRegistros;
+                    $TablasLocales[$i]["Nombre"]=$Tabla;
+                    $TablasLocales[$i]["Registros"]=$TotalRegistros;
+                    $i++;                
+                }
             }
-
         }
 
         print("OK;$RegistrosXCopiar;".json_encode($TablasLocales, JSON_FORCE_OBJECT));
