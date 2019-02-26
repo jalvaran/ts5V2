@@ -15,6 +15,7 @@ const HOST="localhost", USER="root",PW="pirlo1985",DB="ts5";//para uso
  * Para un ServidorCaja la combinacion deberá ser $TipoPC="Caja"; $TipoKardex="Automatico";
  */
 $TipoPC="Caja";         // Server para que al abrir el menu un timer registre las facturas en el libro diario y en el kardex, Caja para la otra opcion
-$TipoKardex="Automatico"; // Automatico Para que registre automaticamente las facturas en el kardex, NO para que sea caja
+$TipoKardex="Servidor"; // Servidor se contabilizan las facturas pos desde el menu, Caja desde el pos
 $PrintAutomatico="SI";    //IMPRIME LAS FACTURAS POS AUTOMATICAMENTE SI ES SI, SI ES NO NO IMPRIME FACTURA POR POR DEFECTO
+
 ?>

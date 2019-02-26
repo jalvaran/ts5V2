@@ -125,7 +125,7 @@ $RutaPrint="PDF_Factura.php?ImgPrintFactura=".$NumFactura;
 $DatosFactura=$obVenta->DevuelveValores("facturas", "idFacturas", $NumFactura);
 $css->CrearNotificacionNaranja("Por favor devolver: ". number_format($Devuelta),30);
 $css->CrearNotificacionVerde("Factura Creada Correctamente <a href='$RutaPrint' target='_blank'>Imprimir Factura No. $DatosFactura[NumeroFactura]</a>",16);
-if($TipoKardex=="Automatico"){
+if($TipoKardex=="Caja"){
     register_shutdown_function('Kardex');
 }
 ?>

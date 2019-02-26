@@ -16,12 +16,12 @@ $css->PageInit($myTitulo);
         $css->Cdiv();
         
     $css->CModal("BntModalCompras", "onclick=CrearCompra(event)", "button", "Guardar");
-    $css->div("", "container", "", "", "", "", "");
-    $css->h3("", "", "", "");
-                print("<strong>Registro de Compras</strong>");
-    $css->Ch3();
-    $css->CrearDiv("DivOpcionesCrearCompras", "col-md-11", "left", 1, 1); 
+    $css->div("", "", "", "", "", "", "");
     
+    $css->CrearDiv("DivOpcionesCrearCompras", "col-md-12", "left", 1, 1); 
+        $css->h3("", "", "", "");
+                    print("<strong>Registro de Compras</strong>");
+        $css->Ch3();
         $css->fieldset("", "", "FieldDatosCompra", "DatosCompra", "", "");
             $css->legend("", "");
                 print("<a href='#'>Cree, Seleccione o imprima una Factura de Compra</a>");
@@ -53,13 +53,13 @@ $css->PageInit($myTitulo);
         $css->Cfieldset(); 
     $css->CerrarDiv();
     print("<br><br><br><br><br>");
-    $css->CrearDiv("DivDatosCompras", "col-md-11", "left", 1, 1); //Datos para la creacion de la compra
+    $css->CrearDiv("DivDatosCompras", "col-md-12", "left", 1, 1); //Datos para la creacion de la compra
         $css->fieldset("", "", "FieldDatosCompra", "DatosCompra", "", "");
                     $css->legend("", "");
                         print("<a href='#'>Agregar items a esta compra</a>");
                     $css->Clegend();    
         $css->CrearDiv("DivAgregarItems", "", "center", 1, 1);   
-            $css->CrearDiv("", "col-md-3", "center", 1, 1);
+            $css->CrearDiv("", "col-md-2", "center", 1, 1);
                 $css->select("CmbListado", "form-control", "CmbListado", "Listado", "", "", "onchange=ConvertirSelectBusquedas()");
                     $css->option("", "", "", 1, "", "");
                         print("Productos para la venta");
@@ -76,8 +76,8 @@ $css->PageInit($myTitulo);
                 $css->Cselect();
             $css->CerrarDiv();
             
-            $css->CrearDiv("", "col-md-5", "center", 1, 1);
-                $css->select("CmbBusquedas", "form-control", "CmbBusquedas", "Búsquedas", "", "", "");
+            $css->CrearDiv("", "col-md-6", "center", 1, 1);
+                $css->select("CmbBusquedas", "form-control", "CmbBusquedas", "Búsquedas<br>", "", "", "style=width:100%");
                    
                     $css->option("", "", "", "", "", "");
                         print("Buscar");
@@ -114,12 +114,12 @@ $css->PageInit($myTitulo);
                 $css->Cselect();   
             $css->CerrarDiv();
             print("<br><br><br><br>");
-            $css->CrearDiv("", "col-md-3", "center", 1, 1);
+            $css->CrearDiv("", "col-md-2", "center", 1, 1);
                 print("<strong>Código</strong>");
                $css->input("text", "CodigoBarras", "form-control", "CodigoBarras", "Codigo de barras", "", "Código", "off", "", "onchange=AgregaItemPorCodigo()");
             $css->CerrarDiv();
             
-            $css->CrearDiv("", "col-md-5", "center", 1, 1);
+            $css->CrearDiv("", "col-md-4", "center", 1, 1);
                print("<strong>Descripción</strong>");
                $css->input("text", "TxtDescripcion", "form-control", "TxtDescripcion", "Descripción", "", "Descripción", "off", "", "");
             $css->CerrarDiv();
@@ -132,6 +132,10 @@ $css->PageInit($myTitulo);
             $css->CrearDiv("", "col-md-2", "center", 1, 1);
                print("<strong>Valor Unitario</strong>");
                $css->input("text", "ValorUnitario", "form-control", "ValorUnitario", "Valor Unitario", "", "Valor Unitario", "off", "", "");
+            $css->CerrarDiv();
+            $css->CrearDiv("", "col-md-2", "center", 1, 1);
+               print("<strong>Precio Venta</strong>");
+               $css->input("text", "PrecioVenta", "form-control", "PrecioVenta", "Precio Venta", "", "Precio Venta", "off", "", "");
             $css->CerrarDiv();
             print("<br><br><br><br>");
             
@@ -151,7 +155,7 @@ $css->PageInit($myTitulo);
     //$css->CerrarDiv();
 
     print("<br>");
-    $css->CrearDiv("DivDatosCompras", "col-md-11", "left", 1, 1); //Datos para la creacion de la compra
+    $css->CrearDiv("DivDatosCompras", "col-md-12", "left", 1, 1); //Datos para la creacion de la compra
         $css->fieldset("", "", "FieldDatosCompra", "items en esta compra", "", "");
             $css->legend("", "");
                 print("<a href='#'>Items Agregados a esta Compra</a>");

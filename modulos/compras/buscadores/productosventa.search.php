@@ -19,7 +19,7 @@ $result = $obRest->Query($sql);
 $json = [];
 
 while($row = $obRest->FetchAssoc($result)){
-    $Texto=$row['Nombre']." // ".$row['idProductosVenta']." // ".$row['Referencia']." // ".number_format($row['Existencias']);
+    $Texto=$row['Nombre']." // ".$row['idProductosVenta']." // ".$row['Referencia']." // ".number_format($row['CostoUnitario'])." // ".number_format($row['Existencias']);
      $json[] = ['id'=>$row['idProductosVenta'], 'text'=>$Texto];
 }
 echo json_encode($json);

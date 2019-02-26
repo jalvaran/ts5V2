@@ -58,7 +58,7 @@ class Compras extends ProcesoVenta{
     }
     
     //Clase para agregar un item a una compra
-    public function AgregueProductoCompra($idCompra,$idProducto,$Cantidad,$CostoUnitario,$TipoIVA,$IVAIncluido,$Vector) {
+    public function AgregueProductoCompra($idCompra,$idProducto,$Cantidad,$CostoUnitario,$PrecioVenta,$TipoIVA,$IVAIncluido,$Vector) {
         
         $DatosTipoImpuesto= $this->DevuelveValores("porcentajes_iva", "ID", $TipoIVA);
         $TipoIVA=$DatosTipoImpuesto["Valor"];
@@ -76,7 +76,7 @@ class Compras extends ProcesoVenta{
         $Total=round($Subtotal+$Impuestos,2);
         //////Agrego el registro           
         $tab="factura_compra_items";
-        $NumRegistros=8;
+        $NumRegistros=9;
 
         $Columnas[0]="idFacturaCompra";     $Valores[0]=$idCompra;
         $Columnas[1]="idProducto";          $Valores[1]=$idProducto;
@@ -86,6 +86,7 @@ class Compras extends ProcesoVenta{
         $Columnas[5]="ImpuestoCompra";      $Valores[5]=$Impuestos;
         $Columnas[6]="TotalCompra";         $Valores[6]=$Total;
         $Columnas[7]="Tipo_Impuesto";       $Valores[7]=$TipoIVA;
+        $Columnas[8]="PrecioVenta";         $Valores[8]=$PrecioVenta;
                     
         $this->InsertarRegistro($tab,$NumRegistros,$Columnas,$Valores);
     }
@@ -508,6 +509,15 @@ class Compras extends ProcesoVenta{
             }
                        
         }
+    }
+    /**
+     * Actualiza los precios de venta de los productos que están en una factura de compra 
+     * @param type $idCompra
+     */
+    function ActualicePreciosVentaFacturaCompra($idCompra) {
+        $sql="UPDATE productosventa pv INNER JOIN factura_compra_items fc SET pv.PrecioVenta=fc.PrecioVenta
+        WHERE fc.idFacturaCompra='$idCompra' AND fc.PrecioVenta>=fc.CostoUnitarioCompra AND fc.idProducto=pv.idProductosVenta;";
+        $this->Query($sql);
     }
     /**
      * Fin Clase

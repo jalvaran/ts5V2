@@ -188,6 +188,7 @@ if( !empty($_REQUEST["Accion"]) ){
                     $css->ColTabla("<strong>Subtotal</strong>", 1, "C");
                     $css->ColTabla("<strong>Impuestos</strong>", 1, "C");
                     $css->ColTabla("<strong>Total</strong>", 1, "C");
+                    $css->ColTabla("<strong>Precio Venta</strong>", 1, "C");
                     $css->ColTabla("<strong>% Impuestos</strong>", 1, "C");
                     print("<td style=text-align:center;width:100px>");
                         print("<strong>Devolver</strong>");
@@ -223,6 +224,7 @@ if( !empty($_REQUEST["Accion"]) ){
                         $css->ColTabla(number_format($DatosItems["SubtotalCompra"],2,",","."), 1, "C");
                         $css->ColTabla(number_format($DatosItems["ImpuestoCompra"],2,",","."), 1, "C");
                         $css->ColTabla(number_format($DatosItems["TotalCompra"],2,",","."), 1, "C");
+                        $css->ColTabla(number_format($DatosItems["PrecioVenta"],2,",","."), 1, "C");
                         $css->ColTabla($PorcentajeImpuestos, 1, "C");
                         
                        print("<td style='font-size:16px;text-align:center;color:red' title='Devolver'>");   
@@ -264,6 +266,7 @@ if( !empty($_REQUEST["Accion"]) ){
                         $css->ColTabla(number_format($DatosItems["SubtotalCompra"],2,",","."), 1, "C");
                         $css->ColTabla(number_format($DatosItems["ImpuestoCompra"],2,",","."), 1, "C");
                         $css->ColTabla(number_format($DatosItems["TotalCompra"],2,",","."), 1, "C");
+                        $css->ColTabla("NA", 1, "C");
                         $css->ColTabla($PorcentajeImpuestos, 1, "C");
                         $css->ColTabla("NA", 1, "C");
                         print("<td style='font-size:16px;text-align:center;color:red' title='Borrar'>");   
@@ -300,6 +303,7 @@ if( !empty($_REQUEST["Accion"]) ){
                         $css->ColTabla(number_format($DatosItems["Subtotal_Servicio"],2,",","."), 1, "C");
                         $css->ColTabla(number_format($DatosItems["Impuesto_Servicio"],2,",","."), 1, "C");
                         $css->ColTabla(number_format($DatosItems["Total_Servicio"],2,",","."), 1, "C");
+                        $css->ColTabla("NA", 1, "C");
                         $css->ColTabla($PorcentajeImpuestos, 1, "C");
                         $css->ColTabla("NA", 1, "C");
                         print("<td style='font-size:16px;text-align:center;color:red' title='Borrar'>");   
@@ -342,6 +346,7 @@ if( !empty($_REQUEST["Accion"]) ){
                         $css->ColTabla(number_format($DatosItems["SubtotalCompra"],2,",","."), 1, "C");
                         $css->ColTabla(number_format($DatosItems["ImpuestoCompra"],2,",","."), 1, "C");
                         $css->ColTabla(number_format($DatosItems["TotalCompra"],2,",","."), 1, "C");
+                        $css->ColTabla("NA", 1, "C");
                         $css->ColTabla($PorcentajeImpuestos, 1, "C");
                         
                        print("<td style='text-align:center' title=''>");   
@@ -909,7 +914,29 @@ if( !empty($_REQUEST["Accion"]) ){
                $css->CerrarTabla();
             $css->Cdiv();//Cierra div de retenciones e impuestos adicionales
             }
-        break;    
+        break;// fin caso 4
+        
+        case 5: //consulta el precio de venta y costo de un producto o servicio
+            $Listado=$obCon->normalizar($_REQUEST["listado"]);
+            $idBusqueda=$obCon->normalizar($_REQUEST["Codigo"]);
+            $PrecioVenta=0;
+            $CostoUnitario=0;
+            if($Listado==1){
+                $tab="productosventa";
+                $Datos=$obCon->ValorActual($tab, "PrecioVenta,CostoUnitario", " idProductosVenta='$idBusqueda'");
+                $PrecioVenta=$Datos["PrecioVenta"];
+                $CostoUnitario=$Datos["CostoUnitario"];
+            }
+            
+            if($Listado==3){
+                $tab="insumos";
+                $Datos=$obCon->ValorActual($tab, "CostoUnitario", " ID='$idBusqueda'");
+                
+                $CostoUnitario=$Datos["CostoUnitario"];
+            }
+            
+            print("OK;".$CostoUnitario.";".$PrecioVenta);
+            break;//Fin caso 5
         
     }
     

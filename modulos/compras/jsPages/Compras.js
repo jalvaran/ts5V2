@@ -240,6 +240,7 @@ function ConvertirSelectBusquedas(){
         document.getElementById('CodigoBarras').value="";
         document.getElementById('TxtDescripcion').value="";
         document.getElementById('ValorUnitario').value="";
+        document.getElementById('PrecioVenta').value="";
         document.getElementById('Cantidad').value=1;
         document.getElementById('Cantidad').disabled=false;
         document.getElementById('TxtDescripcion').disabled=true;
@@ -267,6 +268,7 @@ function ConvertirSelectBusquedas(){
         document.getElementById('CodigoBarras').value="";
         document.getElementById('TxtDescripcion').value="";
         document.getElementById('ValorUnitario').value="";
+        document.getElementById('PrecioVenta').value="";
         document.getElementById('Cantidad').value=1;
         document.getElementById('Cantidad').disabled=true;
         document.getElementById('TxtDescripcion').disabled=false;
@@ -293,6 +295,7 @@ function ConvertirSelectBusquedas(){
         document.getElementById('CodigoBarras').value="";
         document.getElementById('TxtDescripcion').value="";
         document.getElementById('ValorUnitario').value="";
+        document.getElementById('PrecioVenta').value="";
         document.getElementById('Cantidad').value=1;
         document.getElementById('Cantidad').disabled=false;
         document.getElementById('TxtDescripcion').disabled=true;
@@ -327,24 +330,10 @@ function AgregarItem(){
     var CmbTipoImpuesto = document.getElementById('CmbTipoImpuesto').value;
     var CodigoBarras = document.getElementById('CodigoBarras').value;
     var TxtDescripcion = document.getElementById('TxtDescripcion').value;
-    var Cantidad = parseFloat(document.getElementById('Cantidad').value);
-    var ValorUnitario = parseFloat(document.getElementById('ValorUnitario').value);
+    var Cantidad = (document.getElementById('Cantidad').value);
+    var ValorUnitario = (document.getElementById('ValorUnitario').value);
+    var PrecioVenta = (document.getElementById('PrecioVenta').value);
     
-    /*
-    Cantidad=Cantidad.replace(".","");
-    Cantidad=Cantidad.replace(".","");
-    Cantidad=Cantidad.replace(".","");
-    Cantidad=Cantidad.replace(".","");
-    Cantidad=Cantidad.replace(",",".");
-    ValorUnitario=ValorUnitario.replace(".","");
-    ValorUnitario=ValorUnitario.replace(".","");
-    ValorUnitario=ValorUnitario.replace(".","");
-    ValorUnitario=ValorUnitario.replace(".","");
-    ValorUnitario=ValorUnitario.replace(".","");
-    ValorUnitario=ValorUnitario.replace(",",".");
-    
-    */
-   console.log("varlor unitario:"+ ValorUnitario); 
     if(idCompra==""){
         alertify.alert("Debe Seleccionar una compra");
         document.getElementById('idCompra').style.backgroundColor="pink";
@@ -377,7 +366,8 @@ function AgregarItem(){
         document.getElementById('CodigoBarras').style.backgroundColor="white";
     }
     
-    if(isNaN(Cantidad) || Cantidad == ""){
+    if(!$.isNumeric(Cantidad) || Cantidad == "" || Cantidad <= 0 ){
+    
         alertify.alert("El campo Cantidad debe ser un número mayor a cero");
         document.getElementById('Cantidad').style.backgroundColor="pink";
         return;
@@ -385,12 +375,32 @@ function AgregarItem(){
         document.getElementById('Cantidad').style.backgroundColor="white";
     }
     
-    if(isNaN(ValorUnitario) || ValorUnitario == ""){
+    if(!$.isNumeric(ValorUnitario) || ValorUnitario == "" || ValorUnitario <= 0 ){
+    
         alertify.alert("El campo Valor Unitario debe ser un número mayor a cero");
         document.getElementById('ValorUnitario').style.backgroundColor="pink";
         return;
     }else{
         document.getElementById('ValorUnitario').style.backgroundColor="white";
+    }
+    
+    
+    if(!$.isNumeric(PrecioVenta) || PrecioVenta == "" ){
+    
+        alertify.alert("El campo precio de venta debe ser un número mayor a cero");
+        document.getElementById('PrecioVenta').style.backgroundColor="pink";
+        return;
+    }else{
+        document.getElementById('PrecioVenta').style.backgroundColor="white";
+    }
+    
+    if((PrecioVenta<ValorUnitario) && CmbListado==1 ){
+    
+        alertify.alert("El Precio de Venta debe ser mayor al Costo Unitario");
+        document.getElementById('PrecioVenta').style.backgroundColor="pink";
+        return;
+    }else{
+        document.getElementById('PrecioVenta').style.backgroundColor="white";
     }
        
     var form_data = new FormData();
@@ -404,7 +414,10 @@ function AgregarItem(){
         form_data.append('TxtDescripcion', TxtDescripcion);
         form_data.append('Cantidad', Cantidad);
         form_data.append('ValorUnitario', ValorUnitario);
-         document.getElementById('ValorUnitario').value="";   
+        form_data.append('PrecioVenta', PrecioVenta);
+        
+         document.getElementById('ValorUnitario').value=""; 
+         document.getElementById('PrecioVenta').value="";  
         $.ajax({
         url: './procesadores/Compras.process.php',
         //dataType: 'json',
@@ -1336,11 +1349,53 @@ function LimpiarDivs(){
     document.getElementById('DivTotalesCompra').innerHTML='';
 }
 
+/**
+ * Busca el precio de venta y costo de un producto
+ * @returns {undefined}
+ */
+function BusquePrecioVentaCosto(){
+   
+    var listado = document.getElementById('CmbListado').value;
+    var Codigo = document.getElementById('CodigoBarras').value;
+    
+    var form_data = new FormData();
+        form_data.append('Accion', 5);
+        form_data.append('listado', listado);
+        form_data.append('Codigo', Codigo);
+        $.ajax({
+        url: './Consultas/Compras.draw.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            console.log(data)
+            var respuestas = data.split(';');
+            if(respuestas[0]=='OK'){
+                document.getElementById('ValorUnitario').value=respuestas[1];
+                document.getElementById('PrecioVenta').value=respuestas[2];
+            }else{
+                alertify.alert("Error "+ data);
+            }
+            
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      });
+      
+}
+
 ConvertirSelectBusquedas();
 
 $('#CmbBusquedas').bind('change', function() {
     
     document.getElementById('CodigoBarras').value = document.getElementById('CmbBusquedas').value;
+    BusquePrecioVentaCosto();
     
 });
 

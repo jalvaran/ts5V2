@@ -76,6 +76,7 @@ if( !empty($_REQUEST["Accion"]) ){
             $TxtDescripcion=$obCon->normalizar($_REQUEST["TxtDescripcion"]); 
             $Cantidad=$obCon->normalizar($_REQUEST["Cantidad"]); 
             $ValorUnitario=$obCon->normalizar($_REQUEST["ValorUnitario"]); 
+            $PrecioVenta=$obCon->normalizar($_REQUEST["PrecioVenta"]); 
             if($CmbListado==1){
                 $idProducto=$CodigoBarras;
                 $DatosCodigos=$obCon->DevuelveValores("prod_codbarras", "CodigoBarras", $CodigoBarras);
@@ -86,7 +87,7 @@ if( !empty($_REQUEST["Accion"]) ){
                 if($DatosProducto["idProductosVenta"]==''){
                     exit("Este producto no existe en la base de datos");
                 }
-                $obCon->AgregueProductoCompra($idCompra, $idProducto, $Cantidad, $ValorUnitario, $CmbTipoImpuesto, $CmbImpuestosIncluidos, "");
+                $obCon->AgregueProductoCompra($idCompra, $idProducto, $Cantidad, $ValorUnitario,$PrecioVenta, $CmbTipoImpuesto, $CmbImpuestosIncluidos, "");
             
             }
             
@@ -194,6 +195,7 @@ if( !empty($_REQUEST["Accion"]) ){
             $CuentaPUCCXP=$obCon->normalizar($_REQUEST["CmbCuentaPUCCXP"]);
             $FechaProgramada=$obCon->normalizar($_REQUEST["TxtFechaProgramada"]);
             $obCon->GuardarFacturaCompra($idCompra, $TipoPago, $CuentaOrigen,$CuentaPUCCXP, $FechaProgramada,"");
+            $obCon->ActualicePreciosVentaFacturaCompra($idCompra);
             $LinkTraslado="";
             $LinkFactura="../../VAtencion/PDF_FCompra.php?ID=$idCompra";
             $MensajeTraslado="";

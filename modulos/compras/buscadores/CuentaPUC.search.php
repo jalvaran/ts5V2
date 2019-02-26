@@ -13,7 +13,7 @@ $obRest=new ProcesoVenta($idUser);
 $key=$obRest->normalizar($_REQUEST['q']);
 
 $sql = "SELECT * FROM subcuentas 
-		WHERE Nombre LIKE '%$key%' or PUC LIKE '$key%' AND LENGTH(PUC)>=6
+		WHERE (Nombre LIKE '%$key%' or PUC LIKE '$key%') AND LENGTH(PUC)>=6
 		LIMIT 10"; 
 $result = $obRest->Query($sql);
 $json = [];

@@ -44,7 +44,7 @@ function ContabilizarFacturas(){
         
         case 1: //Contabilizacion de facturas
             
-            if($TipoKardex=="Automatico"){
+            if($TipoKardex=="Servidor"){
                 register_shutdown_function('ContabilizarFacturas');
             }else{
                 print("OK;Contabilizacion Automatica Deshabilitada");
