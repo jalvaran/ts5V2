@@ -11,5 +11,19 @@ INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOr
 ALTER TABLE `factura_compra_items` ADD `PrecioVenta` DOUBLE NOT NULL AFTER `SubtotalDescuento`;
 
 UPDATE `parametros_contables` SET `CuentaPUC` = '280505' WHERE `parametros_contables`.`ID` = 20;
+UPDATE `menu_submenus` SET `TipoLink` = '1' WHERE `menu_submenus`.`ID` = 55;
+UPDATE `menu_submenus` SET `TablaAsociada` = 'productosventa' WHERE `menu_submenus`.`ID` = 55;
+UPDATE `menu_submenus` SET `JavaScript` = 'onclick=\"SeleccioneTablaDB(`productosventa`)\";' WHERE `menu_submenus`.`ID` = 55;
+
+UPDATE `menu_submenus` SET `Target` = '_SELF' WHERE `menu_submenus`.`ID` = 55;
+
+INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOrigen`, `TablaAsociada`, `CampoAsociado`, `IDCampoAsociado`, `Updated`, `Sync`) VALUES (4, 'productosventa', 'Departamento', 'prod_departamentos', 'Nombre', 'idDepartamentos', '2019-02-24 14:01:51', '2019-01-24 14:01:51');
+
+INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOrigen`, `TablaAsociada`, `CampoAsociado`, `IDCampoAsociado`, `Updated`, `Sync`) VALUES (5, 'productosventa', 'Sub1', 'prod_sub1', 'NombreSub1', 'idSub1', '2019-02-24 14:01:51', '2019-01-24 14:01:51');
+INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOrigen`, `TablaAsociada`, `CampoAsociado`, `IDCampoAsociado`, `Updated`, `Sync`) VALUES (6, 'productosventa', 'Sub2', 'prod_sub2', 'NombreSub2', 'idSub2', '2019-02-24 14:01:51', '2019-01-24 14:01:51');
+INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOrigen`, `TablaAsociada`, `CampoAsociado`, `IDCampoAsociado`, `Updated`, `Sync`) VALUES (7, 'productosventa', 'Sub3', 'prod_sub3', 'NombreSub3', 'idSub3', '2019-02-24 14:01:51', '2019-01-24 14:01:51');
+INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOrigen`, `TablaAsociada`, `CampoAsociado`, `IDCampoAsociado`, `Updated`, `Sync`) VALUES (8, 'productosventa', 'Sub4', 'prod_sub4', 'NombreSub4', 'idSub4', '2019-02-24 14:01:51', '2019-01-24 14:01:51');
+INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOrigen`, `TablaAsociada`, `CampoAsociado`, `IDCampoAsociado`, `Updated`, `Sync`) VALUES (9, 'productosventa', 'Sub5', 'prod_sub5', 'NombreSub5', 'idSub5', '2019-02-24 14:01:51', '2019-01-24 14:01:51');
+INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOrigen`, `TablaAsociada`, `CampoAsociado`, `IDCampoAsociado`, `Updated`, `Sync`) VALUES (10, 'productosventa', 'Sub6', 'prod_sub6', 'NombreSub6', 'idSub6', '2019-02-24 14:01:51', '2019-01-24 14:01:51');
 
 

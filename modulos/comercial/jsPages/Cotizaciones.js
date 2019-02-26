@@ -671,6 +671,38 @@ function AbrirModalAnticipo(){
           }
       })  
 }  
+
+/*
+ * Abre el modal para registrar un anticipo a una cotizacion
+ * @returns {undefined}
+ */
+function AbrirModalFacturarCotizacion(){
+    
+    $("#ModalAccionesGrande").modal();
+    var idCotizacion=document.getElementById('idCotizacion').value;
+    
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 7);
+        form_data.append('idCotizacion', idCotizacion);
+        $.ajax({
+        url: './Consultas/Cotizaciones.draw.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            document.getElementById('DivFrmModalAccionesGrande').innerHTML=data;
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}  
 /**
  * Selecciona la accion que se realizará al momento de dar click en el boton de guardar en el modal
  * @returns {undefined}
@@ -681,6 +713,10 @@ function SeleccioneAccionFormularios(){
     
     if(idFormulario==1){
         GuardarAnticipo();
+    }
+    
+    if(idFormulario==2){
+        ConviertaCotizacionEnFactura();
     }
     
 }

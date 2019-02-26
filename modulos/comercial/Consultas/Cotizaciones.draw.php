@@ -331,6 +331,35 @@ if( !empty($_REQUEST["Accion"]) ){
             print("<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>");
         break;//Fin caso 6
         
+        case 7: //Dibujo el formulario para facturar una cotización
+            $idCotizacion=$obCon->normalizar($_REQUEST["idCotizacion"]);
+            
+            $css->input("hidden", "idFormulario", "", "idFormulario", "", 2, "", "", "", ""); // 2 sirve para indicarle al sistema que debe guardar el formulario de crear una factura desde una cotizacion
+            
+            $css->CrearTabla();
+                $css->FilaTabla(16);
+                    $css->ColTabla("<strong>Facturar Esta Cotización</strong>", 4);
+                $css->CierraFilaTabla();
+                
+                $css->FilaTabla(14);
+                    $css->ColTabla("<strong>Fecha:</strong>", 1);
+                    $css->ColTabla("<strong>Centro de Costos</strong>", 1);
+                    $css->ColTabla("<strong>Resolución</strong>", 1);
+                    $css->ColTabla("<strong>Forma de Pago</strong>", 1);
+                $css->CierraFilaTabla();
+                
+                $css->FilaTabla(14);
+                    print("<td>");
+                        
+                    print("</td>");
+                    $css->ColTabla("<strong>Centro de Costos</strong>", 1);
+                    $css->ColTabla("<strong>Resolución</strong>", 1);
+                    $css->ColTabla("<strong>Forma de Pago</strong>", 1);
+                $css->CierraFilaTabla();
+            $css->CerrarTabla();
+            
+        break;//Fin caso 7
+        
     }
     
     
