@@ -106,6 +106,27 @@ class Cotizaciones extends ProcesoVenta{
             return($idComprobanteIngreso);
             
         }
+        
+        //Editar un item de una precotizacion
+        public function EditarItemCotizacion($idItem,$Cantidad,$Multiplicador,$ValorAcordado,$Vector) {
+            $DatosPreventa= $this->DevuelveValores('cot_itemscotizaciones',"ID",$idItem);
+            $DatosProductos=$this->DevuelveValores($DatosPreventa["TablaOrigen"],"Referencia",$DatosPreventa["Referencia"]);
+            //$ValorAcordado=round($ValorAcordado/(1+$DatosProductos["IVA"]),2);
+            $Subtotal=$ValorAcordado*$Cantidad*$Multiplicador;
+            $IVA=($Subtotal*$DatosProductos["IVA"]);
+            $SubtotalCosto=$DatosProductos["CostoUnitario"]*$Cantidad;
+            $Total=$Subtotal+$IVA;
+            $filtro="ID";
+
+            $this->ActualizaRegistro("cot_itemscotizaciones","SubTotal", $Subtotal, $filtro, $idItem);
+            $this->ActualizaRegistro("cot_itemscotizaciones","IVA", $IVA, $filtro, $idItem);
+            $this->ActualizaRegistro("cot_itemscotizaciones","SubtotalCosto", $SubtotalCosto, $filtro, $idItem);
+            $this->ActualizaRegistro("cot_itemscotizaciones","Total", $Total, $filtro, $idItem);
+            $this->ActualizaRegistro("cot_itemscotizaciones","ValorUnitario", $ValorAcordado, $filtro, $idItem);
+            $this->ActualizaRegistro("cot_itemscotizaciones","Cantidad", $Cantidad, $filtro, $idItem);
+            $this->ActualizaRegistro("cot_itemscotizaciones","Multiplicador", $Multiplicador, $filtro, $idItem);
+
+        }
     
     /**
      * Fin Clase

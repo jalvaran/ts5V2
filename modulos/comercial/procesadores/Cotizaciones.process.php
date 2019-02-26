@@ -77,13 +77,31 @@ if( !empty($_REQUEST["Accion"]) ){
         break;//Fin caso 5
         
         case 6://Guardo el documento
-            $idCotizacion=$obCon->normalizar($_REQUEST["idCotizacion"]);            
+            $idCotizacion=$obCon->normalizar($_REQUEST["idCotizacion"]);
+            $obCon->ActualizaRegistro("cotizacionesv5", "Estado", "Cerrada", "ID", $idCotizacion);            
+            $LinkCotizacion="../../VAtencion/ImprimirPDFCotizacion.php?ImgPrintCoti=$idCotizacion";
+            $Mensaje="<strong>Cotizacion $idCotizacion Creada Correctamente </strong><a href='$LinkCotizacion'  target='blank'> Imprimir</a>";
+            
+            print("OK;$Mensaje");
+        break;//Fin caso 6
+        
+        case 7://Edita un item de una cotizacion
+            $idItem=$obCon->normalizar($_REQUEST["idItem"]);            
+            $ValorUnitario=$obCon->normalizar($_REQUEST["ValorUnitario"]);
+            $Multiplicador=$obCon->normalizar($_REQUEST["Multiplicador"]);
+            $Cantidad=$obCon->normalizar($_REQUEST["Cantidad"]);
+            
+            $obCon->EditarItemCotizacion($idItem, $Cantidad, $Multiplicador, $ValorUnitario, "");
+            $Mensaje="Item Editado";
+            print("OK;$Mensaje");
+        break;//Fin caso 7
+    
+        case 8://realiza un anticipo a una cotizacion
+            $idCotizacion=$obCon->normalizar($_REQUEST["idCotizacion"]);       
             $CmbCuentaIngreso=$obCon->normalizar($_REQUEST["CmbCuentaIngreso"]);
             $TxtAnticipo=$obCon->normalizar($_REQUEST["TxtAnticipo"]);
             $TxtFechaAnticipo=$obCon->normalizar($_REQUEST["TxtFechaAnticipo"]);
-            
-            $obCon->ActualizaRegistro("cotizacionesv5", "Estado", "Cerrada", "ID", $idCotizacion);
-            $MensajeComprobante="";
+            $MensajeComprobante="El valor debe ser superior a Cero";
             if($TxtAnticipo>0){
                 $CentroCotos=1;
                 $idComprobanteIngreso=$obCon->AnticipoCotizacion($TxtFechaAnticipo, $idCotizacion, $TxtAnticipo, $CmbCuentaIngreso, $CentroCotos, "");
@@ -92,13 +110,8 @@ if( !empty($_REQUEST["Accion"]) ){
            
             }
             
-            
-            $LinkCotizacion="../../VAtencion/ImprimirPDFCotizacion.php?ImgPrintCoti=$idCotizacion";
-                        
-            $Mensaje="<strong>Cotizacion $idCotizacion Creada Correctamente </strong><a href='$LinkCotizacion'  target='blank'> Imprimir</a>";
-            $Mensaje.=$MensajeComprobante;
-            print("OK;$Mensaje");
-        break;//Fin caso 6
+            print("OK;$MensajeComprobante");
+        break;//Fin caso 7
         
     }
     

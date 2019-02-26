@@ -16,6 +16,12 @@ $css->PageInit($myTitulo);
         $css->Cdiv();
         
     $css->CModal("BntModalCotizaciones", "onclick=CrearCotizacion(event)", "button", "Guardar");
+    
+    $css->Modal("ModalAccionesGrande", "TS5", "", 1);
+        $css->div("DivFrmModalAccionesGrande", "", "", "", "", "", "");
+        $css->Cdiv();
+        
+    $css->CModal("BntModalAcciones", "onclick=SeleccioneAccionFormularios()", "button", "Guardar");
     //$css->div("", "container", "", "", "", "", "");
     
     $css->CrearDiv("DivOpcionesCrearCotizaciones", "col-md-12", "left", 1, 1); 

@@ -10,6 +10,7 @@
  * Abre el modal para registrar la nueva cotizacion
  * @returns {undefined}
  */
+
 function AbrirModalNuevaCotizacion(Proceso="Nuevo"){
     $("#ModalAccionesCotizaciones").modal();
     var idCotizacion=document.getElementById('idCotizacion').value;
@@ -463,47 +464,11 @@ function GuardarDocumento(idCotizacion=''){
         var idCotizacion = document.getElementById('idCotizacion').value;
     }
         
-    var CmbCuentaIngreso = document.getElementById("CmbCuentaIngreso").value;
-    var TxtAnticipo = document.getElementById("TxtAnticipo").value;
-    var TxtTotalDocumento = document.getElementById("TxtTotalDocumento").value;
-    var TxtFechaAnticipo = document.getElementById("TxtFechaAnticipo").value;
     
-    if(TxtFechaAnticipo==''){
-        alertify.alert("El campo fecha de anticipo no puede estar vacío");
-        document.getElementById("TxtFechaAnticipo").style.backgroundColor="pink";
-        document.getElementById('BtnGuardarDocumento').disabled=false;
-        return;
-    }else{
-        document.getElementById("TxtFechaAnticipo").style.backgroundColor="white";
-    }
-    
-    
-    
-    if(!$.isNumeric(TxtAnticipo) || TxtAnticipo == "" || TxtAnticipo<0){
-        alertify.alert("El campo Valor Unitario debe ser un número mayor a cero");
-        document.getElementById('TxtAnticipo').style.backgroundColor="pink";
-        document.getElementById('BtnGuardarDocumento').disabled=false;
-        return;
-    }else{
-        document.getElementById('TxtAnticipo').style.backgroundColor="white";
-    }
-    
-    if(TxtAnticipo > TxtTotalDocumento){
-        alertify.alert("El campo Valor del anticipo no puede ser mayor al total de la cotización");
-        document.getElementById('TxtAnticipo').style.backgroundColor="pink";
-        document.getElementById('BtnGuardarDocumento').disabled=false;
-        return;
-    }else{
-        document.getElementById('TxtAnticipo').style.backgroundColor="white";
-    }
-    
-    document.getElementById("TxtAnticipo").value=0;
     var form_data = new FormData();
         form_data.append('Accion', '6'); 
         form_data.append('idCotizacion', idCotizacion);
-        form_data.append('CmbCuentaIngreso', CmbCuentaIngreso);
-        form_data.append('TxtAnticipo', TxtAnticipo);
-        form_data.append('TxtFechaAnticipo', TxtFechaAnticipo);
+        
         
         $.ajax({
         url: './procesadores/Cotizaciones.process.php',
@@ -580,6 +545,228 @@ function BusquePrecioVenta(){
       });
       
 }
+/**
+ * Edita un item
+ * @param {type} idItem
+ * @param {type} idCompra
+ * @returns {undefined}
+ */
+function EditarItem(idItem){
+    
+    var idBotonEditar="BtnEditar_"+idItem;
+    var idCantidad="TxtCantidad_"+idItem;
+    var idMultiplicador="TxtMultiplicador_"+idItem;
+    var idValorUnitario="TxtValorUnitario_"+idItem;
+    
+    document.getElementById(idBotonEditar).disabled=true;
+    document.getElementById(idBotonEditar).value="Editando...";
+    
+    var idCotizacion = document.getElementById('idCotizacion').value;
+    
+        
+    var Cantidad = document.getElementById(idCantidad).value;
+    var Multiplicador = document.getElementById(idMultiplicador).value;
+    var ValorUnitario = document.getElementById(idValorUnitario).value;
+    
+    
+    
+    if(!$.isNumeric(Cantidad) || Cantidad == "" || Cantidad<=0){
+        alertify.alert("La Cantidad debe ser un número mayor a cero");
+        document.getElementById(idCantidad).style.backgroundColor="pink";
+        document.getElementById(idBotonEditar).disabled=false;
+        document.getElementById(idBotonEditar).value="Editar";
+        return;
+    }else{
+        document.getElementById(idCantidad).style.backgroundColor="white";
+    }
+    
+    if(!$.isNumeric(Multiplicador) || Multiplicador == "" || Multiplicador<=0){
+        alertify.alert("El Multiplicador debe ser un número mayor a cero");
+        document.getElementById(idMultiplicador).style.backgroundColor="pink";
+        document.getElementById(idBotonEditar).disabled=false;
+        document.getElementById(idBotonEditar).value="Editar";
+        return;
+    }else{
+        document.getElementById(idMultiplicador).style.backgroundColor="white";
+    }
+    
+    if(!$.isNumeric(ValorUnitario) || ValorUnitario == "" || ValorUnitario<=0){
+        alertify.alert("El Valor Unitario debe ser un número mayor a cero");
+        document.getElementById(idValorUnitario).style.backgroundColor="pink";
+        document.getElementById(idBotonEditar).disabled=false;
+        document.getElementById(idBotonEditar).value="Editar";
+        return;
+    }else{
+        document.getElementById(idValorUnitario).style.backgroundColor="white";
+    }
+    
+   
+    var form_data = new FormData();
+        form_data.append('Accion', '7'); 
+        form_data.append('idItem', idItem);
+        form_data.append('ValorUnitario', ValorUnitario);
+        form_data.append('Multiplicador', Multiplicador);
+        form_data.append('Cantidad', Cantidad);
+        
+        $.ajax({
+        url: './procesadores/Cotizaciones.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';'); 
+            if(respuestas[0]=="OK"){
+                var mensaje=respuestas[1];
+                
+                alertify.success(mensaje);
+                
+            }else{
+                alertify.alert("Error: <br>"+data);
+                
+            }
+            
+            DibujeCotizacion(idCotizacion);
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      });
+    
+    
+}
+
+/*
+ * Abre el modal para registrar un anticipo a una cotizacion
+ * @returns {undefined}
+ */
+function AbrirModalAnticipo(){
+    
+    $("#ModalAccionesGrande").modal();
+    var idCotizacion=document.getElementById('idCotizacion').value;
+    
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 6);
+        form_data.append('idCotizacion', idCotizacion);
+        $.ajax({
+        url: './Consultas/Cotizaciones.draw.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            document.getElementById('DivFrmModalAccionesGrande').innerHTML=data;
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}  
+/**
+ * Selecciona la accion que se realizará al momento de dar click en el boton de guardar en el modal
+ * @returns {undefined}
+ */
+function SeleccioneAccionFormularios(){
+    document.getElementById("BntModalAcciones").disabled=true;
+    var idFormulario=document.getElementById('idFormulario').value; //determina el tipo de formulario que se va a guardar
+    
+    if(idFormulario==1){
+        GuardarAnticipo();
+    }
+    
+}
+
+/**
+ * Guarda el anticipo a una cotizacion
+ * @returns {undefined}
+ */
+function GuardarAnticipo(){
+       
+    var idCotizacion = document.getElementById('idCotizacion').value;       
+    var TxtFechaAnticipo = document.getElementById('TxtFechaAnticipo').value;
+    var TxtAnticipo = document.getElementById('TxtAnticipo').value;
+    var CmbCuentaIngreso = document.getElementById('CmbCuentaIngreso').value;
+    var TotalCotizacion = document.getElementById('TxtTotalDocumento').value;
+    var TotalAnticipos = document.getElementById('TxtTotalAnticipos').value;
+    var MaxAnticipo = TotalCotizacion-TotalAnticipos;
+    //console.log("Anticipo "+TxtAnticipo+"; TotalCotizacion: "+TotalCotizacion+"; Total Anticipos: "+TotalAnticipos+";MaxAnticipo "+MaxAnticipo)
+    if(!$.isNumeric(TxtAnticipo) || TxtAnticipo == "" || TxtAnticipo<=0){
+        alertify.alert("El Anticipo debe ser un número mayor a cero");
+        document.getElementById("TxtAnticipo").style.backgroundColor="pink";
+        document.getElementById("BntModalAcciones").disabled=false;
+        return;
+    }else{
+        document.getElementById("TxtAnticipo").style.backgroundColor="white";
+    }
+    
+    if( TxtAnticipo > MaxAnticipo){
+        alertify.alert("La suma de los anticipos no puede ser mayor a "+TotalCotizacion);
+        document.getElementById("TxtAnticipo").style.backgroundColor="pink";
+        document.getElementById("BntModalAcciones").disabled=false;
+        return;
+    }else{
+        document.getElementById("TxtAnticipo").style.backgroundColor="white";
+    }
+    
+    if( TxtFechaAnticipo == ''){
+        alertify.alert("El campo Fecha no puede estar vacío");
+        document.getElementById("TxtFechaAnticipo").style.backgroundColor="pink";
+        document.getElementById("BntModalAcciones").disabled=false;
+        return;
+    }else{
+        document.getElementById("TxtFechaAnticipo").style.backgroundColor="white";
+    }
+    
+    CierraModal('ModalAccionesGrande');
+    var form_data = new FormData();
+        form_data.append('Accion', '8'); 
+        form_data.append('idCotizacion', idCotizacion);
+        form_data.append('TxtFechaAnticipo', TxtFechaAnticipo);
+        form_data.append('CmbCuentaIngreso', CmbCuentaIngreso);
+        form_data.append('TxtAnticipo', TxtAnticipo);
+        
+        $.ajax({
+        url: './procesadores/Cotizaciones.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';'); 
+            if(respuestas[0]=="OK"){
+                var mensaje=respuestas[1];
+                
+                alertify.alert(mensaje);
+                document.getElementById("BntModalAcciones").disabled=false;
+            }else{
+                alertify.alert("Error: <br>"+data);
+                document.getElementById("BntModalAcciones").disabled=false;
+            }
+            
+            DibujeCotizacion(idCotizacion);
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            document.getElementById("BntModalAcciones").disabled=false;
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      });
+    
+    
+}
+
 
 ConvertirSelectBusquedas();
 
