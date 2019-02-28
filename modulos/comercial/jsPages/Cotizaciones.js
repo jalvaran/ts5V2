@@ -709,6 +709,7 @@ function AbrirModalFacturarCotizacion(){
  */
 function SeleccioneAccionFormularios(){
     document.getElementById("BntModalAcciones").disabled=true;
+    document.getElementById("BntModalAcciones").value="Guardando...";
     var idFormulario=document.getElementById('idFormulario').value; //determina el tipo de formulario que se va a guardar
     
     if(idFormulario==1){
@@ -739,6 +740,7 @@ function GuardarAnticipo(){
         alertify.alert("El Anticipo debe ser un número mayor a cero");
         document.getElementById("TxtAnticipo").style.backgroundColor="pink";
         document.getElementById("BntModalAcciones").disabled=false;
+        document.getElementById("BntModalAcciones").value="Guardar";
         return;
     }else{
         document.getElementById("TxtAnticipo").style.backgroundColor="white";
@@ -748,6 +750,7 @@ function GuardarAnticipo(){
         alertify.alert("La suma de los anticipos no puede ser mayor a "+TotalCotizacion);
         document.getElementById("TxtAnticipo").style.backgroundColor="pink";
         document.getElementById("BntModalAcciones").disabled=false;
+        document.getElementById("BntModalAcciones").value="Guardar";
         return;
     }else{
         document.getElementById("TxtAnticipo").style.backgroundColor="white";
@@ -757,6 +760,7 @@ function GuardarAnticipo(){
         alertify.alert("El campo Fecha no puede estar vacío");
         document.getElementById("TxtFechaAnticipo").style.backgroundColor="pink";
         document.getElementById("BntModalAcciones").disabled=false;
+        document.getElementById("BntModalAcciones").value="Guardar";
         return;
     }else{
         document.getElementById("TxtFechaAnticipo").style.backgroundColor="white";
@@ -785,9 +789,11 @@ function GuardarAnticipo(){
                 
                 alertify.alert(mensaje);
                 document.getElementById("BntModalAcciones").disabled=false;
+                document.getElementById("BntModalAcciones").value="Guardar";
             }else{
                 alertify.alert("Error: <br>"+data);
                 document.getElementById("BntModalAcciones").disabled=false;
+                document.getElementById("BntModalAcciones").value="Guardar";
             }
             
             DibujeCotizacion(idCotizacion);
@@ -795,6 +801,108 @@ function GuardarAnticipo(){
         },
         error: function (xhr, ajaxOptions, thrownError) {
             document.getElementById("BntModalAcciones").disabled=false;
+            document.getElementById("BntModalAcciones").value="Guardar";
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      });
+    
+    
+}
+
+
+/**
+ * Convierte una cotizacion en una factura
+ * @returns {undefined}
+ */
+function ConviertaCotizacionEnFactura(){
+       
+    var idCotizacion = document.getElementById('idCotizacion').value;       
+    var TxtFechaFactura = document.getElementById('TxtFechaFactura').value;
+    var CmbCentroCostosFactura = document.getElementById('CmbCentroCostosFactura').value;
+    var CmbResolucion = document.getElementById('CmbResolucion').value;
+    var CmbFormaPago = document.getElementById('CmbFormaPago').value;
+    var CmbFrecuente = document.getElementById('CmbFrecuente').value;
+    var CmbCuentaIngresoFactura = document.getElementById('CmbCuentaIngresoFactura').value;
+    var CmbColaboradores = document.getElementById('CmbColaboradores').value;
+    var TxtObservacionesFactura = document.getElementById('TxtObservacionesFactura').value;
+    
+    var CmbEmpresa = document.getElementById('CmbEmpresa').value;
+    var CmbSucursal = document.getElementById('CmbSucursal').value;
+    /*
+    if(!$.isNumeric(TxtAnticipo) || TxtAnticipo == "" || TxtAnticipo<=0){
+        alertify.alert("El Anticipo debe ser un número mayor a cero");
+        document.getElementById("TxtAnticipo").style.backgroundColor="pink";
+        document.getElementById("BntModalAcciones").disabled=false;
+        return;
+    }else{
+        document.getElementById("TxtAnticipo").style.backgroundColor="white";
+    }
+    */
+    
+    
+    if( TxtFechaFactura == ''){
+        alertify.alert("El campo Fecha no puede estar vacío");
+        document.getElementById("TxtFechaFactura").style.backgroundColor="pink";
+        document.getElementById("BntModalAcciones").disabled=false;
+        document.getElementById("BntModalAcciones").value="Guardar";
+        return;
+    }else{
+        document.getElementById("TxtFechaFactura").style.backgroundColor="white";
+    }
+    
+    CierraModal('ModalAccionesGrande');
+    var form_data = new FormData();
+        form_data.append('Accion', '9'); 
+        form_data.append('idCotizacion', idCotizacion);
+        form_data.append('TxtFechaFactura', TxtFechaFactura);
+        form_data.append('CmbCentroCostosFactura', CmbCentroCostosFactura);
+        form_data.append('CmbResolucion', CmbResolucion);
+        form_data.append('CmbFormaPago', CmbFormaPago);
+        form_data.append('CmbFrecuente', CmbFrecuente);
+        form_data.append('CmbCuentaIngresoFactura', CmbCuentaIngresoFactura);
+        form_data.append('CmbColaboradores', CmbColaboradores);
+        form_data.append('TxtObservacionesFactura', TxtObservacionesFactura);
+        form_data.append('CmbEmpresa', CmbEmpresa);
+        form_data.append('CmbSucursal', CmbSucursal);
+        
+        $.ajax({
+        url: './procesadores/Cotizaciones.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';'); 
+            if(respuestas[0]=="OK"){
+                var mensaje=respuestas[1];                
+                alertify.alert(mensaje);
+                document.getElementById("BntModalAcciones").disabled=false;
+                document.getElementById("BntModalAcciones").value="Guardar";
+                CierraModal('ModalAccionesGrande');
+                
+            }else if(respuestas[0]=="E1"){
+                alertify.error("Error: La Resolución seleccionada ya está Completada",0);
+                document.getElementById("BntModalAcciones").disabled=false;
+                document.getElementById("BntModalAcciones").value="Guardar";
+            }else if(respuestas[0]=="E2"){
+                alertify.error("Error: La Resolución seleccionada Está Ocupada, intentelo nuevamente",0);
+                document.getElementById("BntModalAcciones").disabled=false;  
+                document.getElementById("BntModalAcciones").value="Guardar";
+            }else{
+                alertify.alert("Error: <br>"+data);
+                document.getElementById("BntModalAcciones").disabled=false;
+                document.getElementById("BntModalAcciones").value="Guardar";
+            }
+            
+            
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            document.getElementById("BntModalAcciones").disabled=false;
+            document.getElementById("BntModalAcciones").value="Guardar";
             alert(xhr.status);
             alert(thrownError);
           }

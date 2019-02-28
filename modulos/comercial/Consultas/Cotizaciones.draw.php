@@ -342,20 +342,154 @@ if( !empty($_REQUEST["Accion"]) ){
                 $css->CierraFilaTabla();
                 
                 $css->FilaTabla(14);
-                    $css->ColTabla("<strong>Fecha:</strong>", 1);
+                    $css->ColTabla("<strong>Fecha</strong>", 1);
+                    $css->ColTabla("<strong>Empresa</strong>", 1);
                     $css->ColTabla("<strong>Centro de Costos</strong>", 1);
-                    $css->ColTabla("<strong>Resolución</strong>", 1);
+                    $css->ColTabla("<strong>Sucursal</strong>", 1);
                     $css->ColTabla("<strong>Forma de Pago</strong>", 1);
                 $css->CierraFilaTabla();
                 
                 $css->FilaTabla(14);
+                    
                     print("<td>");
-                        
+                        $css->input("date", "TxtFechaFactura", "form-control", "TxtFechaFactura", "Fecha de la Factura", date("Y-m-d"), "Fecha de la Factura", "", "", "", "", "", "style='line-height: 15px;'");
                     print("</td>");
-                    $css->ColTabla("<strong>Centro de Costos</strong>", 1);
-                    $css->ColTabla("<strong>Resolución</strong>", 1);
-                    $css->ColTabla("<strong>Forma de Pago</strong>", 1);
+                    
+                    print("<td>");
+                        $css->select("CmbEmpresa", "form-control", "CmbEmpresa", "", "", "", "");
+
+                            $sql="SELECT * FROM empresapro";
+                            $Consulta=$obCon->Query($sql);
+                            while($DatosCentro=$obCon->FetchAssoc($Consulta)){
+                                $css->option("", "",'' , $DatosCentro["idEmpresaPro"], "", "", "", "");
+                                    print($DatosCentro["idEmpresaPro"]." ".$DatosCentro["RazonSocial"]." ".$DatosCentro["NIT"]." ".$DatosCentro["Ciudad"]);
+                                $css->Coption();
+                            }
+
+
+                        $css->Cselect();
+                    print("</td>");
+                    
+                    print("<td>");
+                        $css->select("CmbCentroCostosFactura", "form-control", "CmbCentroCostosFactura", "", "", "", "");
+
+                            $sql="SELECT * FROM centrocosto";
+                            $Consulta=$obCon->Query($sql);
+                            while($DatosCentro=$obCon->FetchAssoc($Consulta)){
+                                $css->option("", "",'' , $DatosCentro["ID"], "", "", "", "");
+                                    print($DatosCentro["ID"]." ".$DatosCentro["Nombre"]);
+                                $css->Coption();
+                            }
+
+
+                        $css->Cselect();
+                    print("</td>");
+                    print("<td>");
+                        $css->select("CmbSucursal", "form-control", "CmbSucursal", "", "", "", "");
+
+                            $sql="SELECT * FROM empresa_pro_sucursales ";
+                            $Consulta=$obCon->Query($sql);
+                            while($DatosSucursales=$obCon->FetchAssoc($Consulta)){
+                                $css->option("", "",'' , $DatosSucursales["ID"], "", "", "", "");
+                                    print($DatosSucursales["ID"]." ".$DatosSucursales["Nombre"]);
+                                $css->Coption();
+                            }
+
+
+                        $css->Cselect();
+                    print("</td>");
+                    print("<td>");
+                        $css->select("CmbFormaPago", "form-control", "CmbFormaPago", "", "", "", "");
+
+                            $sql="SELECT * FROM repuestas_forma_pago";
+                            $Consulta=$obCon->Query($sql);
+                            while($DatosFormaPago=$obCon->FetchAssoc($Consulta)){
+                                $css->option("", "",'' , $DatosFormaPago["DiasCartera"], "", "", "", "");
+                                    print($DatosFormaPago["Etiqueta"]);
+                                $css->Coption();
+                            }
+
+
+                        $css->Cselect();
+                    print("</td>");
                 $css->CierraFilaTabla();
+                
+                $css->FilaTabla(14);
+                    $css->ColTabla("<strong>Resolución</strong>", 1);
+                    $css->ColTabla("<strong>Frecuente</strong>", 1);
+                    $css->ColTabla("<strong>Cuenta de Ingreso</strong>", 1);
+                    $css->ColTabla("<strong>Asignar</strong>", 1);
+                    $css->ColTabla("<strong>Observaciones</strong>", 1);
+                $css->CierraFilaTabla();
+                
+                $css->FilaTabla(14);
+                    print("<td>");
+                        $css->select("CmbResolucion", "form-control", "CmbResolucion", "", "", "", "");
+
+                            $sql="SELECT * FROM empresapro_resoluciones_facturacion WHERE Completada='NO'";
+                            $Consulta=$obCon->Query($sql);
+                            while($DatosResolucion=$obCon->FetchAssoc($Consulta)){
+                                $css->option("", "",'' , $DatosResolucion["ID"], "", "", "", "");
+                                    print($DatosResolucion["ID"]." ".$DatosResolucion["NombreInterno"]);
+                                $css->Coption();
+                            }
+
+
+                        $css->Cselect();
+                    print("</td>");
+                
+                     print("<td>");
+                        $css->select("CmbFrecuente", "form-control", "CmbFrecuente", "", "", "", "");
+
+                            $css->option("", "",'' ,'NO', "", "", "", "");
+                                print('NO');
+                            $css->Coption();
+                            
+                            $css->option("", "",'' ,'SI', "", "", "", "");
+                                print('SI');
+                            $css->Coption();
+
+
+
+                        $css->Cselect();
+                    print("</td>");
+                    print("<td>");
+                        $css->select("CmbCuentaIngresoFactura", "form-control", "CmbCuentaIngresoFactura", "", "", "", "");
+
+                            $sql="SELECT * FROM subcuentas WHERE PUC LIKE '11%' AND LENGTH(PUC)>4";
+                            $Consulta=$obCon->Query($sql);
+                            while($DatosPUC=$obCon->FetchAssoc($Consulta)){
+                                $css->option("", "",'' , $DatosPUC["PUC"], "", "", "", "");
+                                    print($DatosPUC["PUC"]." ".$DatosPUC["Nombre"]);
+                                $css->Coption();
+                            }
+
+
+                        $css->Cselect();
+                    print("</td>");
+                    print("<td>");
+                        $css->select("CmbColaboradores", "form-control", "CmbColaboradores", "", "", "", "");
+
+                            $sql="SELECT * FROM colaboradores WHERE Activo='SI'";
+                            $Consulta=$obCon->Query($sql);
+                                $css->option("", "",'' , '', "", "", "", "");
+                                    print("Seleccione un colaborador");
+                                $css->Coption();
+                            while($DatosColaboradores=$obCon->FetchAssoc($Consulta)){
+                                $css->option("", "",'' , $DatosColaboradores["idColaboradores"], "", "", "", "");
+                                    print($DatosColaboradores["Nombre"]." ".$DatosColaboradores["Identificacion"]);
+                                $css->Coption();
+                            }
+
+
+                        $css->Cselect();
+                    print("</td>");
+                    print("<td>");
+                        $css->textarea("TxtObservacionesFactura", "form-control", "TxtObservacionesFactura", "Observaciones", "Observaciones", "", "");
+                        $css->Ctextarea();
+                    print("</td>");    
+                $css->CierraFilaTabla();
+                
             $css->CerrarTabla();
             
         break;//Fin caso 7

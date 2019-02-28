@@ -111,7 +111,59 @@ if( !empty($_REQUEST["Accion"]) ){
             }
             
             print("OK;$MensajeComprobante");
-        break;//Fin caso 7
+        break;//Fin caso 8
+        
+        case 9://Convierte cotizacion en factura
+            include_once("../clases/Facturacion.class.php");
+            $obFactura = new Facturacion($idUser);
+            
+            $idCotizacion=$obCon->normalizar($_REQUEST["idCotizacion"]);       
+            $Fecha=$obCon->normalizar($_REQUEST["TxtFechaFactura"]);
+            $idCentroCostos=$obCon->normalizar($_REQUEST["CmbCentroCostosFactura"]);
+            $CmbResolucion=$obCon->normalizar($_REQUEST["CmbResolucion"]);
+            $CmbFormaPago=$obCon->normalizar($_REQUEST["CmbFormaPago"]);
+            $CmbFrecuente=$obCon->normalizar($_REQUEST["CmbFrecuente"]);
+            $CmbCuentaIngresoFactura=$obCon->normalizar($_REQUEST["CmbCuentaIngresoFactura"]);
+            $CmbColaboradores=$obCon->normalizar($_REQUEST["CmbColaboradores"]);
+            $Observaciones=$obCon->normalizar($_REQUEST["TxtObservacionesFactura"]);
+            
+            $idEmpresa=$obCon->normalizar($_REQUEST["CmbEmpresa"]);
+            $idSucursal=$obCon->normalizar($_REQUEST["CmbSucursal"]);
+            
+            $Hora=date("H:i:s");
+            $OrdenCompra="";
+            $OrdenSalida="";
+            $sql="SELECT SUM(Subtotal) AS Subtotal, SUM(IVA) AS IVA, SUM(Total) as Total,SUM(SubtotalCosto) AS TotalCostos "
+                    . "FROM cot_itemscotizaciones WHERE NumCotizacion='$idCotizacion'";
+            $Consulta=$obCon->Query($sql);
+            $DatosTotalesCotizacion=$obCon->FetchAssoc($Consulta);
+            $Subtotal=$DatosTotalesCotizacion["Subtotal"];
+            $IVA=$DatosTotalesCotizacion["IVA"];
+            $Total=$DatosTotalesCotizacion["Total"];
+            $TotalCostos=$DatosTotalesCotizacion["TotalCostos"];
+            $SaldoFactura=$Total;
+            $Descuentos=0;
+            $DatosCotizacion=$obCon->DevuelveValores("cotizacionesv5", "ID", $idCotizacion);
+            $idCliente=$DatosCotizacion["Clientes_idClientes"];
+            $idFactura=$obFactura->idFactura();
+            $NumFactura=$obFactura->CrearFactura($idFactura, $Fecha, $Hora, $CmbResolucion, $OrdenCompra, $OrdenSalida, $CmbFormaPago, $Subtotal, $IVA, $Total, $Descuentos, $SaldoFactura, $idCotizacion, $idEmpresa, $idCentroCostos, $idSucursal, $idUser, $idCliente, $TotalCostos, $Observaciones, 0, 0, 0, 0, 0, 0, 0, "");
+            if($NumFactura=="E1"){
+                $Mensaje="La Resolucion está completa";
+                print("E1;$Mensaje");
+                exit();
+            }
+            if($NumFactura=="E2"){
+                $Mensaje="La Resolucion está ocupada, intentelo nuevamente";
+                print("E2;$Mensaje");
+                exit();
+            }
+            $obFactura->CopiarItemsCotizacionAItemsFactura($idCotizacion, $idFactura, $Fecha,$idUser, "");
+            
+            $LinkFactura="../../general/Consultas/PDF_Documentos.draw.php?idDocumento=2&ID=$idFactura";
+            $Mensaje="<br><strong>Factura $NumFactura Creada Correctamente </strong><a href='$LinkFactura'  target='blank'> Imprimir</a>";
+           
+            print("OK;$Mensaje");
+        break;//Fin caso 9
         
     }
     

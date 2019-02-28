@@ -27,3 +27,7 @@ INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOr
 INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOrigen`, `TablaAsociada`, `CampoAsociado`, `IDCampoAsociado`, `Updated`, `Sync`) VALUES (10, 'productosventa', 'Sub6', 'prod_sub6', 'NombreSub6', 'idSub6', '2019-02-24 14:01:51', '2019-01-24 14:01:51');
 
 
+ALTER TABLE `cot_itemscotizaciones` ADD `PorcentajeIVA` VARCHAR(10) NOT NULL AFTER `TipoItem`, ADD `Departamento` INT NOT NULL AFTER `PorcentajeIVA`, ADD `SubGrupo1` INT NOT NULL AFTER `Departamento`, ADD `SubGrupo2` INT NOT NULL AFTER `SubGrupo1`, ADD `SubGrupo3` INT NOT NULL AFTER `SubGrupo2`, ADD `SubGrupo4` INT NOT NULL AFTER `SubGrupo3`, ADD `SubGrupo5` INT NOT NULL AFTER `SubGrupo4`;
+ALTER TABLE `cot_itemscotizaciones` ADD `idPorcentajeIVA` INT NOT NULL AFTER `PorcentajeIVA`;
+
+
