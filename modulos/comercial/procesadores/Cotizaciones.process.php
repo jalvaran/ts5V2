@@ -126,6 +126,7 @@ if( !empty($_REQUEST["Accion"]) ){
             $CmbCuentaIngresoFactura=$obCon->normalizar($_REQUEST["CmbCuentaIngresoFactura"]);
             $CmbColaboradores=$obCon->normalizar($_REQUEST["CmbColaboradores"]);
             $Observaciones=$obCon->normalizar($_REQUEST["TxtObservacionesFactura"]);
+            $AnticiposCruzados=$obCon->normalizar($_REQUEST["AnticiposCruzados"]);
             
             $idEmpresa=$obCon->normalizar($_REQUEST["CmbEmpresa"]);
             $idSucursal=$obCon->normalizar($_REQUEST["CmbSucursal"]);
@@ -151,6 +152,24 @@ if( !empty($_REQUEST["Accion"]) ){
             $Descuentos=0;
             $DatosCotizacion=$obCon->DevuelveValores("cotizacionesv5", "ID", $idCotizacion);
             $idCliente=$DatosCotizacion["Clientes_idClientes"];
+            
+            if($AnticiposCruzados>0){
+                $DatosCliente=$obCon->DevuelveValores("clientes", "idClientes", $DatosCotizacion["Clientes_idClientes"]);            
+                $NIT=$DatosCliente["Num_Identificacion"];
+                $ParametrosAnticipos=$obCon->DevuelveValores("parametros_contables", "ID", 20);//Aqui se encuentra la cuenta para los anticipos
+                $CuentaAnticipos=$ParametrosAnticipos["CuentaPUC"];
+                $sql="SELECT SUM(Debito) as Debito, SUM(Credito) AS Credito FROM librodiario WHERE CuentaPUC='$CuentaAnticipos' AND Tercero_Identificacion='$NIT'";
+                $Consulta=$obCon->Query($sql);
+                $DatosAnticipos=$obCon->FetchAssoc($Consulta);
+                $SaldoAnticiposTercero=$DatosAnticipos["Credito"]-$DatosAnticipos["Debito"];
+                
+                if($SaldoAnticiposTercero<$AnticiposCruzados){
+                    $Mensaje="El Cliente no cuenta con el anticipo registrado";
+                    print("E3;$Mensaje");
+                    exit();
+                }
+                
+            }
             $idFactura=$obFactura->idFactura();
             $NumFactura=$obFactura->CrearFactura($idFactura, $Fecha, $Hora, $CmbResolucion, $OrdenCompra, $OrdenSalida, $FormaPagoFactura, $Subtotal, $IVA, $Total, $Descuentos, $SaldoFactura, $idCotizacion, $idEmpresa, $idCentroCostos, $idSucursal, $idUser, $idCliente, $TotalCostos, $Observaciones, 0, 0, 0, 0, 0, 0, 0, "");
             if($NumFactura=="E1"){
@@ -164,31 +183,25 @@ if( !empty($_REQUEST["Accion"]) ){
                 exit();
             }
             $obFactura->CopiarItemsCotizacionAItemsFactura($idCotizacion, $idFactura, $Fecha,$idUser, "");
+            if($CmbFormaPago=='Contado'){
+                $DatosCuenta=$obCon->DevuelveValores("subcuentas", "PUC", $CmbCuentaIngresoFactura);
+                $CuentaDestino=$CmbCuentaIngresoFactura;
+                $NombreCuentaDestino=$DatosCuenta["Nombre"];
+            }else{
+                $DatosCuenta=$obCon->DevuelveValores("parametros_contables", "ID", 6); //Cuenta Clientes
+                $CuentaDestino=$DatosCuenta["CuentaPUC"];
+                $NombreCuentaDestino=$DatosCuenta["NombreCuenta"];
+            }
             $Datos["ID"]=$idFactura;
             $Datos["CuentaDestino"]=$CmbCuentaIngresoFactura;
             $obCon->InsertarFacturaLibroDiario($Datos);
             $obCon->DescargueFacturaInventarios($idFactura, "");
-            if($CmbFormaPago=="Contado"){
-                $SumaDias=0;
-            }else{
-                $SumaDias=$CmbFormaPago;
+            if($CmbFormaPago<>'Contado'){
+                $obFactura->IngreseCartera($idFactura, $Fecha, $idCliente, $CmbFormaPago, $SaldoFactura, "");
             }
-            if($CmbFormaPago=="SisteCredito"){
-                $SumaDias=30;
-            }
-            
-            if($CmbFormaPago<>"Contado"){                   //Si es a Credito
-                if($CmbFormaPago=="SisteCredito"){
-                    $Datos["SisteCredito"]=1;
-                }
-                $Datos["Fecha"]=$Fecha; 
-                $Datos["Dias"]=$SumaDias;
-                $FechaVencimiento=$obCon->SumeDiasFecha($Datos);
-                $Datos["idFactura"]=$idFactura; 
-                $Datos["FechaFactura"]=$Fecha; 
-                $Datos["FechaVencimiento"]=$FechaVencimiento;
-                $Datos["idCliente"]=$idCliente;
-                $obCon->InsertarFacturaEnCartera($Datos);///Inserto La factura en la cartera
+            if($AnticiposCruzados>0){
+                
+                $obFactura->CruzarAnticipoAFactura($idFactura,$Fecha,$AnticiposCruzados,$CuentaDestino,$NombreCuentaDestino,"");
             }
             
             if($CmbColaboradores>0){

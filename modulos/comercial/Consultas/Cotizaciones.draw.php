@@ -333,12 +333,30 @@ if( !empty($_REQUEST["Accion"]) ){
         
         case 7: //Dibujo el formulario para facturar una cotización
             $idCotizacion=$obCon->normalizar($_REQUEST["idCotizacion"]);
+            $DatosCotizacion=$obCon->DevuelveValores("cotizacionesv5", "ID", $idCotizacion);
+            
+            $DatosCliente=$obCon->DevuelveValores("clientes", "idClientes", $DatosCotizacion["Clientes_idClientes"]);
+            $NIT=$DatosCliente["Num_Identificacion"];
+            $Parametros=$obCon->DevuelveValores("parametros_contables", "ID", 20);//Aqui se encuentra la cuenta para los anticipos
+            $CuentaAnticipos=$Parametros["CuentaPUC"];
+            $sql="SELECT SUM(Debito) as Debito, SUM(Credito) AS Credito FROM librodiario WHERE CuentaPUC='$CuentaAnticipos' AND Tercero_Identificacion='$NIT'";
+            $Consulta=$obCon->Query($sql);
+            $DatosAnticipos=$obCon->FetchAssoc($Consulta);
+            $SaldoAnticiposTercero=$DatosAnticipos["Credito"]-$DatosAnticipos["Debito"];
+            
+            $sql="SELECT round(SUM(Total)) as Total FROM cot_itemscotizaciones WHERE NumCotizacion = '$idCotizacion'";
+            $Consulta=$obCon->Query($sql);
+            $Totales=$obCon->FetchAssoc($Consulta);
+            
+            $TotalCotizacion=$Totales["Total"];
+            $css->input("hidden", "TxtTotalFactura", "", "TxtTotalFactura", "", $TotalCotizacion, "", "", "", ""); 
+            $css->input("hidden", "TxtTotalAnticiposFactura", "", "TxtTotalAnticiposFactura", "", $SaldoAnticiposTercero, "", "", "", "");  
             
             $css->input("hidden", "idFormulario", "", "idFormulario", "", 2, "", "", "", ""); // 2 sirve para indicarle al sistema que debe guardar el formulario de crear una factura desde una cotizacion
             
             $css->CrearTabla();
                 $css->FilaTabla(16);
-                    $css->ColTabla("<strong>Facturar Esta Cotización</strong>", 4);
+                    $css->ColTabla("Facturar Ésta Cotización al Cliente: <strong>$DatosCliente[RazonSocial] $DatosCliente[Num_Identificacion]</strong>", 4);
                 $css->CierraFilaTabla();
                 
                 $css->FilaTabla(14);
@@ -346,7 +364,7 @@ if( !empty($_REQUEST["Accion"]) ){
                     $css->ColTabla("<strong>Empresa</strong>", 1);
                     $css->ColTabla("<strong>Centro de Costos</strong>", 1);
                     $css->ColTabla("<strong>Sucursal</strong>", 1);
-                    $css->ColTabla("<strong>Forma de Pago</strong>", 1);
+                    
                 $css->CierraFilaTabla();
                 
                 $css->FilaTabla(14);
@@ -398,6 +416,18 @@ if( !empty($_REQUEST["Accion"]) ){
 
                         $css->Cselect();
                     print("</td>");
+                    
+                $css->CierraFilaTabla();
+                
+                $css->FilaTabla(14);
+                    $css->ColTabla("<strong>Forma de Pago</strong>", 1);
+                    $css->ColTabla("<strong>Resolución</strong>", 1);
+                    $css->ColTabla("<strong>Frecuente</strong>", 1);
+                    $css->ColTabla("<strong>Cuenta de Ingreso</strong>", 1);
+                    
+                $css->CierraFilaTabla();
+                
+                $css->FilaTabla(14);
                     print("<td>");
                         $css->select("CmbFormaPago", "form-control", "CmbFormaPago", "", "", "", "");
 
@@ -412,17 +442,6 @@ if( !empty($_REQUEST["Accion"]) ){
 
                         $css->Cselect();
                     print("</td>");
-                $css->CierraFilaTabla();
-                
-                $css->FilaTabla(14);
-                    $css->ColTabla("<strong>Resolución</strong>", 1);
-                    $css->ColTabla("<strong>Frecuente</strong>", 1);
-                    $css->ColTabla("<strong>Cuenta de Ingreso</strong>", 1);
-                    $css->ColTabla("<strong>Asignar</strong>", 1);
-                    $css->ColTabla("<strong>Observaciones</strong>", 1);
-                $css->CierraFilaTabla();
-                
-                $css->FilaTabla(14);
                     print("<td>");
                         $css->select("CmbResolucion", "form-control", "CmbResolucion", "", "", "", "");
 
@@ -467,7 +486,17 @@ if( !empty($_REQUEST["Accion"]) ){
 
                         $css->Cselect();
                     print("</td>");
-                    print("<td>");
+                       
+                $css->CierraFilaTabla();
+                
+                $css->FilaTabla(14);
+                    
+                    $css->ColTabla("<strong>Asignar</strong>", 1);
+                    $css->ColTabla("<strong>Observaciones</strong>", 1);
+                $css->CierraFilaTabla();
+                
+                $css->FilaTabla(14);
+                print("<td>");
                         $css->select("CmbColaboradores", "form-control", "CmbColaboradores", "", "", "", "");
 
                             $sql="SELECT * FROM colaboradores WHERE Activo='SI'";
@@ -484,12 +513,19 @@ if( !empty($_REQUEST["Accion"]) ){
 
                         $css->Cselect();
                     print("</td>");
-                    print("<td>");
+                    print("<td colspan=2>");
                         $css->textarea("TxtObservacionesFactura", "form-control", "TxtObservacionesFactura", "Observaciones", "Observaciones", "", "");
                         $css->Ctextarea();
-                    print("</td>");    
-                $css->CierraFilaTabla();
-                
+                    print("</td>"); 
+                    
+                    print("<td>");
+                        print("Éste Cliente cuenta con anticipos por valor de: <strong>". number_format($SaldoAnticiposTercero)."</strong>; Cuanto desea Cruzar en esta factura?:");
+                        $css->input("number", "AnticiposCruzados", "form-control", "AnticiposCruzados", "Cruzar Anticipos", 0, "", "", "", "");
+                    print("</td>");
+                    
+                    
+                    $css->CierraFilaTabla();
+                    
             $css->CerrarTabla();
             
         break;//Fin caso 7

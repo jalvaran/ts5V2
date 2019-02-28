@@ -131,6 +131,46 @@ class Facturacion extends ProcesoVenta{
     }
     
         
+    public function IngreseCartera($idFactura,$Fecha,$idCliente,$CmbFormaPago,$SaldoFactura,$Vector) {
+        
+        $SumaDias=$CmbFormaPago;        
+        if($CmbFormaPago=="SisteCredito"){
+            $SumaDias=30;
+            $Datos["SisteCredito"]=1;
+        }
+           
+        $Datos["Fecha"]=$Fecha; 
+        $Datos["Dias"]=$SumaDias;
+        $FechaVencimiento=$this->SumeDiasFecha($Datos);
+        $Datos["idFactura"]=$idFactura; 
+        $Datos["FechaFactura"]=$Fecha; 
+        $Datos["FechaVencimiento"]=$FechaVencimiento;
+        $Datos["idCliente"]=$idCliente;
+        $Datos["SaldoFactura"]=$SaldoFactura;
+        if($SaldoFactura>0){
+            $this->InsertarFacturaEnCartera($Datos);///Inserto La factura en la cartera
+        }
+        
+            
+    }
+    
+    
+    public function CruzarAnticipoAFactura($idFactura,$Fecha,$ValorAnticipo,$CuentaDestino,$NombreCuentaDestino,$vector) {
+        
+        $DatosFactura=$this->DevuelveValores("facturas", "idFacturas", $idFactura);
+        $DatosCliente=$this->DevuelveValores("clientes", "idClientes", $DatosFactura["Clientes_idClientes"]);
+        $ParametrosAnticipos=$this->DevuelveValores("parametros_contables", "ID", 20);
+        $this->IngreseMovimientoLibroDiario($Fecha, "FACTURA", $idFactura, "", $DatosCliente["Num_Identificacion"], $CuentaDestino, $NombreCuentaDestino, "Cruce de Anticipos", "CR", $ValorAnticipo, "Cruce Anticipos Relaizados por Clientes", $DatosFactura["CentroCosto"], $DatosFactura["idSucursal"], "");
+        $this->IngreseMovimientoLibroDiario($Fecha, "FACTURA", $idFactura, "", $DatosCliente["Num_Identificacion"], $ParametrosAnticipos["CuentaPUC"], $ParametrosAnticipos["NombreCuenta"], "Cruce de Anticipos", "DB", $ValorAnticipo, "Cruce Anticipos Relaizados por Clientes", $DatosFactura["CentroCosto"], $DatosFactura["idSucursal"], "");
+        
+        $NuevoSaldo=$DatosFactura["SaldoFact"]-$ValorAnticipo;
+        $AbonosTotales=$DatosFactura["Total"]-$NuevoSaldo;
+        $this->ActualizaRegistro("facturas", "SaldoFact", $NuevoSaldo, "idFacturas", $idFactura);
+        $this->ActualizaRegistro("cartera", "Saldo", $NuevoSaldo, "Facturas_idFacturas", $idFactura);
+        $this->ActualizaRegistro("cartera", "TotalAbonos", $AbonosTotales, "Facturas_idFacturas", $idFactura);
+        
+    }
+        
     /**
      * Fin Clase
      */

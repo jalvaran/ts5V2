@@ -1217,24 +1217,25 @@ public function CalculePesoRemision($idCotizacion)
                 $TotalAbonos=$DatosFactura["Total"]-$Datos["SaldoFactura"];
             }
             $TotalFactura=$DatosFactura["Total"];
-            $tab="cartera";       
-            $NumRegistros=14; 
-
-            $Columnas[0]="Facturas_idFacturas";         $Valores[0]=$idFactura;
-            $Columnas[1]="FechaIngreso";                $Valores[1]=$FechaIngreso;
-            $Columnas[2]="FechaVencimiento";            $Valores[2]=$FechaVencimiento;
-            $Columnas[3]="DiasCartera";                 $Valores[3]=0;
-            $Columnas[4]="idCliente";                   $Valores[4]=$idCliente;
-            $Columnas[5]="RazonSocial";                 $Valores[5]=$RazonSocial;
-            $Columnas[6]="Telefono";                    $Valores[6]=$Telefono;
-            $Columnas[7]="Contacto";                    $Valores[7]=$Contacto;
-            $Columnas[8]="TelContacto";                 $Valores[8]=$TelContacto;
-            $Columnas[9]="TotalFactura";                $Valores[9]=$TotalFactura;
-            $Columnas[10]="TotalAbonos";                $Valores[10]=$TotalAbonos;
-            $Columnas[11]="Saldo";                      $Valores[11]=$SaldoFactura;
-            $Columnas[12]="idUsuarios";                 $Valores[12]= $this->idUser;
-            $Columnas[13]="TipoCartera";                $Valores[13]= $TipoCartera;
-            $this->InsertarRegistro($tab,$NumRegistros,$Columnas,$Valores);
+            
+            $Insercion["Facturas_idFacturas"]=$idFactura;
+            $Insercion["FechaIngreso"]=$FechaIngreso;
+            $Insercion["FechaVencimiento"]=$FechaVencimiento;
+            $Insercion["DiasCartera"]=0;
+            $Insercion["idCliente"]=$idCliente;
+            $Insercion["RazonSocial"]=$RazonSocial;
+            $Insercion["Telefono"]=$Telefono;
+            $Insercion["Contacto"]=$Contacto;
+            $Insercion["TelContacto"]=$TelContacto;
+            $Insercion["TotalFactura"]=$TotalFactura;
+            $Insercion["TotalAbonos"]=$TotalAbonos;
+            $Insercion["Saldo"]=$SaldoFactura;
+            $Insercion["idUsuarios"]=$this->idUser;
+            $Insercion["TipoCartera"]=$TipoCartera;
+            $sql=$this->getSQLInsert("cartera", $Insercion);
+            
+            $this->Query($sql);
+            
         }       
         
     }
@@ -4071,10 +4072,9 @@ public function VerificaPermisos($VectorPermisos) {
             $idCliente=$DatosFactura["Clientes_idClientes"];
             $DatosCliente=$this->DevuelveValores("clientes","idClientes",$idCliente);
             $CuentaClientes=$this->DevuelveValores("parametros_contables","ID",6);
-            $DatosCuentasFrecuentes=$this->DevuelveValores("cuentasfrecuentes","CuentaPUC",$CuentaDestino);
-            if($DatosCuentasFrecuentes["CuentaPUC"]==''){
-                $DatosCuentasFrecuentes=$this->DevuelveValores("subcuentas","PUC",$CuentaDestino);
-            }
+            
+            $DatosCuentasFrecuentes=$this->DevuelveValores("subcuentas","PUC",$CuentaDestino);
+            
             $NIT=$DatosCliente["Num_Identificacion"];
             $RazonSocialC=$DatosCliente["RazonSocial"];
             
@@ -4105,8 +4105,6 @@ public function VerificaPermisos($VectorPermisos) {
             $CuentaPUCContraPartida=$CuentaClientes["CuentaPUC"];
             $NombreCuentaContraPartida="Clientes Nacionales";
             
-
-
             $Columnas[0]="Fecha";			$Valores[0]=$fecha;
             $Columnas[1]="Tipo_Documento_Intero";	$Valores[1]="ComprobanteIngreso";
             $Columnas[2]="Num_Documento_Interno";	$Valores[2]=$idIngreso;

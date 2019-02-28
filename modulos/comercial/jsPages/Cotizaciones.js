@@ -826,21 +826,13 @@ function ConviertaCotizacionEnFactura(){
     var CmbCuentaIngresoFactura = document.getElementById('CmbCuentaIngresoFactura').value;
     var CmbColaboradores = document.getElementById('CmbColaboradores').value;
     var TxtObservacionesFactura = document.getElementById('TxtObservacionesFactura').value;
+    var AnticiposCruzados = parseFloat(document.getElementById('AnticiposCruzados').value);
+    var TxtTotalFactura = parseFloat(document.getElementById('TxtTotalFactura').value);
+    var TxtTotalAnticipos = parseFloat(document.getElementById('TxtTotalAnticiposFactura').value);
     
     var CmbEmpresa = document.getElementById('CmbEmpresa').value;
     var CmbSucursal = document.getElementById('CmbSucursal').value;
-    /*
-    if(!$.isNumeric(TxtAnticipo) || TxtAnticipo == "" || TxtAnticipo<=0){
-        alertify.alert("El Anticipo debe ser un número mayor a cero");
-        document.getElementById("TxtAnticipo").style.backgroundColor="pink";
-        document.getElementById("BntModalAcciones").disabled=false;
-        return;
-    }else{
-        document.getElementById("TxtAnticipo").style.backgroundColor="white";
-    }
-    */
-    
-    
+    //console.log(AnticiposCruzados+" "+TxtTotalFactura+" "+TxtTotalAnticipos)    
     if( TxtFechaFactura == ''){
         alertify.alert("El campo Fecha no puede estar vacío");
         document.getElementById("TxtFechaFactura").style.backgroundColor="pink";
@@ -851,7 +843,36 @@ function ConviertaCotizacionEnFactura(){
         document.getElementById("TxtFechaFactura").style.backgroundColor="white";
     }
     
-    CierraModal('ModalAccionesGrande');
+    if(!$.isNumeric(AnticiposCruzados) ||  AnticiposCruzados<0){
+        
+        alertify.alert("El Anticipo debe ser un número mayor o igual a cero");
+        document.getElementById("AnticiposCruzados").style.backgroundColor="pink";
+        document.getElementById("BntModalAcciones").disabled=false;
+        return;
+    }else{
+        document.getElementById("AnticiposCruzados").style.backgroundColor="white";
+    }
+    
+    if(TxtTotalAnticipos < AnticiposCruzados){
+        
+        alertify.alert("El Anticipo no puede ser mayor al total de anticipos realizados por el Cliente");
+        document.getElementById("AnticiposCruzados").style.backgroundColor="pink";
+        document.getElementById("BntModalAcciones").disabled=false;
+        return;
+    }else{
+        document.getElementById("AnticiposCruzados").style.backgroundColor="white";
+    }
+    
+    if( AnticiposCruzados > TxtTotalFactura){
+        alertify.alert("El Anticipo no puede ser mayor al total de la Factura");
+        document.getElementById("AnticiposCruzados").style.backgroundColor="pink";
+        document.getElementById("BntModalAcciones").disabled=false;
+        return;
+    }else{
+        document.getElementById("AnticiposCruzados").style.backgroundColor="white";
+    }
+    
+    
     var form_data = new FormData();
         form_data.append('Accion', '9'); 
         form_data.append('idCotizacion', idCotizacion);
@@ -865,7 +886,8 @@ function ConviertaCotizacionEnFactura(){
         form_data.append('TxtObservacionesFactura', TxtObservacionesFactura);
         form_data.append('CmbEmpresa', CmbEmpresa);
         form_data.append('CmbSucursal', CmbSucursal);
-        
+        form_data.append('AnticiposCruzados', AnticiposCruzados);
+        AnticiposCruzados=0;
         $.ajax({
         url: './procesadores/Cotizaciones.process.php',
         //dataType: 'json',
@@ -891,6 +913,10 @@ function ConviertaCotizacionEnFactura(){
                 alertify.error("Error: La Resolución seleccionada Está Ocupada, intentelo nuevamente",0);
                 document.getElementById("BntModalAcciones").disabled=false;  
                 document.getElementById("BntModalAcciones").value="Guardar";
+            }else if(respuestas[0]=="E3"){
+                alertify.error("Error: El Cliente ya no cuenta con el saldo en anticipos escrito",0);
+                document.getElementById("BntModalAcciones").disabled=false;  
+                document.getElementById("BntModalAcciones").value="Guardar";    
             }else{
                 alertify.alert("Error: <br>"+data);
                 document.getElementById("BntModalAcciones").disabled=false;
