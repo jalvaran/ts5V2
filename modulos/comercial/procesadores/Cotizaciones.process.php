@@ -130,6 +130,12 @@ if( !empty($_REQUEST["Accion"]) ){
             $idEmpresa=$obCon->normalizar($_REQUEST["CmbEmpresa"]);
             $idSucursal=$obCon->normalizar($_REQUEST["CmbSucursal"]);
             
+            $FormaPagoFactura=$CmbFormaPago;
+            if($CmbFormaPago<>"Contado"){
+                $FormaPagoFactura="Credito a $CmbFormaPago dias";
+            }
+            
+            
             $Hora=date("H:i:s");
             $OrdenCompra="";
             $OrdenSalida="";
@@ -146,7 +152,7 @@ if( !empty($_REQUEST["Accion"]) ){
             $DatosCotizacion=$obCon->DevuelveValores("cotizacionesv5", "ID", $idCotizacion);
             $idCliente=$DatosCotizacion["Clientes_idClientes"];
             $idFactura=$obFactura->idFactura();
-            $NumFactura=$obFactura->CrearFactura($idFactura, $Fecha, $Hora, $CmbResolucion, $OrdenCompra, $OrdenSalida, $CmbFormaPago, $Subtotal, $IVA, $Total, $Descuentos, $SaldoFactura, $idCotizacion, $idEmpresa, $idCentroCostos, $idSucursal, $idUser, $idCliente, $TotalCostos, $Observaciones, 0, 0, 0, 0, 0, 0, 0, "");
+            $NumFactura=$obFactura->CrearFactura($idFactura, $Fecha, $Hora, $CmbResolucion, $OrdenCompra, $OrdenSalida, $FormaPagoFactura, $Subtotal, $IVA, $Total, $Descuentos, $SaldoFactura, $idCotizacion, $idEmpresa, $idCentroCostos, $idSucursal, $idUser, $idCliente, $TotalCostos, $Observaciones, 0, 0, 0, 0, 0, 0, 0, "");
             if($NumFactura=="E1"){
                 $Mensaje="La Resolucion está completa";
                 print("E1;$Mensaje");
@@ -158,7 +164,36 @@ if( !empty($_REQUEST["Accion"]) ){
                 exit();
             }
             $obFactura->CopiarItemsCotizacionAItemsFactura($idCotizacion, $idFactura, $Fecha,$idUser, "");
+            $Datos["ID"]=$idFactura;
+            $Datos["CuentaDestino"]=$CmbCuentaIngresoFactura;
+            $obCon->InsertarFacturaLibroDiario($Datos);
+            $obCon->DescargueFacturaInventarios($idFactura, "");
+            if($CmbFormaPago=="Contado"){
+                $SumaDias=0;
+            }else{
+                $SumaDias=$CmbFormaPago;
+            }
+            if($CmbFormaPago=="SisteCredito"){
+                $SumaDias=30;
+            }
             
+            if($CmbFormaPago<>"Contado"){                   //Si es a Credito
+                if($CmbFormaPago=="SisteCredito"){
+                    $Datos["SisteCredito"]=1;
+                }
+                $Datos["Fecha"]=$Fecha; 
+                $Datos["Dias"]=$SumaDias;
+                $FechaVencimiento=$obCon->SumeDiasFecha($Datos);
+                $Datos["idFactura"]=$idFactura; 
+                $Datos["FechaFactura"]=$Fecha; 
+                $Datos["FechaVencimiento"]=$FechaVencimiento;
+                $Datos["idCliente"]=$idCliente;
+                $obCon->InsertarFacturaEnCartera($Datos);///Inserto La factura en la cartera
+            }
+            
+            if($CmbColaboradores>0){
+                $obCon->AgregueVentaColaborador($idFactura,$CmbColaboradores);
+            }
             $LinkFactura="../../general/Consultas/PDF_Documentos.draw.php?idDocumento=2&ID=$idFactura";
             $Mensaje="<br><strong>Factura $NumFactura Creada Correctamente </strong><a href='$LinkFactura'  target='blank'> Imprimir</a>";
            

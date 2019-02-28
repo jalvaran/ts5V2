@@ -49,11 +49,16 @@ class Cotizaciones extends ProcesoVenta{
             }
             if($Porcentaje>0 and $FechaDescuento==$fecha){
 
-                    $Porcentaje=(100-$Porcentaje)/100;
-                    $ValorUnitario=round($ValorUnitario*$Porcentaje,2);
+                $Porcentaje=(100-$Porcentaje)/100;
+                $ValorUnitario=round($ValorUnitario*$Porcentaje,2);
 
             }
             
+            if($DatosProductoGeneral["IVA"]<>"E"){
+                $PorcentajeIVA=($DatosProductoGeneral["IVA"]*100)."%";
+            }else{
+                $PorcentajeIVA="Exc";
+            }
             $Subtotal=$ValorUnitario*$Cantidad*$Multiplicador;
             $IVA=(($impuesto-1)*$Subtotal);
             $Total=$Subtotal+$IVA;
@@ -69,13 +74,21 @@ class Cotizaciones extends ProcesoVenta{
             $Datos["Subtotal"]=$Subtotal;
             $Datos["IVA"]=$IVA;
             $Datos["Total"]=$Total;
+            $Datos["PorcentajeIVA"]=$PorcentajeIVA;
             $Datos["Descuento"]=0;
             $Datos["ValorDescuento"]=0;
             $Datos["PrecioCosto"]=$DatosProductoGeneral["CostoUnitario"];
             $Datos["SubtotalCosto"]=$DatosProductoGeneral["CostoUnitario"]*$Cantidad*$Multiplicador;
             $Datos["TipoItem"]=$DatosDepartamento["TipoItem"];
             $Datos["Devuelto"]="";
-            $Datos["CuentaPUC"]=$DatosProductoGeneral["CuentaPUC"];
+            $Datos["CuentaPUC"]=$DatosProductoGeneral["CuentaPUC"];            
+            $Datos["Departamento"]=$DatosProductoGeneral["Departamento"];
+            $Datos["SubGrupo1"]=$DatosProductoGeneral["Sub1"];
+            $Datos["SubGrupo2"]=$DatosProductoGeneral["Sub2"];
+            $Datos["SubGrupo3"]=$DatosProductoGeneral["Sub3"];
+            $Datos["SubGrupo4"]=$DatosProductoGeneral["Sub4"];
+            $Datos["SubGrupo5"]=$DatosProductoGeneral["Sub5"];
+            
             $sql=$this->getSQLInsert($tab, $Datos);
             $this->Query($sql);
             
