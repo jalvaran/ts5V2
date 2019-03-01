@@ -34,7 +34,9 @@ if(isset($_REQUEST["Opcion"])){
             $OrdenColumna=$obCon->normalizar($_REQUEST["OrdenColumna"]);
             $AscDesc=$obCon->normalizar($_REQUEST["Orden"]);
             $Separador=$obCon->normalizar($_REQUEST["Separador"]);
-            
+            $NumPage="";
+            $limit="";
+            $startpoint="";
             $ColumnasSeleccionadas=$obCon->getColumnasVisibles($Tabla, "");  
             
             $DatosConsulta=$obCon->getConsultaTabla($Tabla,$ColumnasSeleccionadas, $Condicion, $OrdenColumna, $AscDesc, $NumPage, $limit,$startpoint);

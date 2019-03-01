@@ -1027,6 +1027,55 @@ function ClonarCotizacion(){
       })  
 }  
 
+
+/*
+ * Copia los items de una cotización a otra
+ * @returns {undefined}
+ */
+function CopiarCotizacion(){
+    
+    var idCotizacion=document.getElementById('idCotizacionAcciones').value;
+    var idCotizacionActual=document.getElementById('idCotizacion').value;
+    
+    if(idCotizacionActual==""){
+        alertify.alert("Debe Seleccionar una cotizacion");
+        document.getElementById('idCotizacion').style.backgroundColor="pink";
+        return;
+    }else{
+        document.getElementById('idCotizacion').style.backgroundColor="white";
+    }
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 12);
+        form_data.append('idCotizacion', idCotizacion);
+        form_data.append('idCotizacionActual', idCotizacionActual);
+        $.ajax({
+        url: './procesadores/Cotizaciones.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';'); 
+            if(respuestas[0]=="SD"){
+                alertify.alert("La cotización digitada no existe");
+            }
+            
+            if(respuestas[0]=="OK"){
+                
+                alertify.success("Los Items de la Cotización "+idCotizacion+" han sido Copiados Satisfactoriamente");
+                DibujeCotizacion();
+            }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}  
+
 ConvertirSelectBusquedas();
 
 $('#CmbBusquedas').bind('change', function() {

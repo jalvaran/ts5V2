@@ -66,6 +66,7 @@ $css->PageInit($myTitulo);
                     
                         <li><a href="#" onclick="AbrirCotizacion()">Abrir</a></li>
                         <li><a href="#" onclick="ClonarCotizacion()">Clonar</a></li>
+                        <li><a href="#" onclick="CopiarCotizacion()">Copiar</a></li>
                     
                   </ul>
                 </div>

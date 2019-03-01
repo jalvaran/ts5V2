@@ -245,7 +245,23 @@ if( !empty($_REQUEST["Accion"]) ){
             $DatosCliente=$obCon->DevuelveValores("clientes", "idClientes", $DatosCotizacion["Clientes_idClientes"]);
             print("OK;$idCotizacionNew;".$DatosCliente["RazonSocial"]); //Existe la cotizacion solicitada
             
-        break;//Fin caso 10
+        break;//Fin caso 12
+        
+        case 12://Copiar los items de una cotización a otra
+            $Fecha=date("Y-m-d");
+            $idCotizacion=$obCon->normalizar($_REQUEST["idCotizacion"]);
+            $idCotizacionActual=$obCon->normalizar($_REQUEST["idCotizacionActual"]);
+            $DatosCotizacion=$obCon->DevuelveValores("cotizacionesv5", "ID", $idCotizacion);
+            if($DatosCotizacion["ID"]==''){
+                print("SD;"); //No existe el numero de cotizacion solicitado
+                exit();
+            }
+            
+            $obCon->CopiarItemsCotizacion($idCotizacion, $idCotizacionActual);
+            
+            print("OK;"); //Existe la cotizacion solicitada
+            
+        break;//Fin caso 12
         
     }
     
