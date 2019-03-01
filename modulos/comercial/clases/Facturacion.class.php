@@ -186,6 +186,17 @@ class Facturacion extends ProcesoVenta{
         $this->ActualizaRegistro("cartera", "TotalAbonos", $AbonosTotales, "Facturas_idFacturas", $idFactura);
         
     }
+    
+    public function CrearPreventaPOS($idUser,$TextPreventa) {
+        
+        $Datos["Nombre"]=$TextPreventa;
+        $Datos["Usuario_idUsuario"]=$idUser;
+        $Datos["Clientes_idClientes"]=1;
+        $sql=$this->getSQLInsert("vestasactivas", $Datos);
+        $this->Query($sql);
+        $idPreventa=$this->ObtenerMAX("vestasactivas", "idVestasActivas", "Usuario_idUsuario", $idUser);
+        return($idPreventa);
+    }
         
     /**
      * Fin Clase
