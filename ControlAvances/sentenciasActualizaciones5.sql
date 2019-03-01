@@ -35,4 +35,4 @@ ALTER TABLE `configuracion_tablas_acciones_adicionales` CHANGE `ClaseIcono` `Cla
 
 INSERT INTO `configuracion_tablas_acciones_adicionales` (`ID`, `TablaDB`, `JavaScript`, `ClaseIcono`, `Titulo`, `Ruta`, `Target`, `Updated`, `Sync`) VALUES ('4', 'comprobantes_ingreso', '', 'fa fa-fw fa-close', 'Anular', '../../VAtencion/AnularComprobanteIngreso.php?idComprobante=', '_BLANK', '2019-01-13 09:04:49', '2018-01-13 09:04:49');
 UPDATE `configuracion_control_tablas` SET `AccionesAdicionales` = '1' WHERE `configuracion_control_tablas`.`ID` = 7;
-INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOrigen`, `TablaAsociada`, `CampoAsociado`, `IDCampoAsociado`, `Updated`, `Sync`) VALUES (11, 'cotizacionesv5', 'Clientes_idClientes', 'clientes', 'RazonSocial', 'idClientes', '2019-02-24 14:01:51', '2018-02-24 14:01:51');
+INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOrigen`, `TablaAsociada`, `CampoAsociado`, `IDCampoAsociado`, `Updated`, `Sync`) VALUES (11, 'cotizacionesv5', 'Clientes_idClientes', 'clientes', 'Num_Identificacion', 'idClientes', '2019-02-24 14:01:51', '2018-02-24 14:01:51');

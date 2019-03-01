@@ -28,7 +28,7 @@ class db_conexion{
         $str=str_ireplace("CREATE ", "ISQL", $str);
         $str=str_ireplace("DROP ", "ISQL", $str);
         $str=str_ireplace("ALTER ", "ISQL", $str);
-        $str=str_ireplace("SELECT ", "ISQL", $str);
+        //$str=str_ireplace("SELECT ", "ISQL", $str);
         $str=str_ireplace("INSERT ", "ISQL", $str);
         $str=str_ireplace("UPDATE ", "ISQL", $str);
         $str=str_ireplace("DELETE ", "ISQL", $str);
@@ -37,6 +37,7 @@ class db_conexion{
         //$str=filter_var($string, FILTER_SANITIZE_STRING);
         return($str);
     }
+    
     
     //Funcion para Conetarse a un servidor y seleccionar una base de datos
      public function ConToServer($ip,$User,$Pass,$db,$VectorCon){

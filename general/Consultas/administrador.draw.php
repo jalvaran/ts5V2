@@ -26,7 +26,7 @@ if( !empty($_REQUEST["Accion"]) ){
             
             $Tabla=$obCon->normalizar($_REQUEST["Tabla"]);
             $DivTablas=$obCon->normalizar($_REQUEST["DivTablas"]);
-            $Condicion=$obCon->normalizar($_REQUEST["Condicion"]);
+            $Condicion=$obCon->normalizarSubQuerys($_REQUEST["Condicion"]);
             $OrdenColumna=$obCon->normalizar($_REQUEST["OrdenColumna"]);
             $AscDesc=$obCon->normalizar($_REQUEST["Orden"]);
             $NumPage=$obCon->normalizar($_REQUEST["Page"]);
@@ -749,6 +749,18 @@ if( !empty($_REQUEST["Accion"]) ){
             
        
         break; //Fin case 14
+        
+        case 15://obtengo informacion de los campos asociados si los hay
+            
+            $Tabla=$obCon->normalizar($_REQUEST["Tabla"]);
+            $Columna=$obCon->normalizar($_REQUEST["Columna"]);
+            
+            $sql="SELECT * FROM configuracion_campos_asociados WHERE TablaOrigen='$Tabla' AND CampoTablaOrigen='$Columna' LIMIT 1";
+            $Consulta=$obCon->Query($sql);
+            $DatosCampos=$obCon->FetchAssoc($Consulta);
+            print('OK;'.$DatosCampos["TablaAsociada"].";".$DatosCampos["CampoAsociado"].";".$DatosCampos["IDCampoAsociado"]);
+       
+        break; //Fin case 15
     }
     
     

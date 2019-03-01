@@ -80,57 +80,106 @@ $(document).on("click",function(e) {
  * Agrega un condicional a la caja de texto utilizada para ese fin
  * @returns {undefined}
  */
+
 function AgregaCondicionalDB(Tabla,DivTablas){
-   
+    var Columna = document.getElementById(Tabla+'_CmbColumna').value;
     
-    var Columna = document.getElementById(Tabla+'_CmbColumna').value
-    var Condicional = document.getElementById(Tabla+'_CmbCondicion').value
-    var Busqueda = document.getElementById(Tabla+'_TxtBusquedaTablas').value
-    var CondicionActual = document.getElementById(Tabla+'_condicion').value
-    var CondicionFinal="";
-    var Operador = "";
-    var combo = document.getElementById(Tabla+"_CmbColumna");
-    var ColumnaSeleccionada = combo.options[combo.selectedIndex].text;
-    document.getElementById(Tabla+'_page').value=1;
-    if(CondicionActual != ''){
-        Operador = " AND ";
-    }
-    switch(Condicional) {
-        case '=':            
-            CondicionFinal= Operador + Columna + " = '" + Busqueda + "'";            
-            break;
-        case '*':            
-            CondicionFinal= Operador + Columna + " LIKE '%" + Busqueda + "%'";            
-            break;
-        case '>':            
-            CondicionFinal= Operador + Columna + " > '" + Busqueda + "'";            
-            break;
-        case '<':            
-            CondicionFinal= Operador + Columna + " < '" + Busqueda + "'";            
-            break;
-        case '>=':            
-            CondicionFinal= Operador + Columna + " >= '" + Busqueda + "'";            
-            break;
-        case '<=':            
-            CondicionFinal= Operador + Columna + " <= '" + Busqueda + "'";            
-            break;
-        case '#%':            
-            CondicionFinal= Operador + Columna + " LIKE '" + Busqueda + "%'";            
-            break;
-        case '<>':            
-            CondicionFinal= Operador + Columna + " <> '" + Busqueda + "'";            
-            break;    
-    } 
-    document.getElementById(Tabla+'_condicion').value=document.getElementById(Tabla+'_condicion').value+" "+CondicionFinal;
-    
-    DibujeTablaDB(Tabla,DivTablas);
-    if(document.getElementById(Tabla+'_DivFiltrosAplicados').innerHTML==''){
-        document.getElementById(Tabla+'_DivFiltrosAplicados').innerHTML='<a href="#" id="aBorrarFiltros" onclick=LimpiarFiltros(`'+Tabla+'`,`'+DivTablas+'`); style="color:green"><span class="btn btn-block btn-primary btn-xs"><strong>Limpiar Filtros</strong></span></a> <strong>Filtros Aplicados: </strong><br>';
-    }
-    var lista='<i class="fa fa-circle-o text-aqua"></i><span> '+ColumnaSeleccionada+' '+ Condicional + ' '+Busqueda+' </span><br>';
-    document.getElementById(Tabla+'_DivFiltrosAplicados').innerHTML=document.getElementById(Tabla+'_DivFiltrosAplicados').innerHTML+" "+lista;
-    
+    var form_data = new FormData();
+        form_data.append('Accion', 15);
+        form_data.append('Tabla', Tabla);
+        form_data.append('Columna', Columna);
+        $.ajax({
+        url: '../../general/Consultas/administrador.draw.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+          var respuestas = data.split(';'); 
+          if (respuestas[0] = "OK") { 
+                var TablaAsociada = respuestas[1];
+                var CampoAsociado = respuestas[2];
+                var IDCampoAsociado = respuestas[3];
+                
+                var Columna = document.getElementById(Tabla+'_CmbColumna').value
+                var Condicional = document.getElementById(Tabla+'_CmbCondicion').value
+                var Busqueda = document.getElementById(Tabla+'_TxtBusquedaTablas').value
+                var CondicionActual = document.getElementById(Tabla+'_condicion').value
+                var CondicionFinal="";
+                var Operador = "";
+                var combo = document.getElementById(Tabla+"_CmbColumna");
+                var ColumnaSeleccionada = combo.options[combo.selectedIndex].text;
+                document.getElementById(Tabla+'_page').value=1;
+                if(CondicionActual != ''){
+                    Operador = " AND ";
+                }
+                switch(Condicional) {
+                    case '=':   
+                        if(TablaAsociada==''){
+                            CondicionFinal= Operador + Columna + " = '" + Busqueda + "'";  
+                        }else{
+                            CondicionFinal= Operador + Columna + " = (SELECT "+IDCampoAsociado+" FROM "+ TablaAsociada +" WHERE "+ CampoAsociado +" = '"+ Busqueda + "' limit 1)";
+                        }
+                                    
+                        break;
+                    case '*': 
+                        if(TablaAsociada==''){
+                            CondicionFinal= Operador + Columna + " LIKE '%" + Busqueda + "%'"; 
+                        }else{
+                            CondicionFinal= Operador + Columna + " LIKE (SELECT "+IDCampoAsociado+" FROM "+ TablaAsociada +" WHERE "+ CampoAsociado +" LIKE '%"+ Busqueda + "%' limit 1)";
+                        }
+                        break;
+                    case '>':  
+                        if(TablaAsociada==''){
+                            CondicionFinal= Operador + Columna + " > '" + Busqueda + "'"; 
+                        }else{
+                            CondicionFinal= Operador + Columna + " > (SELECT "+IDCampoAsociado+" FROM "+ TablaAsociada +" WHERE "+ CampoAsociado +" = '"+ Busqueda + "' limit 1)";
+                        }
+                        break;
+                    case '<':            
+                        CondicionFinal= Operador + Columna + " < '" + Busqueda + "'";            
+                        break;
+                    case '>=':            
+                        CondicionFinal= Operador + Columna + " >= '" + Busqueda + "'";            
+                        break;
+                    case '<=':            
+                        CondicionFinal= Operador + Columna + " <= '" + Busqueda + "'";            
+                        break;
+                    case '#%':    
+                        if(TablaAsociada==''){
+                            CondicionFinal= Operador + Columna + " LIKE '" + Busqueda + "%'"; 
+                        }else{
+                            CondicionFinal= Operador + Columna + " = (SELECT "+IDCampoAsociado+" FROM "+ TablaAsociada +" WHERE "+ CampoAsociado +" LIKE '"+ Busqueda + "%' limit 1)";
+                        }
+                        break;
+                    case '<>':            
+                        CondicionFinal= Operador + Columna + " <> '" + Busqueda + "'";            
+                        break;    
+                } 
+                document.getElementById(Tabla+'_condicion').value=document.getElementById(Tabla+'_condicion').value+" "+CondicionFinal;
+
+                DibujeTablaDB(Tabla,DivTablas);
+                if(document.getElementById(Tabla+'_DivFiltrosAplicados').innerHTML==''){
+                    document.getElementById(Tabla+'_DivFiltrosAplicados').innerHTML='<a href="#" id="aBorrarFiltros" onclick=LimpiarFiltros(`'+Tabla+'`,`'+DivTablas+'`); style="color:green"><span class="btn btn-block btn-primary btn-xs"><strong>Limpiar Filtros</strong></span></a> <strong>Filtros Aplicados: </strong><br>';
+                }
+                var lista='<i class="fa fa-circle-o text-aqua"></i><span> '+ColumnaSeleccionada+' '+ Condicional + ' '+Busqueda+' </span><br>';
+                document.getElementById(Tabla+'_DivFiltrosAplicados').innerHTML=document.getElementById(Tabla+'_DivFiltrosAplicados').innerHTML+" "+lista;
+
+
+                
+          }else {
+            alert("No hay resultados para la consulta");
+          }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })       
 }
+
 
 /*
  * Dibuja las operaciones que se pueden realizar en una tabla
