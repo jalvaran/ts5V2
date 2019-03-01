@@ -6,6 +6,7 @@ if (!isset($_SESSION['username'])){
   
 }
 $idUser=$_SESSION['idUser'];
+$fecha=date("Y-m-d");
 
 include_once("../clases/Facturacion.class.php");
 
@@ -30,31 +31,30 @@ if( !empty($_REQUEST["Accion"]) ){
             
         break; 
         
-        case 2: //editar datos generales de una cotizacion
-            $idCotizacion=$obCon->normalizar($_REQUEST["idCotizacionActiva"]); 
-            $Fecha=$obCon->normalizar($_REQUEST["Fecha"]); 
-            $idTercero=$obCon->normalizar($_REQUEST["Tercero"]);           
-            $Observaciones=$obCon->normalizar($_REQUEST["Observaciones"]); 
+        
+        case 2://Agregar un producto para la venta
             
-            
-            $obCon->ActualizaRegistro("cotizacionesv5", "Fecha", $Fecha, "ID", $idCotizacion,0);
-            $obCon->ActualizaRegistro("cotizacionesv5", "Clientes_idClientes", $idTercero, "ID", $idCotizacion,0);
-            $obCon->ActualizaRegistro("cotizacionesv5", "Observaciones", $Observaciones, "ID", $idCotizacion,0);
-            
-            $DatosTercero=$obCon->DevuelveValores("clientes", "idClientes", $idTercero);
-            
-            print("OK;$DatosTercero[RazonSocial]");
-            
-        break; 
-        case 3://Agregar un item
-            
-            $idCotizacion=$obCon->normalizar($_REQUEST["idCotizacion"]); 
+            $idPreventa=$obCon->normalizar($_REQUEST["idPreventa"]); 
             $CmbListado=$obCon->normalizar($_REQUEST["CmbListado"]); 
-            $CmbBusquedas=$obCon->normalizar($_REQUEST["CmbBusquedas"]); 
+            $Codigo=$obCon->normalizar($_REQUEST["Codigo"]); 
             $Cantidad=$obCon->normalizar($_REQUEST["Cantidad"]); 
-            $ValorUnitario=$obCon->normalizar($_REQUEST["ValorUnitario"]); 
+            
             if($CmbListado==1){
                 $TablaItem="productosventa";
+                $idProducto=$obCon->ObtenerIdProducto($Codigo);
+                if($idProducto==''){
+                    print("E1;El producto no existe en la base de datos, por favor no lo entregue"); //El producto no existe en la base de datos
+                    exit();
+                }
+                $DatosProducto=$obCon->ValorActual("productosventa", "PrecioVenta", "idProductosVenta='$idProducto'");
+                $DatosImpuestosAdicionales=$obCon->DevuelveValores("productos_impuestos_adicionales", "idProducto", $idProducto);
+                if($DatosProducto["PrecioVenta"]<=0 and $DatosImpuestosAdicionales["ValorImpuesto"]==''){
+                    print("E1;Este Producto no tiene precio por favor no lo entregue"); //El producto no tiene precio de venta
+                    exit();
+                }
+                $obCon->POS_AgregaItemPreventa($idProducto, $TablaItem, $Cantidad, $idPreventa);
+                print("OK;Item $idProducto Agregado");
+                exit();
             }
             if($CmbListado==2){
                 $TablaItem="servicios";
@@ -62,43 +62,54 @@ if( !empty($_REQUEST["Accion"]) ){
             if($CmbListado==3){
                 $TablaItem="productosalquiler";
             }
-            $Multiplicador=1;
+            if($CmbListado==4){
+                $TablaItem="sistemas";
+            }
+            
             $obCon->AgregaItemCotizacion($idCotizacion,$Cantidad,$Multiplicador,$CmbBusquedas,$TablaItem,$ValorUnitario,"");
             
             print("OK");
             
+        break;//Fin caso 2
+        
+        
+        case 3://Se elimina un item
+            $idItem=$obCon->normalizar($_REQUEST["idItem"]);
+            $Tabla="preventa";
+            $obCon->BorraReg($Tabla, "idPrecotizacion", $idItem);
+            print("Item Eliminado");
         break;//Fin caso 3
         
         
-        case 5://Se elimina un item
-            $idItem=$obCon->normalizar($_REQUEST["idItem"]);
-            $Tabla=$obCon->normalizar($_REQUEST["Tabla"]);
-            if($Tabla==1){
-                $Tabla="cot_itemscotizaciones";
+        case 4://Edita una cantidad
+             
+            $idItem=$obCon->normalizar($_REQUEST["idItem"]);            
+            $Cantidad=$obCon->normalizar($_REQUEST["Cantidad"]);
+            if($Cantidad==0){
+                print("E1,No se puede editar la cantidad en cero");
+                exit();
             }
             
-            $obCon->BorraReg($Tabla, "ID", $idItem);
-            print("Item Eliminado");
-        break;//Fin caso 5
-        
-        case 6://Guardo el documento
-            $idCotizacion=$obCon->normalizar($_REQUEST["idCotizacion"]);
-            $obCon->ActualizaRegistro("cotizacionesv5", "Estado", "Cerrada", "ID", $idCotizacion);            
-            $LinkCotizacion="../../VAtencion/ImprimirPDFCotizacion.php?ImgPrintCoti=$idCotizacion";
-            $Mensaje="<strong>Cotizacion $idCotizacion Creada Correctamente </strong><a href='$LinkCotizacion'  target='blank'> Imprimir</a>";
-            
-            print("OK;$Mensaje");
-        break;//Fin caso 6
-        
-        case 7://Edita un item de una cotizacion
-            $idItem=$obCon->normalizar($_REQUEST["idItem"]);            
-            $ValorUnitario=$obCon->normalizar($_REQUEST["ValorUnitario"]);
-            $Multiplicador=$obCon->normalizar($_REQUEST["Multiplicador"]);
-            $Cantidad=$obCon->normalizar($_REQUEST["Cantidad"]);
-            
-            $obCon->EditarItemCotizacion($idItem, $Cantidad, $Multiplicador, $ValorUnitario, "");
+            $DatosPreventa=$obCon->DevuelveValores("preventa", "idPrecotizacion", $idItem);
+            $ValorAcordado=$DatosPreventa["ValorAcordado"];
+            $idProducto=$DatosPreventa["ProductosVenta_idProductosVenta"];
+            $Tabla=$DatosPreventa["TablaItem"];
+            $Subtotal=$ValorAcordado*$Cantidad;
+            $DatosProductos=$obCon->DevuelveValores($Tabla,"idProductosVenta",$idProducto);
+            $DatosImpuestosAdicionales=$obCon->DevuelveValores("productos_impuestos_adicionales", "idProducto", $idProducto);
+            $IVA=$Subtotal*$DatosProductos["IVA"]+($DatosImpuestosAdicionales["ValorImpuesto"]*$Cantidad);
+            $SubtotalCosto=$DatosProductos["CostoUnitario"]*$Cantidad;
+            $Total=$Subtotal+$IVA;
+            $filtro="idPrecotizacion";
+
+            $obCon->ActualizaRegistro("preventa","Subtotal", $Subtotal, $filtro, $idItem);
+            $obCon->ActualizaRegistro("preventa","Impuestos", $IVA, $filtro, $idItem);
+            $obCon->ActualizaRegistro("preventa","TotalVenta", $Total, $filtro, $idItem);
+            $obCon->ActualizaRegistro("preventa","Cantidad", $Cantidad, $filtro, $idItem);
+           
             $Mensaje="Item Editado";
             print("OK;$Mensaje");
+            
         break;//Fin caso 7
     
         case 8://realiza un anticipo a una cotizacion

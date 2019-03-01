@@ -186,7 +186,12 @@ class Facturacion extends ProcesoVenta{
         $this->ActualizaRegistro("cartera", "TotalAbonos", $AbonosTotales, "Facturas_idFacturas", $idFactura);
         
     }
-    
+    /**
+     * Crear una preventa
+     * @param type $idUser
+     * @param type $TextPreventa
+     * @return type
+     */
     public function CrearPreventaPOS($idUser,$TextPreventa) {
         
         $Datos["Nombre"]=$TextPreventa;
@@ -196,6 +201,157 @@ class Facturacion extends ProcesoVenta{
         $this->Query($sql);
         $idPreventa=$this->ObtenerMAX("vestasactivas", "idVestasActivas", "Usuario_idUsuario", $idUser);
         return($idPreventa);
+    }
+    /**
+     * Obtiene el id de un producto revisando primero los codigos de barras
+     * @param type $CodigoBarras
+     * @return type
+     */
+    public function ObtenerIdProducto($CodigoBarras) {
+        $sql="SELECT ProductosVenta_idProductosVenta as idProductosVenta FROM prod_codbarras WHERE CodigoBarras='$CodigoBarras' AND TablaOrigen='productosventa'";
+        $consulta=$this->Query($sql);
+        $DatosProducto=$this->FetchAssoc($consulta);
+        if($DatosProducto["idProductosVenta"]==''){
+            $idProducto=ltrim($CodigoBarras, "0");
+            $sql="SELECT idProductosVenta FROM productosventa WHERE idProductosVenta='$CodigoBarras'";
+            $consulta=$this->Query($sql);
+            $DatosProducto=$this->FetchArray($consulta);
+        }
+        $idProducto=$DatosProducto["idProductosVenta"];
+        return($idProducto);
+    }
+    
+    public function POS_AgregaItemPreventa($idProducto,$TablaItem,$Cantidad,$idPreventa,$ValorAcordado=0,$idSistema=0) {
+        $DatosProductoGeneral=$this->DevuelveValores($TablaItem, "idProductosVenta", $idProducto);
+        $CostoUnitario=0;
+        $PrecioMayor=0;
+        
+        if(isset($DatosProductoGeneral["CostoUnitario"])){
+            $CostoUnitario=$DatosProductoGeneral["CostoUnitario"];
+        }
+        
+        if(isset($DatosProductoGeneral["PrecioMayorista"])){
+            $PrecioMayor=$DatosProductoGeneral["PrecioMayorista"];
+        }
+        
+        $DatosImpuestosAdicionales=$this->DevuelveValores("productos_impuestos_adicionales", "idProducto", $idProducto);
+	
+        $DatosDepartamento=$this->DevuelveValores("prod_departamentos", "idDepartamentos", $DatosProductoGeneral["Departamento"]);
+        $DatosTablaItem=$this->DevuelveValores("tablas_ventas", "NombreTabla", $TablaItem);
+        $TipoItem=$DatosDepartamento["TipoItem"];
+        $consulta=$this->ConsultarTabla("preventa", "WHERE TablaItem='$TablaItem' AND ProductosVenta_idProductosVenta='$idProducto' AND VestasActivas_idVestasActivas='$idPreventa' AND idSistema='$idSistema' ORDER BY idPrecotizacion DESC");
+        $DatosProduto=$this->FetchArray($consulta);
+        
+        if($DatosProduto["Cantidad"]>0){ //Si ya hay un producto agregado
+            if($DatosProductoGeneral["IVA"]=="E"){
+                $DatosProductoGeneral["IVA"]=0;
+            }
+            
+            $Cantidad=$DatosProduto["Cantidad"]+$Cantidad;
+            $Subtotal=round($DatosProduto["ValorAcordado"]*$Cantidad,2);
+            $Impuestos=round($DatosProductoGeneral["IVA"]*$Subtotal+$DatosImpuestosAdicionales["ValorImpuesto"],2);
+            $TotalVenta=$Subtotal+$Impuestos;
+            $sql="UPDATE preventa SET Subtotal='$Subtotal', Impuestos='$Impuestos', TotalVenta='$TotalVenta', Cantidad='$Cantidad' WHERE idPrecotizacion='$DatosProduto[idPrecotizacion]'";
+            
+            $this->Query($sql);
+        }else{
+            $reg=$this->Query("select * from fechas_descuentos where (Departamento = '$DatosProductoGeneral[Departamento]' OR Departamento ='0') AND (Sub1 = '$DatosProductoGeneral[Sub1]' OR Sub1 ='0') AND (Sub2 = '$DatosProductoGeneral[Sub2]' OR Sub2 ='0')  ORDER BY idFechaDescuentos DESC LIMIT 1");
+            $reg=$this->FetchArray($reg);
+            $Porcentaje=$reg["Porcentaje"];
+            $Departamento=$reg["Departamento"];
+            $FechaDescuento=$reg["Fecha"];
+            if($DatosProductoGeneral["IVA"]=="E"){
+                $DatosProductoGeneral["IVA"]=0;
+            }
+            $impuesto=$DatosProductoGeneral["IVA"];
+            $PorcentajeIVA=$impuesto;
+            $DatosImpuestosAdicionales["ValorImpuesto"];
+            $impuesto=$impuesto+1;
+            if($ValorAcordado>0){
+                $DatosProductoGeneral["PrecioVenta"]=$ValorAcordado;
+            }
+            
+            // buscar si tiene habilitado precio de descuento 
+            
+            $DatosFechasPreciosEspeciales= $this->DevuelveValores("ventas_fechas_especiales", "ID", 1);
+            
+            if($DatosFechasPreciosEspeciales["Habilitado"]==1){
+                
+                $fecha_inicio=$DatosFechasPreciosEspeciales["FechaInicial"];
+                $fecha_fin=$DatosFechasPreciosEspeciales["FechaFinal"];
+                $fecha_inicio = strtotime($fecha_inicio);
+                $fecha_fin = strtotime($fecha_fin);
+                $fecha = strtotime(date("Y-m-d"));
+                if(($fecha >= $fecha_inicio) and ($fecha <= $fecha_fin)) {
+                    $DatosPreciosEspeciales=$this->DevuelveValores("ventas_fechas_especiales_precios", "Referencia", $DatosProductoGeneral["Referencia"]);
+                    
+                    if($DatosPreciosEspeciales["PrecioVenta"]<>''){
+                        $PrecioEspecial=$DatosPreciosEspeciales["PrecioVenta"];
+                        $DatosProductoGeneral["PrecioVenta"]=$PrecioEspecial;
+                    }
+                }
+                
+              
+            }
+            
+           
+            if($DatosImpuestosAdicionales["Incluido"]=='SI'){
+               $DatosProductoGeneral["PrecioVenta"]=$DatosProductoGeneral["PrecioVenta"] - $DatosImpuestosAdicionales["ValorImpuesto"];
+            }
+            
+            if($DatosTablaItem["IVAIncluido"]=="SI"){
+                
+                $ValorUnitario=round($DatosProductoGeneral["PrecioVenta"]/$impuesto,2);
+                
+            }else{
+                $ValorUnitario=$DatosProductoGeneral["PrecioVenta"];
+                
+            }
+            
+            if($Porcentaje>0 and $FechaDescuento==$fecha){
+
+                    $Porcentaje=(100-$Porcentaje)/100;
+                    $ValorUnitario=round($ValorUnitario*$Porcentaje,2);
+
+            }
+            
+            
+            
+            $Subtotal=$ValorUnitario*$Cantidad;
+            //Para colocarle el valor totoal al producto especial
+            if(isset($DatosProductoGeneral["Especial"])){
+                if($DatosProductoGeneral["Especial"]=="SI"){
+                    $Subtotal=$ValorUnitario;
+                }
+            }
+            
+            $impuesto=($impuesto-1)*$Subtotal +($DatosImpuestosAdicionales["ValorImpuesto"]*$Cantidad);
+            
+            
+            $Total=$Subtotal+$impuesto;
+            
+            $Insert["Fecha"]=$fecha;
+            $Insert["Cantidad"]=$Cantidad;
+            $Insert["VestasActivas_idVestasActivas"]=$idPreventa;
+            $Insert["ProductosVenta_idProductosVenta"]=$idProducto;
+            $Insert["ValorUnitario"]=$ValorUnitario;
+            $Insert["ValorAcordado"]=$ValorUnitario;
+            $Insert["Subtotal"]=$Subtotal;
+            $Insert["Impuestos"]=$impuesto;
+            $Insert["TotalVenta"]=$Total;            
+            $Insert["TablaItem"]=$TablaItem;
+            $Insert["TipoItem"]=$TipoItem;
+            $Insert["CostoUnitario"]=$CostoUnitario;
+            $Insert["PrecioMayorista"]=$PrecioMayor;
+            $Insert["PorcentajeIVA"]=$PorcentajeIVA;
+            $Insert["idSistema"]=$idSistema;
+            
+            $sql=$this->getSQLInsert("preventa", $Insert);
+            
+            $this->Query($sql);	
+	
+        }
+        
     }
         
     /**

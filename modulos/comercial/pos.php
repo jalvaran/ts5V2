@@ -129,11 +129,15 @@ $css->PageInit($myTitulo);
                     $css->option("", "", "", 1, "", "");
                         print("Productos para la venta");
                     $css->Coption();
+                    
                     $css->option("", "", "", 2, "", "");
                         print("Servicios");
                     $css->Coption();
                     $css->option("", "", "", 3, "", "");
                         print("Productos para alquilar");
+                    $css->Coption();
+                    $css->option("", "", "", 4, "", "");
+                        print("Sistemas");
                     $css->Coption();
                     
                 $css->Cselect();
@@ -162,7 +166,7 @@ $css->PageInit($myTitulo);
 
     print("<br><br><br><br><br><br><br><br>");
     $css->CrearDiv("DivDatosCompras", "col-md-8", "left", 1, 1); //Datos para la creacion de la compra
-        $css->fieldset("", "", "FieldDatosCompra", "items en esta compra", "", "");
+        $css->fieldset("", "", "FieldDatosCompra", "items en esta venta", "", "");
             $css->legend("", "");
                 print("<a href='#'>Items Agregados</a>");
             $css->Clegend();    
@@ -175,7 +179,7 @@ $css->PageInit($myTitulo);
         $css->CrearDiv("DivInfoTotales", "col-md-4", "left", 1, 1); //Datos para la creacion de la compra
         $css->fieldset("", "", "FieldDatosCompra", "Totales", "", "");
             $css->legend("", "");
-                print("<a href='#'>Totales y Opciones del Documento</a>");
+                print("<a href='#'>Totales</a>");
             $css->Clegend();    
            
             $css->CrearDiv("DivTotales", "", "center", 1, 1);   
