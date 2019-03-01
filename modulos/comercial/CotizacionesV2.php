@@ -11,10 +11,11 @@ $css =  new PageConstruct($myTitulo, ""); //objeto con las funciones del html
 $obCon = new conexion($idUser); //Conexion a la base de datos
 
 $css->PageInit($myTitulo);
+    
     $css->Modal("ModalAccionesCotizaciones", "Cotizaciones", "", 0);
         $css->div("DivFrmCrearCotizacion", "", "", "", "", "", "");
         $css->Cdiv();
-        
+       
     $css->CModal("BntModalCotizaciones", "onclick=CrearCotizacion(event)", "button", "Guardar");
     
     $css->Modal("ModalAccionesGrande", "TS5", "", 1);
@@ -23,13 +24,64 @@ $css->PageInit($myTitulo);
         
     $css->CModal("BntModalAcciones", "onclick=SeleccioneAccionFormularios()", "button", "Guardar");
     //$css->div("", "container", "", "", "", "", "");
-    
+    $css->CrearDiv("", "col-md-10", "left", 1, 1); 
+        $css->h3("", "", "", "");
+                print("<strong>Cotizaciones</strong>");
+        $css->Ch3();
+    $css->CerrarDiv(); 
+    $css->CrearDiv("", "col-md-2", "right", 1, 1); 
+        $css->h3("", "", "", "");
+            print("<a onclick=MuestraOcultaXID('DivOpcionesGenerales') style='cursor:pointer'><strong>Opciones</strong>");
+            print('<i class="fa fa-fw fa-bars"></i></a>');
+                
+        $css->Ch3();
+    $css->CerrarDiv(); 
+    $css->CrearDiv("DivOpcionesGenerales", "col-md-12", "left", 0, 0);
+        $css->fieldset("", "", "FieldDatosCotizacion", "DatosCotizacion", "", "");
+            $css->legend("", "");
+                print("<a href='#'>Opciones Adicionales:</a>");
+            $css->Clegend();   
+            $css->CrearDiv("", "col-md-3", "left", 1, 1);
+                $css->CrearBotonEvento("BtnCrearTercero", "Crear Tercero", 1, "onclick", "SeleccioneTablaDB(`clientes`);", "azul", "");
+                
+                
+            $css->CerrarDiv();
+            
+            $css->CrearDiv("", "col-md-3", "left", 1, 1);
+                $css->CrearBotonEvento("BtnHistorialCotizaciones", "Historial de Cotizaciones", 1, "onclick", "SeleccioneTablaDB(`cotizacionesv5`);", "azul", "");
+            $css->CerrarDiv();
+            
+            $css->CrearDiv("", "col-md-3", "left", 1, 1);
+                $css->CrearBotonEvento("BtnHistorialAbonos", "Historial de Abonos", 1, "onclick", "SeleccioneTablaDB(`comprobantes_ingreso`);", "azul", "");
+            $css->CerrarDiv();
+            
+            $css->CrearDiv("", "col-md-3", "left", 1, 1);
+            
+            print('<div class="input-group input-group-lg">
+                <input type="text" id="idCotizacionAcciones" class="form-control" placeholder="Cotización">
+                <div class="input-group-btn">
+                  <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false" >Acción
+                    <span class="fa fa-caret-down"></span></button>
+                    <ul class="dropdown-menu">
+                    
+                        <li><a href="#" onclick="AbrirCotizacion()">Abrir</a></li>
+                        <li><a href="#" onclick="ClonarCotizacion()">Clonar</a></li>
+                    
+                  </ul>
+                </div>
+               
+              </div>');
+            
+                
+            $css->CerrarDiv();
+            
+        $css->Cfieldset();
+        print("<br><br>");
+    $css->CerrarDiv();  
     $css->CrearDiv("DivOpcionesCrearCotizaciones", "col-md-12", "left", 1, 1); 
     $css->CrearDiv("DivMensajesModulo", "", "center", 1, 1); 
     $css->CerrarDiv();  
-    $css->h3("", "", "", "");
-                print("<strong>Cotizaciones</strong>");
-    $css->Ch3();
+    
         $css->fieldset("", "", "FieldDatosCotizacion", "DatosCotizacion", "", "");
             $css->legend("", "");
                 print("<a href='#'>Cree, Seleccione o imprima una Cotización</a>");

@@ -441,7 +441,7 @@ function DibujeTotales(idCotizacion=""){
  * @returns {undefined}
  */
 
-function MuestraOcultaXIDCompras(id){
+function MuestraOcultaXID(id){
     
     var estado=document.getElementById(id).style.display;
     if(estado=="none" | estado==""){
@@ -937,6 +937,95 @@ function ConviertaCotizacionEnFactura(){
     
 }
 
+/*
+ * Abre una cotización
+ * @returns {undefined}
+ */
+function AbrirCotizacion(){
+    
+    var idCotizacion=document.getElementById('idCotizacionAcciones').value;
+    
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 10);
+        form_data.append('idCotizacion', idCotizacion);
+        $.ajax({
+        url: './procesadores/Cotizaciones.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';'); 
+            if(respuestas[0]=="SD"){
+                alertify.alert("La cotización digitada no existe");
+            }
+            if(respuestas[0]=="AB"){
+                alertify.alert("La cotización ya está abierta");
+            }
+            if(respuestas[0]=="OK"){
+                var x = document.getElementById("idCotizacion");
+                var option = document.createElement("option");
+                option.text = idCotizacion+" "+respuestas[1];
+                option.value = idCotizacion;
+                x.add(option); 
+                $("#idCotizacion option:last").attr('selected','selected');
+                DibujeCotizacion();
+            }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}  
+
+
+/*
+ * Abre una cotización
+ * @returns {undefined}
+ */
+function ClonarCotizacion(){
+    
+    var idCotizacion=document.getElementById('idCotizacionAcciones').value;
+    
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 11);
+        form_data.append('idCotizacion', idCotizacion);
+        $.ajax({
+        url: './procesadores/Cotizaciones.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';'); 
+            if(respuestas[0]=="SD"){
+                alertify.alert("La cotización digitada no existe");
+            }
+            
+            if(respuestas[0]=="OK"){
+                var x = document.getElementById("idCotizacion");
+                var option = document.createElement("option");
+                option.text = respuestas[1]+" "+respuestas[2];
+                option.value = respuestas[1];
+                x.add(option); 
+                $("#idCotizacion option:last").attr('selected','selected');
+                alertify.success("La cotización "+idCotizacion+" ha sido Clonada Satisfactoriamente");
+                DibujeCotizacion();
+            }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}  
 
 ConvertirSelectBusquedas();
 

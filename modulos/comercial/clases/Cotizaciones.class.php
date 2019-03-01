@@ -27,7 +27,16 @@ class Cotizaciones extends ProcesoVenta{
         
         return $idCotizacion;
     }
-    
+    /**
+     * Agrega un item a una cotizacion
+     * @param type $idCotizacion
+     * @param type $Cantidad
+     * @param type $Multiplicador
+     * @param type $idProducto
+     * @param type $TablaItem
+     * @param type $ValorUnitario
+     * @param type $Vector
+     */
     public function AgregaItemCotizacion($idCotizacion,$Cantidad,$Multiplicador,$idProducto,$TablaItem,$ValorUnitario,$Vector){
         
             $DatosProductoGeneral=$this->DevuelveValores($TablaItem, "idProductosVenta", $idProducto);
@@ -60,7 +69,7 @@ class Cotizaciones extends ProcesoVenta{
                 $PorcentajeIVA="Exc";
             }
             $Subtotal=$ValorUnitario*$Cantidad*$Multiplicador;
-            $IVA=(($impuesto-1)*$Subtotal);
+            $IVA=round(($impuesto-1)*$Subtotal,2);
             $Total=$Subtotal+$IVA;
             
             $tab="cot_itemscotizaciones";
@@ -120,7 +129,14 @@ class Cotizaciones extends ProcesoVenta{
             
         }
         
-        //Editar un item de una precotizacion
+       /**
+        * Editar item a una cotizacion
+        * @param type $idItem
+        * @param type $Cantidad
+        * @param type $Multiplicador
+        * @param type $ValorAcordado
+        * @param type $Vector
+        */
         public function EditarItemCotizacion($idItem,$Cantidad,$Multiplicador,$ValorAcordado,$Vector) {
             $DatosPreventa= $this->DevuelveValores('cot_itemscotizaciones',"ID",$idItem);
             $DatosProductos=$this->DevuelveValores($DatosPreventa["TablaOrigen"],"Referencia",$DatosPreventa["Referencia"]);
@@ -139,6 +155,13 @@ class Cotizaciones extends ProcesoVenta{
             $this->ActualizaRegistro("cot_itemscotizaciones","Cantidad", $Cantidad, $filtro, $idItem);
             $this->ActualizaRegistro("cot_itemscotizaciones","Multiplicador", $Multiplicador, $filtro, $idItem);
 
+        }
+        
+        public function CopiarItemsCotizacion($idCotizacionOrigen,$idCotizacionDestino) {
+            $sql="INSERT INTO `cot_itemscotizaciones`( `NumCotizacion`, `Descripcion`, `Referencia`, `TablaOrigen`, `ValorUnitario`, `Cantidad`, `Multiplicador`, `Subtotal`, `IVA`, `Total`, `Descuento`, `ValorDescuento`, `PrecioCosto`, `SubtotalCosto`, `TipoItem`, `PorcentajeIVA`, `idPorcentajeIVA`, `Departamento`, `SubGrupo1`, `SubGrupo2`, `SubGrupo3`, `SubGrupo4`, `SubGrupo5`, `Devuelto`, `CuentaPUC`) "
+                    . "SELECT '$idCotizacionDestino', Descripcion, Referencia, TablaOrigen, ValorUnitario, Cantidad, Multiplicador, Subtotal, IVA, Total, Descuento, ValorDescuento, PrecioCosto, SubtotalCosto, TipoItem, PorcentajeIVA, idPorcentajeIVA, Departamento, SubGrupo1, SubGrupo2, SubGrupo3, SubGrupo4, SubGrupo5, Devuelto, CuentaPUC FROM `cot_itemscotizaciones` "
+                    . "WHERE NumCotizacion='$idCotizacionOrigen' ";
+            $this->Query($sql);
         }
     
     /**

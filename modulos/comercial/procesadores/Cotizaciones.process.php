@@ -213,6 +213,40 @@ if( !empty($_REQUEST["Accion"]) ){
             print("OK;$Mensaje");
         break;//Fin caso 9
         
+        case 10://Consulta si existe o no una cotizacion
+            $idCotizacion=$obCon->normalizar($_REQUEST["idCotizacion"]);
+            $DatosCotizacion=$obCon->DevuelveValores("cotizacionesv5", "ID", $idCotizacion);
+            if($DatosCotizacion["ID"]==''){
+                print("SD;"); //No existe el numero de cotizacion solicitado
+            }
+            if($DatosCotizacion["ID"]>0 AND $DatosCotizacion["Estado"]<>'Abierta'){
+                $obCon->ActualizaRegistro("cotizacionesv5", "Estado", "Abierta", "ID", $idCotizacion);
+                $DatosCliente=$obCon->DevuelveValores("clientes", "idClientes", $DatosCotizacion["Clientes_idClientes"]);
+                print("OK;".$DatosCliente["RazonSocial"]); //Existe la cotizacion solicitada
+            }
+            if($DatosCotizacion["Estado"]=='Abierta'){
+                print("AB;"); //La Cotizacion ya está abierta
+            }
+            
+        break;//Fin caso 10
+        
+        case 11://Clonar una cotización
+            $Fecha=date("Y-m-d");
+            $idCotizacion=$obCon->normalizar($_REQUEST["idCotizacion"]);
+            $DatosCotizacion=$obCon->DevuelveValores("cotizacionesv5", "ID", $idCotizacion);
+            if($DatosCotizacion["ID"]==''){
+                print("SD;"); //No existe el numero de cotizacion solicitado
+                exit();
+            }
+            $idCotizacionNew=$obCon->CrearCotizacion($Fecha, $DatosCotizacion["Clientes_idClientes"], "", "");
+            
+            $obCon->CopiarItemsCotizacion($idCotizacion, $idCotizacionNew);
+            
+            $DatosCliente=$obCon->DevuelveValores("clientes", "idClientes", $DatosCotizacion["Clientes_idClientes"]);
+            print("OK;$idCotizacionNew;".$DatosCliente["RazonSocial"]); //Existe la cotizacion solicitada
+            
+        break;//Fin caso 10
+        
     }
     
     

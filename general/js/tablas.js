@@ -374,9 +374,9 @@ function OcultaMuestraCampoTabla(Tabla,Campo,DivTablas){
  * @param {type} Tabla
  * @returns {undefined}
  */
-function DibujaFormularioNuevoRegistro(Tabla,idDivTabla){
+function DibujaFormularioNuevoRegistro(Tabla,idDivTabla,idModal='ModalAcciones',DivFormularios='DivFormularios'){
     
-    $("#ModalAcciones").modal()
+    $("#"+idModal).modal()
 
     var form_data = new FormData();
         form_data.append('Accion', 9);
@@ -393,7 +393,7 @@ function DibujaFormularioNuevoRegistro(Tabla,idDivTabla){
         success: function(data){
            
           if (data != "") { 
-              document.getElementById('DivFormularios').innerHTML=data;
+              document.getElementById(DivFormularios).innerHTML=data;
               ConvierteSelects();
               EnfocaPrimerCampo('TxtNuevoRegistro');              
               AgregaEventosCamposEspeciales();

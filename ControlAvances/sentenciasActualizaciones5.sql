@@ -30,4 +30,9 @@ INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOr
 ALTER TABLE `cot_itemscotizaciones` ADD `PorcentajeIVA` VARCHAR(10) NOT NULL AFTER `TipoItem`, ADD `Departamento` INT NOT NULL AFTER `PorcentajeIVA`, ADD `SubGrupo1` INT NOT NULL AFTER `Departamento`, ADD `SubGrupo2` INT NOT NULL AFTER `SubGrupo1`, ADD `SubGrupo3` INT NOT NULL AFTER `SubGrupo2`, ADD `SubGrupo4` INT NOT NULL AFTER `SubGrupo3`, ADD `SubGrupo5` INT NOT NULL AFTER `SubGrupo4`;
 ALTER TABLE `cot_itemscotizaciones` ADD `idPorcentajeIVA` INT NOT NULL AFTER `PorcentajeIVA`;
 
+INSERT INTO `configuracion_control_tablas` (`ID`, `TablaDB`, `Agregar`, `Editar`, `Ver`, `LinkVer`, `Exportar`, `AccionesAdicionales`, `Eliminar`, `Updated`, `Sync`) VALUES (8, 'clientes', '1', '1', '0', '', '1', '0', '0', '2019-01-13 09:04:48', '2019-01-13 09:04:48');
+ALTER TABLE `configuracion_tablas_acciones_adicionales` CHANGE `ClaseIcono` `ClaseIcono` VARCHAR(45) CHARACTER SET utf8 COLLATE utf8_spanish_ci NOT NULL;
 
+INSERT INTO `configuracion_tablas_acciones_adicionales` (`ID`, `TablaDB`, `JavaScript`, `ClaseIcono`, `Titulo`, `Ruta`, `Target`, `Updated`, `Sync`) VALUES ('4', 'comprobantes_ingreso', '', 'fa fa-fw fa-close', 'Anular', '../../VAtencion/AnularComprobanteIngreso.php?idComprobante=', '_BLANK', '2019-01-13 09:04:49', '2018-01-13 09:04:49');
+UPDATE `configuracion_control_tablas` SET `AccionesAdicionales` = '1' WHERE `configuracion_control_tablas`.`ID` = 7;
+INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOrigen`, `TablaAsociada`, `CampoAsociado`, `IDCampoAsociado`, `Updated`, `Sync`) VALUES (11, 'cotizacionesv5', 'Clientes_idClientes', 'clientes', 'RazonSocial', 'idClientes', '2019-02-24 14:01:51', '2018-02-24 14:01:51');

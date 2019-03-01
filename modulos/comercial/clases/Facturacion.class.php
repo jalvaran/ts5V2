@@ -130,7 +130,15 @@ class Facturacion extends ProcesoVenta{
         
     }
     
-        
+    /**
+     * Ingresa una factura a la cartera
+     * @param type $idFactura
+     * @param type $Fecha
+     * @param type $idCliente
+     * @param type $CmbFormaPago -> trae el numero de dias que tiene de plazo la factura
+     * @param type $SaldoFactura -> El saldo con el que ingresará a cartera
+     * @param type $Vector
+     */    
     public function IngreseCartera($idFactura,$Fecha,$idCliente,$CmbFormaPago,$SaldoFactura,$Vector) {
         
         $SumaDias=$CmbFormaPago;        
@@ -154,7 +162,15 @@ class Facturacion extends ProcesoVenta{
             
     }
     
-    
+    /**
+     * Cruza un anticipo en una factura
+     * @param type $idFactura
+     * @param type $Fecha
+     * @param type $ValorAnticipo
+     * @param type $CuentaDestino        ->Podrá ser la cuenta de clientes (Si es a credito) o la que cuenta donde ingrese el dinero recibido para el caso de ser de contado
+     * @param type $NombreCuentaDestino
+     * @param type $vector
+     */
     public function CruzarAnticipoAFactura($idFactura,$Fecha,$ValorAnticipo,$CuentaDestino,$NombreCuentaDestino,$vector) {
         
         $DatosFactura=$this->DevuelveValores("facturas", "idFacturas", $idFactura);
