@@ -14,7 +14,7 @@ $key=$obRest->normalizar($_REQUEST['q']);
 
 $sql = "SELECT * FROM productosalquiler 
 		WHERE Nombre LIKE '%$key%' or idProductosVenta = '$key' OR  Referencia = '$key'
-		LIMIT 10"; 
+		LIMIT 50"; 
 $result = $obRest->Query($sql);
 $json = [];
 
