@@ -30,9 +30,7 @@ if( !empty($_REQUEST["Accion"]) ){
                     
                 $css->CierraFilaTabla();
                 //Dibujo los productos
-                $sql="SELECT pre.idPrecotizacion,pre.Cantidad,prod.Nombre,prod.Referencia,pre.ValorAcordado,pre.TotalVenta"
-                        . " FROM preventa pre INNER JOIN productosventa prod ON pre.ProductosVenta_idProductosVenta=prod.idProductosVenta"
-                        . " WHERE pre.VestasActivas_idVestasActivas='$idPreventa' ORDER BY idPrecotizacion DESC";
+                $sql="SELECT * FROM preventa WHERE VestasActivas_idVestasActivas='$idPreventa' ORDER BY idPrecotizacion DESC";
                 $Consulta=$obCon->Query($sql);
                 while ($DatosItems = $obCon->FetchAssoc($Consulta)) {
                     $idItem=$DatosItems["idPrecotizacion"];
@@ -65,8 +63,8 @@ if( !empty($_REQUEST["Accion"]) ){
                                     <span class="fa fa-caret-down"></span></button>
                                     <ul class="dropdown-menu">');
                             
-                            print('<li><a href="#" onclick="EditarPrecioLibre(1)" title="Valor Libre">Valor Libre</a></li>');
-                            print('<li><a href="#" onclick="EditarPrecioLibre(2)" title="Precio Mayorista">Mayorista</a></li>');            
+                            print('<li><a href="#" onclick="EditarPrecioVenta(`'.$idItem.'`,`0`)" title="Valor Libre">Valor Libre</a></li>');
+                            print('<li><a href="#" onclick="EditarPrecioVenta(`'.$idItem.'`,`1`)" title="Precio Mayorista">Mayorista</a></li>');            
 
                             print('</ul></div></div>');
                                 
@@ -108,17 +106,17 @@ if( !empty($_REQUEST["Accion"]) ){
                     $css->CierraFilaTabla();
                     $css->FilaTabla(16);
                         $css->ColTabla("<strong>Subtotal:</strong>", 1,'L');                        
-                        $css->ColTabla(number_format($Subtotal), 1,'L');
+                        $css->ColTabla(number_format($Subtotal), 1,'R');
                     $css->CierraFilaTabla();
                     
                     $css->FilaTabla(16);
                         $css->ColTabla("<strong>Impuestos:</strong>", 1,'L');                        
-                        $css->ColTabla(number_format($IVA), 1,'L');
+                        $css->ColTabla(number_format($IVA), 1,'R');
                     $css->CierraFilaTabla();
                     
-                    $css->FilaTabla(17);
+                    $css->FilaTabla(20);
                         $css->ColTabla("<strong>Total:</strong>", 1,'L');                        
-                        $css->ColTabla(number_format($Total), 1,'L');
+                        $css->ColTabla(number_format($Total), 1,'R');
                     $css->CierraFilaTabla();
                     
                     $css->FilaTabla(17);

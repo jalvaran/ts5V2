@@ -222,7 +222,9 @@ class Facturacion extends ProcesoVenta{
     }
     
     public function POS_AgregaItemPreventa($idProducto,$TablaItem,$Cantidad,$idPreventa,$ValorAcordado=0,$idSistema=0) {
+        
         $DatosProductoGeneral=$this->DevuelveValores($TablaItem, "idProductosVenta", $idProducto);
+        
         $CostoUnitario=0;
         $PrecioMayor=0;
         
@@ -334,6 +336,8 @@ class Facturacion extends ProcesoVenta{
             $Insert["Cantidad"]=$Cantidad;
             $Insert["VestasActivas_idVestasActivas"]=$idPreventa;
             $Insert["ProductosVenta_idProductosVenta"]=$idProducto;
+            $Insert["Nombre"]=$DatosProductoGeneral["Nombre"];
+            $Insert["Referencia"]=$DatosProductoGeneral["Referencia"];
             $Insert["ValorUnitario"]=$ValorUnitario;
             $Insert["ValorAcordado"]=$ValorUnitario;
             $Insert["Subtotal"]=$Subtotal;
@@ -346,6 +350,7 @@ class Facturacion extends ProcesoVenta{
             $Insert["PorcentajeIVA"]=$PorcentajeIVA;
             $Insert["idSistema"]=$idSistema;
             
+            
             $sql=$this->getSQLInsert("preventa", $Insert);
             
             $this->Query($sql);	
@@ -353,7 +358,46 @@ class Facturacion extends ProcesoVenta{
         }
         
     }
-        
+    
+    public function POS_EditarPrecio($idItem,$ValorAcordado,$Mayorista=0) {
+        $DatosPreventa= $this->DevuelveValores("preventa", "idPrecotizacion", $idItem);
+        $Cantidad=$DatosPreventa["Cantidad"];
+        $idProducto=$DatosPreventa["ProductosVenta_idProductosVenta"];
+        $Tabla=$DatosPreventa["TablaItem"];
+        $DatosProductos=$this->DevuelveValores($Tabla,"idProductosVenta",$idProducto);
+        if($Mayorista==1){
+            $ValorAcordado=$DatosProductos["PrecioMayorista"];
+        }
+        $DatosTablaItem=$this->DevuelveValores("tablas_ventas", "NombreTabla", $Tabla);
+        if($DatosTablaItem["IVAIncluido"]=="SI"){
+
+            $ValorAcordado=round($ValorAcordado/($DatosProductos["IVA"]+1),2);
+
+        }
+        $Subtotal=$ValorAcordado*$Cantidad;
+        $IVA=$Subtotal*$DatosProductos["IVA"];
+        $Total=$Subtotal+$IVA;
+        $filtro="idPrecotizacion";
+
+        $this->ActualizaRegistro("preventa","Subtotal", $Subtotal, $filtro, $idItem);
+        $this->ActualizaRegistro("preventa","Impuestos", $IVA, $filtro, $idItem);
+        $this->ActualizaRegistro("preventa","TotalVenta", $Total, $filtro, $idItem);
+        $this->ActualizaRegistro("preventa","ValorAcordado", $ValorAcordado, $filtro, $idItem);
+
+    }
+    
+    //Agregue un sistema a una preventa
+    public function POS_AgregueSistemaPreventa($idPreventa,$idSistema,$Cantidad,$Vector) {
+        $consulta=$this->ConsultarTabla("sistemas_relaciones", "WHERE idSistema='$idSistema'");
+        while($ItemsSistema=$this->FetchArray($consulta)){
+            
+            $CantidadTotal=$Cantidad*$ItemsSistema["Cantidad"];
+            $DatosProducto=$this->DevuelveValores($ItemsSistema["TablaOrigen"], "Referencia", $ItemsSistema["Referencia"]);
+            
+            $this->POS_AgregaItemPreventa($DatosProducto["idProductosVenta"], $ItemsSistema["TablaOrigen"], $CantidadTotal, $idPreventa,$ItemsSistema["ValorUnitario"],$idSistema);
+            
+        }
+    }
     /**
      * Fin Clase
      */

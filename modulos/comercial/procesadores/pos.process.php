@@ -58,18 +58,51 @@ if( !empty($_REQUEST["Accion"]) ){
             }
             if($CmbListado==2){
                 $TablaItem="servicios";
+                $DatosProducto=$obCon->ValorActual($TablaItem, "PrecioVenta", "idProductosVenta='$Codigo'");
+                if($DatosProducto["PrecioVenta"]==''){
+                    print("E1;El Servicio $Codigo no Existe");
+                    exit();
+                }
+                
+                if($DatosProducto["PrecioVenta"]<=0){
+                    print("E1;El precio de venta del Servicio $Codigo es menor o igual a Cero");
+                    exit();
+                }
+                $obCon->POS_AgregaItemPreventa($Codigo, $TablaItem, $Cantidad, $idPreventa);
+                print("OK;Servicio $Codigo Agregado");
+                exit();
             }
             if($CmbListado==3){
                 $TablaItem="productosalquiler";
+                $DatosProducto=$obCon->ValorActual($TablaItem, "PrecioVenta", "idProductosVenta='$Codigo'");
+                if($DatosProducto["PrecioVenta"]==''){
+                    print("E1;El Producto para alquilar $Codigo no Existe");
+                    exit();
+                }
+                
+                if($DatosProducto["PrecioVenta"]<=0){
+                    print("E1;El precio de venta del Producto para alquilar $Codigo es menor o igual a Cero");
+                    exit();
+                }
+                $obCon->POS_AgregaItemPreventa($Codigo, $TablaItem, $Cantidad, $idPreventa);
+                print("OK;Producto para alquilar $Codigo Agregado");
+                exit();
+                
             }
             if($CmbListado==4){
                 $TablaItem="sistemas";
+                $DatosProducto=$obCon->ValorActual($TablaItem, "Nombre", "ID='$Codigo'");
+                if($DatosProducto["Nombre"]==''){
+                    print("E1;El sistema $Codigo no Existe");
+                    exit();
+                }
+                
+                $obCon->POS_AgregueSistemaPreventa($idPreventa,$Codigo, $Cantidad, "");
+                print("OK;Producto para alquilar $Codigo Agregado");
+                exit();
             }
             
-            $obCon->AgregaItemCotizacion($idCotizacion,$Cantidad,$Multiplicador,$CmbBusquedas,$TablaItem,$ValorUnitario,"");
-            
-            print("OK");
-            
+                       
         break;//Fin caso 2
         
         
@@ -110,124 +143,22 @@ if( !empty($_REQUEST["Accion"]) ){
             $Mensaje="Item Editado";
             print("OK;$Mensaje");
             
-        break;//Fin caso 7
-    
-        case 8://realiza un anticipo a una cotizacion
-            $idCotizacion=$obCon->normalizar($_REQUEST["idCotizacion"]);       
-            $CmbCuentaIngreso=$obCon->normalizar($_REQUEST["CmbCuentaIngreso"]);
-            $TxtAnticipo=$obCon->normalizar($_REQUEST["TxtAnticipo"]);
-            $TxtFechaAnticipo=$obCon->normalizar($_REQUEST["TxtFechaAnticipo"]);
-            $MensajeComprobante="El valor debe ser superior a Cero";
-            if($TxtAnticipo>0){
-                $CentroCotos=1;
-                $idComprobanteIngreso=$obCon->AnticipoCotizacion($TxtFechaAnticipo, $idCotizacion, $TxtAnticipo, $CmbCuentaIngreso, $CentroCotos, "");
-                $LinkComprobante="../../VAtencion/PDF_Documentos.php?idDocumento=4&idIngreso=$idComprobanteIngreso";
-                $MensajeComprobante="<br><strong>Comprobante de ingreso $idComprobanteIngreso Creado Correctamente </strong><a href='$LinkComprobante'  target='blank'> Imprimir</a>";
-           
-            }
-            
-            print("OK;$MensajeComprobante");
-        break;//Fin caso 8
+        break;//Fin caso 4
         
-        case 9://Convierte cotizacion en factura
-            include_once("../clases/Facturacion.class.php");
-            $obFactura = new Facturacion($idUser);
-            
-            $idCotizacion=$obCon->normalizar($_REQUEST["idCotizacion"]);       
-            $Fecha=$obCon->normalizar($_REQUEST["TxtFechaFactura"]);
-            $idCentroCostos=$obCon->normalizar($_REQUEST["CmbCentroCostosFactura"]);
-            $CmbResolucion=$obCon->normalizar($_REQUEST["CmbResolucion"]);
-            $CmbFormaPago=$obCon->normalizar($_REQUEST["CmbFormaPago"]);
-            $CmbFrecuente=$obCon->normalizar($_REQUEST["CmbFrecuente"]);
-            $CmbCuentaIngresoFactura=$obCon->normalizar($_REQUEST["CmbCuentaIngresoFactura"]);
-            $CmbColaboradores=$obCon->normalizar($_REQUEST["CmbColaboradores"]);
-            $Observaciones=$obCon->normalizar($_REQUEST["TxtObservacionesFactura"]);
-            $AnticiposCruzados=$obCon->normalizar($_REQUEST["AnticiposCruzados"]);
-            
-            $idEmpresa=$obCon->normalizar($_REQUEST["CmbEmpresa"]);
-            $idSucursal=$obCon->normalizar($_REQUEST["CmbSucursal"]);
-            
-            $FormaPagoFactura=$CmbFormaPago;
-            if($CmbFormaPago<>"Contado"){
-                $FormaPagoFactura="Credito a $CmbFormaPago dias";
-            }
-            
-            
-            $Hora=date("H:i:s");
-            $OrdenCompra="";
-            $OrdenSalida="";
-            $sql="SELECT SUM(Subtotal) AS Subtotal, SUM(IVA) AS IVA, SUM(Total) as Total,SUM(SubtotalCosto) AS TotalCostos "
-                    . "FROM cot_itemscotizaciones WHERE NumCotizacion='$idCotizacion'";
-            $Consulta=$obCon->Query($sql);
-            $DatosTotalesCotizacion=$obCon->FetchAssoc($Consulta);
-            $Subtotal=$DatosTotalesCotizacion["Subtotal"];
-            $IVA=$DatosTotalesCotizacion["IVA"];
-            $Total=$DatosTotalesCotizacion["Total"];
-            $TotalCostos=$DatosTotalesCotizacion["TotalCostos"];
-            $SaldoFactura=$Total;
-            $Descuentos=0;
-            $DatosCotizacion=$obCon->DevuelveValores("cotizacionesv5", "ID", $idCotizacion);
-            $idCliente=$DatosCotizacion["Clientes_idClientes"];
-            
-            if($AnticiposCruzados>0){
-                $DatosCliente=$obCon->DevuelveValores("clientes", "idClientes", $DatosCotizacion["Clientes_idClientes"]);            
-                $NIT=$DatosCliente["Num_Identificacion"];
-                $ParametrosAnticipos=$obCon->DevuelveValores("parametros_contables", "ID", 20);//Aqui se encuentra la cuenta para los anticipos
-                $CuentaAnticipos=$ParametrosAnticipos["CuentaPUC"];
-                $sql="SELECT SUM(Debito) as Debito, SUM(Credito) AS Credito FROM librodiario WHERE CuentaPUC='$CuentaAnticipos' AND Tercero_Identificacion='$NIT'";
-                $Consulta=$obCon->Query($sql);
-                $DatosAnticipos=$obCon->FetchAssoc($Consulta);
-                $SaldoAnticiposTercero=$DatosAnticipos["Credito"]-$DatosAnticipos["Debito"];
-                
-                if($SaldoAnticiposTercero<$AnticiposCruzados){
-                    $Mensaje="El Cliente no cuenta con el anticipo registrado";
-                    print("E3;$Mensaje");
-                    exit();
-                }
-                
-            }
-            $idFactura=$obFactura->idFactura();
-            $NumFactura=$obFactura->CrearFactura($idFactura, $Fecha, $Hora, $CmbResolucion, $OrdenCompra, $OrdenSalida, $FormaPagoFactura, $Subtotal, $IVA, $Total, $Descuentos, $SaldoFactura, $idCotizacion, $idEmpresa, $idCentroCostos, $idSucursal, $idUser, $idCliente, $TotalCostos, $Observaciones, 0, 0, 0, 0, 0, 0, 0, "");
-            if($NumFactura=="E1"){
-                $Mensaje="La Resolucion está completa";
-                print("E1;$Mensaje");
+        case 5:// Editar el precio de venta de un item
+            $idItem=$obCon->normalizar($_REQUEST['idItem']);            
+            $ValorAcordado=$obCon->normalizar($_REQUEST["PrecioVenta"]);
+            $Mayorista=$obCon->normalizar($_REQUEST["Mayorista"]);
+            if($ValorAcordado<=0){
+                print("OK;El Valor del producto debe ser mayor a cero");
                 exit();
             }
-            if($NumFactura=="E2"){
-                $Mensaje="La Resolucion está ocupada, intentelo nuevamente";
-                print("E2;$Mensaje");
-                exit();
-            }
-            $obFactura->CopiarItemsCotizacionAItemsFactura($idCotizacion, $idFactura, $Fecha,$idUser, "");
-            if($CmbFormaPago=='Contado'){
-                $DatosCuenta=$obCon->DevuelveValores("subcuentas", "PUC", $CmbCuentaIngresoFactura);
-                $CuentaDestino=$CmbCuentaIngresoFactura;
-                $NombreCuentaDestino=$DatosCuenta["Nombre"];
-            }else{
-                $DatosCuenta=$obCon->DevuelveValores("parametros_contables", "ID", 6); //Cuenta Clientes
-                $CuentaDestino=$DatosCuenta["CuentaPUC"];
-                $NombreCuentaDestino=$DatosCuenta["NombreCuenta"];
-            }
-            $Datos["ID"]=$idFactura;
-            $Datos["CuentaDestino"]=$CmbCuentaIngresoFactura;
-            $obCon->InsertarFacturaLibroDiario($Datos);
-            $obCon->DescargueFacturaInventarios($idFactura, "");
-            if($CmbFormaPago<>'Contado'){
-                $obFactura->IngreseCartera($idFactura, $Fecha, $idCliente, $CmbFormaPago, $SaldoFactura, "");
-            }
-            if($AnticiposCruzados>0){
-                
-                $obFactura->CruzarAnticipoAFactura($idFactura,$Fecha,$AnticiposCruzados,$CuentaDestino,$NombreCuentaDestino,"");
-            }
             
-            if($CmbColaboradores>0){
-                $obCon->AgregueVentaColaborador($idFactura,$CmbColaboradores);
-            }
-            $LinkFactura="../../general/Consultas/PDF_Documentos.draw.php?idDocumento=2&ID=$idFactura";
-            $Mensaje="<br><strong>Factura $NumFactura Creada Correctamente </strong><a href='$LinkFactura'  target='blank'> Imprimir</a>";
-           
-            print("OK;$Mensaje");
-        break;//Fin caso 9
+            $obCon->POS_EditarPrecio($idItem,$ValorAcordado, $Mayorista);
+            
+            print("OK;Valor Editado");
+        break;//Fin caso 5
+        
         
         case 10://Consulta si existe o no una cotizacion
             $idCotizacion=$obCon->normalizar($_REQUEST["idCotizacion"]);
