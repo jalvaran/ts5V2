@@ -17,13 +17,21 @@ $css->PageInit($myTitulo);
         $css->Cdiv();
        
     $css->CModal("BntModalPOS", "onclick=AccionesPOS(event)", "button", "Guardar");
-    
-    $css->CrearDiv("", "col-md-12", "left", 1, 1); 
+    $DatosCaja=$obCon->DevuelveValores("cajas", "idUsuario", $idUser);
+    $Habilita=1;
+    if($DatosCaja["ID"]==''){
+        print("<h3>  No tienes una caja asignada, no puedes continuar</h3>");
+        $Habilita=0;
+    }
+    $css->CrearDiv("", "col-md-12", "left", $Habilita, 1); 
         $css->fieldset("", "", "FieldDatosCotizacion", "DatosCotizacion", "", "");
             $css->legend("", "");
-                print("<a href='#'>POS TS5</a>");
+                print("<a href='#'>POS TS5,<span id='SpEstadoCaja'> Usted está asignado a la caja No. $DatosCaja[ID]</span></a>");
+                
             $css->Clegend(); 
          
+    
+
     
     $css->CrearDiv("", "col-md-2", "center", 1, 1);
         $css->select("idPreventa", "form-control", "idPreventa", "", "", "", "onchange=DibujePreventa()");
@@ -56,6 +64,10 @@ $css->PageInit($myTitulo);
             $css->option("", "", "", 4, "", "");
                 print("Sistemas");
             $css->Coption();
+            $css->option("", "", "", 5, "", "");
+                print("Modo Bascula");
+            $css->Coption();
+            
 
         $css->Cselect();
     $css->CerrarDiv();
@@ -150,7 +162,7 @@ $css->PageInit($myTitulo);
         print("<br><br>");
     $css->CerrarDiv();  
     
-    $css->CrearDiv("DivDatos", "col-md-12", "left", 1, 1); //Datos para la creacion de la compra
+    $css->CrearDiv("DivDatos", "col-md-12", "left", $Habilita, 1); //Datos para la creacion de la compra
         $css->CrearDiv("DivMensajesModulo", "", "center", 1, 1); 
         $css->CerrarDiv();  
         $css->fieldset("", "", "FieldDatos", "Agregar Items", "", "");
@@ -190,18 +202,8 @@ $css->PageInit($myTitulo);
     //$css->CerrarDiv();
 
     print("<br><br><br><br><br><br><br><br>");
-    $css->CrearDiv("DivDatosCompras", "col-md-9", "left", 1, 1); //Datos para la creacion de la compra
-        $css->fieldset("", "", "FieldDatosCompra", "items en esta venta", "", "");
-            $css->legend("", "");
-                print("<a href='#'>Items Agregados</a>");
-            $css->Clegend();    
-            $css->CrearDiv("DivItems", "", "center", 1, 1,"","height: 400px;overflow: auto;");   
-
-            $css->CerrarDiv();       
-        $css->Cfieldset();
-        $css->CerrarDiv();
-        
-        $css->CrearDiv("DivInfoTotales", "col-md-3", "left", 1, 1); //Datos para la creacion de la compra
+    
+    $css->CrearDiv("DivInfoTotales", "col-md-5", "left", $Habilita, 1); //Datos para la creacion de la compra
         $css->fieldset("", "", "FieldDatosCompra", "Totales", "", "");
             $css->legend("", "");
                 print("<a href='#'>Totales</a>");
@@ -212,12 +214,25 @@ $css->PageInit($myTitulo);
             $css->CerrarDiv(); 
         $css->Cfieldset();    
     $css->CerrarDiv();
+    
+    $css->CrearDiv("DivDatosCompras", "col-md-7", "left", $Habilita, 1); //Datos para la creacion de la compra
+        $css->fieldset("", "", "FieldDatosCompra", "items en esta venta", "", "");
+            $css->legend("", "");
+                print("<a href='#'>Items Agregados</a>");
+            $css->Clegend();    
+            $css->CrearDiv("DivItems", "", "center", 1, 1,"","height: 400px;overflow: auto;");   
+
+            $css->CerrarDiv();       
+        $css->Cfieldset();
+        $css->CerrarDiv();
+        
+        
     //$css->CerrarDiv();
     
     $css->Cdiv();
 
 $css->PageFin();
-
+print('<script src="../../componentes/shortcuts.js"></script>');  //script propio de la pagina
 print('<script src="jsPages/pos.js"></script>');  //script propio de la pagina
 
 $css->Cbody();

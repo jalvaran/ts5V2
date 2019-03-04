@@ -39,7 +39,7 @@ if( !empty($_REQUEST["Accion"]) ){
             $Codigo=$obCon->normalizar($_REQUEST["Codigo"]); 
             $Cantidad=$obCon->normalizar($_REQUEST["Cantidad"]); 
             
-            if($CmbListado==1){
+            if($CmbListado==1 or $CmbListado==5){
                 $TablaItem="productosventa";
                 $idProducto=$obCon->ObtenerIdProducto($Codigo);
                 if($idProducto==''){
@@ -207,6 +207,28 @@ if( !empty($_REQUEST["Accion"]) ){
             $obCon->CopiarItemsCotizacion($idCotizacion, $idCotizacionActual);
             
             print("OK;"); //Existe la cotizacion solicitada
+            
+        break;//Fin caso 12
+        
+        case 13://Obtiene los datos de la bascula
+            
+            $DatosCaja=$obCon->DevuelveValores("cajas", "idUsuario", $idUser);
+            $idBascula=$DatosCaja["idBascula"];
+            if($idBascula==''){
+                print("E1;Usted no tiene una Caja Asignada");//No tiene caja asignada
+                exit();
+            }
+            if($idBascula==0){
+                print("E1;Usted No tiene una báscula asignada");//No tiene bascula asignada
+                exit();
+            }
+            $DatosBascula=$obCon->DevuelveValores("registro_basculas", "idBascula", $idBascula);
+            if($DatosBascula["Gramos"]==''){
+                print("E1;No hay registros de la bascula");//No tiene bascula asignada
+                exit();
+            }
+            
+            print("OK;".$DatosBascula["Gramos"]); //Devuelve el dato registrado por la bascula en la base de datos
             
         break;//Fin caso 12
         

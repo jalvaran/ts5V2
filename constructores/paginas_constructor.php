@@ -71,7 +71,7 @@ class PageConstruct extends html_estruct_class{
                 <!-- Header Navbar: style can be found in header.less -->
                 <nav class="navbar navbar-static-top">
                   <!-- Sidebar toggle button-->
-                  <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+                  <a href="#" id="BtnMuestraMenuLateral" class="sidebar-toggle" data-toggle="push-menu" role="button">
                     <span class="sr-only">Toggle navigation</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>

@@ -455,8 +455,155 @@ $('#idCliente').select2({
     }
   });
 
-ConvertirSelectBusquedas();
 
+function ModoBacula(){
+    
+    var form_data = new FormData();        
+        form_data.append('Accion', 13);
+        
+        
+        $.ajax({
+        url: './procesadores/pos.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';'); 
+            if(respuestas[0]=="E1"){
+                alertify.alert(respuestas[1]);
+                document.getElementById("SpEstadoCaja").innerHTML=respuestas[1];
+            }else if(respuestas[0]=="OK"){
+                document.getElementById("SpEstadoCaja").innerHTML="Modo Bascula Activo";
+                document.getElementById("Cantidad").value=respuestas[1];
+                if(document.getElementById("CmbListado").value==5){
+                    setTimeout(ModoBacula, 400);
+                }else{
+                    document.getElementById("SpEstadoCaja").innerHTML="";
+                    document.getElementById("Cantidad").value=1;
+                }
+                
+            }else{
+                alertify.alert(data);
+            }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}
+
+function AbrirModalFacturarPOS(){
+    
+    $("#ModalAccionesPOS").modal();
+    var idPreventa=document.getElementById('idPreventa').value;
+    var idCliente=document.getElementById('idCliente').value;
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 6);
+        form_data.append('idPreventa', idPreventa);
+        form_data.append('idCliente', idCliente);
+        $.ajax({
+        url: './Consultas/pos.draw.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            document.getElementById('DivFrmPOS').innerHTML=data;
+            setTimeout(function(){document.getElementById("Efectivo").select();}, 100);
+            
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}  
+
+function CalculeDevuelta(){
+    var TotalFactura = parseFloat(document.getElementById("TxtTotalDocumento").value);
+    var Efectivo = parseFloat(document.getElementById("Efectivo").value);
+    var Tarjetas = parseFloat(document.getElementById("Tarjetas").value);
+    var Cheque = parseFloat(document.getElementById("Cheque").value);
+    var Otros = parseFloat(document.getElementById("Otros").value);
+    if(document.getElementById("Tarjetas").value==''){
+        Tarjetas=0;
+    }
+    if(document.getElementById("Cheque").value==''){
+        Cheque=0;
+    }
+    if(document.getElementById("Otros").value==''){
+        Otros=0;
+    }
+    if(!$.isNumeric(Efectivo) || Efectivo < 0){
+        alertify.error("El Campo Efectivo debe ser un número mayor o igual a Cero y no puede estar en blanco");
+        document.getElementById("Efectivo").style.backgroundColor="pink";
+        
+        return;
+    }else{
+        document.getElementById("Efectivo").style.backgroundColor="white";
+    }
+    
+    if(!$.isNumeric(Tarjetas) || Tarjetas < 0){
+        
+        alertify.error("El Campo Tarjetas debe ser un número mayor o igual a Cero y no puede estar en blanco");
+        document.getElementById("Tarjetas").style.backgroundColor="pink";
+        
+        return;
+    }else{
+        document.getElementById("Tarjetas").style.backgroundColor="white";
+    }
+    
+    if(!$.isNumeric(Cheque) || Cheque < 0){
+        alertify.error("El Campo Cheque debe ser un número mayor o igual a Cero y no puede estar en blanco");
+        document.getElementById("Cheque").style.backgroundColor="pink";
+        
+        return;
+    }else{
+        document.getElementById("Cheque").style.backgroundColor="white";
+    }
+    
+    if(!$.isNumeric(Otros) || Otros < 0){
+        alertify.error("El Campo Otros debe ser un número mayor o igual a Cero y no puede estar en blanco");
+        document.getElementById("Otros").style.backgroundColor="pink";
+        
+        return;
+    }else{
+        document.getElementById("Otros").style.backgroundColor="white";
+    }
+    var TotalRecibido = Efectivo+Tarjetas+Cheque+Otros;
+    var Devuelta = TotalRecibido-TotalFactura;
+    document.getElementById("Devuelta").value=Devuelta;
+    
+}
+
+
+function atajosPOS(){
+
+    shortcut("Ctrl+E",function(){
+    document.getElementById("Codigo").focus();
+    });
+
+    shortcut("Ctrl+S",function(){
+    document.getElementById("BtnFacturar").click();
+    });
+    
+    shortcut("Ctrl+D",function(){
+    document.getElementById("Efectivo").select();
+    });
+
+}
+
+atajosPOS();
+ConvertirSelectBusquedas();
+document.getElementById("BtnMuestraMenuLateral").click();
 $('#CmbBusquedaItems').bind('change', function() {
     
     document.getElementById('Codigo').value = document.getElementById('CmbBusquedaItems').value;
@@ -467,6 +614,8 @@ $('#CmbBusquedaItems').bind('change', function() {
 $('#CmbListado').bind('change', function() {
     
     ConvertirSelectBusquedas();
-    
+    if(document.getElementById("CmbListado").value==5){
+        ModoBacula();
+    }
 });
 
