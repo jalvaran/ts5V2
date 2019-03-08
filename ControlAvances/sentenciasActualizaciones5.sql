@@ -39,3 +39,27 @@ INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOr
 
 ALTER TABLE `preventa` ADD `Nombre` VARCHAR(100) NOT NULL AFTER `TablaItem`;
 ALTER TABLE `preventa` ADD `Referencia` TEXT NOT NULL AFTER `Nombre`;
+
+CREATE TABLE `cotizaciones_anticipos` (
+  `ID` bigint(20) NOT NULL AUTO_INCREMENT,
+  `Fecha` date NOT NULL,
+  `Valor` double NOT NULL,
+  `idCotizacion` bigint(20) NOT NULL,
+  `idComprobanteIngreso` bigint(20) NOT NULL,
+  `idUsuario` int(11) NOT NULL,
+  `Estado` varchar(20) COLLATE utf8_spanish_ci NOT NULL,
+  `Updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Sync` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`ID`),
+  KEY `idCotizacion` (`idCotizacion`),
+  KEY `idComprobanteIngreso` (`idComprobanteIngreso`),
+  KEY `Estado` (`Estado`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOrigen`, `TablaAsociada`, `CampoAsociado`, `IDCampoAsociado`, `Updated`, `Sync`) VALUES (12, 'clientes', 'Tipo_Documento', 'cod_documentos', 'Descripcion', 'Codigo', '2019-03-01 23:38:29', '2019-02-01 23:38:29');
+
+INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOrigen`, `TablaAsociada`, `CampoAsociado`, `IDCampoAsociado`, `Updated`, `Sync`) VALUES ('13', 'clientes', 'Cod_Dpto', 'cod_departamentos', 'Nombre', 'Cod_dpto', '2019-03-01 23:38:29', '2019-02-01 23:38:29');
+INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOrigen`, `TablaAsociada`, `CampoAsociado`, `IDCampoAsociado`, `Updated`, `Sync`) VALUES ('14', 'clientes', 'Cod_Mcipio', 'cod_municipios_dptos', 'Ciudad', 'Cod_mcipio', '2019-03-01 23:38:29', '2019-02-01 23:38:29');
+INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOrigen`, `TablaAsociada`, `CampoAsociado`, `IDCampoAsociado`, `Updated`, `Sync`) VALUES ('15', 'clientes', 'Pais_Domicilio', 'cod_paises', 'Pais', 'Codigo', '2019-03-01 23:38:29', '2019-02-01 23:38:29');
+
+

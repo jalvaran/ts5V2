@@ -1084,5 +1084,23 @@ $('#CmbBusquedas').bind('change', function() {
     
 });
 
+
+$('#idCotizacion').select2({
+		  
+    placeholder: 'Selecciona una Cotización',
+    ajax: {
+      url: 'buscadores/cotizaciones.search.php',
+      dataType: 'json',
+      delay: 250,
+      processResults: function (data) {
+
+        return {                     
+          results: data
+        };
+      },
+     cache: true
+    }
+  });
+
 //$('#ValorUnitario').mask('1.999.999.##0,00', {reverse: true});
 //$('#Cantidad').mask('9.999.##0,00', {reverse: true});
