@@ -9,7 +9,7 @@ $idUser=$_SESSION['idUser'];
 $fecha=date("Y-m-d");
 
 include_once("../clases/Facturacion.class.php");
-
+include_once("../../../modelo/PrintPos.php");
 if( !empty($_REQUEST["Accion"]) ){
     $obCon = new Facturacion($idUser);
     
@@ -159,58 +159,8 @@ if( !empty($_REQUEST["Accion"]) ){
             print("OK;Valor Editado");
         break;//Fin caso 5
         
-        
-        case 10://Consulta si existe o no una cotizacion
-            $idCotizacion=$obCon->normalizar($_REQUEST["idCotizacion"]);
-            $DatosCotizacion=$obCon->DevuelveValores("cotizacionesv5", "ID", $idCotizacion);
-            if($DatosCotizacion["ID"]==''){
-                print("SD;"); //No existe el numero de cotizacion solicitado
-            }
-            if($DatosCotizacion["ID"]>0 AND $DatosCotizacion["Estado"]<>'Abierta'){
-                $obCon->ActualizaRegistro("cotizacionesv5", "Estado", "Abierta", "ID", $idCotizacion);
-                $DatosCliente=$obCon->DevuelveValores("clientes", "idClientes", $DatosCotizacion["Clientes_idClientes"]);
-                print("OK;".$DatosCliente["RazonSocial"]); //Existe la cotizacion solicitada
-            }
-            if($DatosCotizacion["Estado"]=='Abierta'){
-                print("AB;"); //La Cotizacion ya está abierta
-            }
-            
-        break;//Fin caso 10
-        
-        case 11://Clonar una cotización
-            $Fecha=date("Y-m-d");
-            $idCotizacion=$obCon->normalizar($_REQUEST["idCotizacion"]);
-            $DatosCotizacion=$obCon->DevuelveValores("cotizacionesv5", "ID", $idCotizacion);
-            if($DatosCotizacion["ID"]==''){
-                print("SD;"); //No existe el numero de cotizacion solicitado
-                exit();
-            }
-            $idCotizacionNew=$obCon->CrearCotizacion($Fecha, $DatosCotizacion["Clientes_idClientes"], "", "");
-            
-            $obCon->CopiarItemsCotizacion($idCotizacion, $idCotizacionNew);
-            
-            $DatosCliente=$obCon->DevuelveValores("clientes", "idClientes", $DatosCotizacion["Clientes_idClientes"]);
-            print("OK;$idCotizacionNew;".$DatosCliente["RazonSocial"]); //Existe la cotizacion solicitada
-            
-        break;//Fin caso 12
-        
-        case 12://Copiar los items de una cotización a otra
-            $Fecha=date("Y-m-d");
-            $idCotizacion=$obCon->normalizar($_REQUEST["idCotizacion"]);
-            $idCotizacionActual=$obCon->normalizar($_REQUEST["idCotizacionActual"]);
-            $DatosCotizacion=$obCon->DevuelveValores("cotizacionesv5", "ID", $idCotizacion);
-            if($DatosCotizacion["ID"]==''){
-                print("SD;"); //No existe el numero de cotizacion solicitado
-                exit();
-            }
-            
-            $obCon->CopiarItemsCotizacion($idCotizacion, $idCotizacionActual);
-            
-            print("OK;"); //Existe la cotizacion solicitada
-            
-        break;//Fin caso 12
-        
-        case 13://Obtiene los datos de la bascula
+                
+        case 6://Obtiene los datos de la bascula
             
             $DatosCaja=$obCon->DevuelveValores("cajas", "idUsuario", $idUser);
             $idBascula=$DatosCaja["idBascula"];
@@ -230,7 +180,141 @@ if( !empty($_REQUEST["Accion"]) ){
             
             print("OK;".$DatosBascula["Gramos"]); //Devuelve el dato registrado por la bascula en la base de datos
             
-        break;//Fin caso 12
+        break;//Fin caso 13
+        
+        case 7: //Guarda la factura
+            $obPrint = new PrintPos($idUser);
+            $obFactura = new Facturacion($idUser);
+            
+            $idPreventa=$obCon->normalizar($_REQUEST["idPreventa"]);       
+            $Fecha=date("Y-m-d");
+            $DatosCaja=$obCon->DevuelveValores("cajas", "idUsuario", $idUser);
+            $idCentroCostos=$DatosCaja["CentroCostos"];
+            $CmbResolucion=$DatosCaja["idResolucionDian"];
+            $CmbFormaPago=$obCon->normalizar($_REQUEST["CmbFormaPago"]);
+            $CmbFrecuente="NO";
+            $CmbCuentaIngresoFactura=$DatosCaja["CuentaPUCEfectivo"];
+            $CmbColaboradores=$obCon->normalizar($_REQUEST["CmbColaboradores"]);
+            $Observaciones=$obCon->normalizar($_REQUEST["TxtObservacionesFactura"]);
+            $AnticiposCruzados=$obCon->normalizar($_REQUEST["AnticiposCruzados"]);
+            $idCliente=$obCon->normalizar($_REQUEST["idCliente"]);
+            $idEmpresa=$DatosCaja["idEmpresa"];
+            $idSucursal=$DatosCaja["idSucursal"];
+            $Devuelta=$obCon->normalizar($_REQUEST["Devuelta"]);
+            $Efectivo=$obCon->normalizar($_REQUEST["Efectivo"]);
+            $Cheques=$obCon->normalizar($_REQUEST["Cheque"]);
+            $Otros=$obCon->normalizar($_REQUEST["Otros"]);
+            $Tarjetas=$obCon->normalizar($_REQUEST["Tarjetas"]);
+            $CmbPrint=$obCon->normalizar($_REQUEST["CmbPrint"]);
+            $FormaPagoFactura=$CmbFormaPago;
+            if($CmbFormaPago<>"Contado"){
+                $FormaPagoFactura="Credito a $CmbFormaPago dias";
+            }
+            
+            
+            $Hora=date("H:i:s");
+            
+            $sql="SELECT SUM(ValorAcordado) AS Subtotal, SUM(Impuestos) AS IVA, SUM(TotalVenta) as Total,SUM(CostoUnitario*Cantidad) AS TotalCostos "
+                    . "FROM preventa WHERE VestasActivas_idVestasActivas='$idPreventa'";
+            $Consulta=$obCon->Query($sql);
+            $DatosTotalesCotizacion=$obCon->FetchAssoc($Consulta);
+            $Subtotal=$DatosTotalesCotizacion["Subtotal"];
+            $IVA=$DatosTotalesCotizacion["IVA"];
+            $Total=$DatosTotalesCotizacion["Total"];
+            $TotalCostos=$DatosTotalesCotizacion["TotalCostos"];
+            $SaldoFactura=$Total;
+            $Descuentos=0;
+            
+            if($AnticiposCruzados>0){
+                $DatosCliente=$obCon->DevuelveValores("clientes", "idClientes", $DatosCotizacion["Clientes_idClientes"]);            
+                $NIT=$DatosCliente["Num_Identificacion"];
+                $ParametrosAnticipos=$obCon->DevuelveValores("parametros_contables", "ID", 20);//Aqui se encuentra la cuenta para los anticipos
+                $CuentaAnticipos=$ParametrosAnticipos["CuentaPUC"];
+                $sql="SELECT SUM(Debito) as Debito, SUM(Credito) AS Credito FROM librodiario WHERE CuentaPUC='$CuentaAnticipos' AND Tercero_Identificacion='$NIT'";
+                $Consulta=$obCon->Query($sql);
+                $DatosAnticipos=$obCon->FetchAssoc($Consulta);
+                $SaldoAnticiposTercero=$DatosAnticipos["Credito"]-$DatosAnticipos["Debito"];
+                
+                if($SaldoAnticiposTercero<$AnticiposCruzados){
+                    $Mensaje="El Cliente no cuenta con el anticipo registrado";
+                    print("E3;$Mensaje");
+                    exit();
+                }
+                
+            }
+            $idFactura=$obFactura->idFactura();
+                        
+            $NumFactura=$obFactura->CrearFactura($idFactura, $Fecha, $Hora, $CmbResolucion, "", "", $FormaPagoFactura, $Subtotal, $IVA, $Total, $Descuentos, $SaldoFactura, "", $idEmpresa, $idCentroCostos, $idSucursal, $idUser, $idCliente, $TotalCostos, $Observaciones, $Efectivo, $Devuelta, $Cheques, $Otros, $Tarjetas, 0, 0, "");
+            if($NumFactura=="E1"){
+                $Mensaje="La Resolucion está completa";
+                print("E1;$Mensaje");
+                exit();
+            }
+            if($NumFactura=="E2"){
+                $Mensaje="La Resolucion está ocupada, intentelo nuevamente";
+                print("E2;$Mensaje");
+                exit();
+            }
+            
+            $Datos["idPreventa"]=$idPreventa;
+            $Datos["NumFactura"]=$NumFactura;
+            $Datos["FechaFactura"]=$Fecha;
+            $Datos["ID"]=$idFactura;
+            $Datos["CuentaDestino"]=$CmbCuentaIngresoFactura;
+            $Datos["EmpresaPro"]=$idEmpresa;
+            $Datos["CentroCostos"]=$idCentroCostos;
+            $obFactura->InsertarItemsPreventaAItemsFactura($Datos);
+                
+            //$obFactura->CopiarItemsCotizacionAItemsFactura($idCotizacion, $idFactura, $Fecha,$idUser, "");
+            if($CmbFormaPago=='Contado'){
+                $DatosCuenta=$obCon->DevuelveValores("subcuentas", "PUC", $CmbCuentaIngresoFactura);
+                $CuentaDestino=$CmbCuentaIngresoFactura;
+                $NombreCuentaDestino=$DatosCuenta["Nombre"];
+            }else{
+                $DatosCuenta=$obCon->DevuelveValores("parametros_contables", "ID", 6); //Cuenta Clientes
+                $CuentaDestino=$DatosCuenta["CuentaPUC"];
+                $NombreCuentaDestino=$DatosCuenta["NombreCuenta"];
+            }
+            
+            $obFactura->InsertarFacturaLibroDiarioV2($idFactura,$CmbCuentaIngresoFactura,$idUser);
+            $obCon->DescargueFacturaInventarios($idFactura, "");
+            if($CmbFormaPago<>'Contado'){
+                $obFactura->IngreseCartera($idFactura, $Fecha, $idCliente, $CmbFormaPago, $SaldoFactura, "");
+            }
+            if($AnticiposCruzados>0){
+                
+                $obFactura->CruzarAnticipoAFactura($idFactura,$Fecha,$AnticiposCruzados,$CuentaDestino,$NombreCuentaDestino,"");
+            }
+            
+            if($CmbColaboradores>0){
+                $obCon->AgregueVentaColaborador($idFactura,$CmbColaboradores);
+            }
+            $obFactura->BorraReg("preventa", "VestasActivas_idVestasActivas", $idPreventa);
+            
+            $DatosImpresora=$obCon->DevuelveValores("config_puertos", "ID", 1);
+            if($DatosImpresora["Habilitado"]=="SI" AND $CmbPrint=='SI'){
+                $obPrint->ImprimeFacturaPOS($idFactura,$DatosImpresora["Puerto"],1);
+                $DatosTikete=$obVenta->DevuelveValores("config_tiketes_promocion", "ID", 1);
+                if($TotalVenta>=$DatosTikete["Tope"] AND $DatosTikete["Activo"]=="SI"){
+                    $VectorTiket["F"]=0;
+                    $Copias=1;
+                    if($DatosTikete["Multiple"]=="SI"){
+                        $Copias=floor($TotalVenta/$DatosTikete["Tope"]);
+                    }
+                    $obPrint->ImprimirTiketePromo($idFactura,$DatosTikete["NombreTiket"],$DatosImpresora["Puerto"],$Copias,$VectorTiket);
+                }
+            }
+            
+            $LinkFactura="../../general/Consultas/PDF_Documentos.draw.php?idDocumento=2&ID=$idFactura";
+            $Mensaje="<br><strong>Factura $NumFactura Creada Correctamente </strong><a href='$LinkFactura'  target='blank'> Imprimir</a>";
+            
+            
+            
+            print("OK;$Mensaje");
+            
+            
+            
+        break;//fin case 7
         
     }
     

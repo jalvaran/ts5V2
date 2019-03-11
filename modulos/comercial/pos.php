@@ -203,19 +203,9 @@ $css->PageInit($myTitulo);
 
     print("<br><br><br><br><br><br><br><br>");
     
-    $css->CrearDiv("DivInfoTotales", "col-md-5", "left", $Habilita, 1); //Datos para la creacion de la compra
-        $css->fieldset("", "", "FieldDatosCompra", "Totales", "", "");
-            $css->legend("", "");
-                print("<a href='#'>Totales</a>");
-            $css->Clegend();    
-           
-            $css->CrearDiv("DivTotales", "", "center", 1, 1);   
-                
-            $css->CerrarDiv(); 
-        $css->Cfieldset();    
-    $css->CerrarDiv();
     
-    $css->CrearDiv("DivDatosCompras", "col-md-7", "left", $Habilita, 1); //Datos para la creacion de la compra
+    
+    $css->CrearDiv("DivDatosCompras", "col-md-8", "left", $Habilita, 1); //Datos para la creacion de la compra
         $css->fieldset("", "", "FieldDatosCompra", "items en esta venta", "", "");
             $css->legend("", "");
                 print("<a href='#'>Items Agregados</a>");
@@ -226,6 +216,18 @@ $css->PageInit($myTitulo);
         $css->Cfieldset();
         $css->CerrarDiv();
         
+        
+        $css->CrearDiv("DivInfoTotales", "col-md-4", "left", $Habilita, 1); //Datos para la creacion de la compra
+        $css->fieldset("", "", "FieldDatosCompra", "Totales", "", "");
+            $css->legend("", "");
+                print("<a href='#'>Totales</a>");
+            $css->Clegend();    
+           
+            $css->CrearDiv("DivTotales", "", "center", 1, 1);   
+                
+            $css->CerrarDiv(); 
+        $css->Cfieldset();    
+    $css->CerrarDiv();
         
     //$css->CerrarDiv();
     

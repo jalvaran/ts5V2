@@ -250,8 +250,8 @@ class Facturacion extends ProcesoVenta{
             }
             
             $Cantidad=$DatosProduto["Cantidad"]+$Cantidad;
-            $Subtotal=round($DatosProduto["ValorAcordado"]*$Cantidad,2);
-            $Impuestos=round($DatosProductoGeneral["IVA"]*$Subtotal+$DatosImpuestosAdicionales["ValorImpuesto"],2);
+            $Subtotal=round($DatosProduto["ValorAcordado"]*$Cantidad);
+            $Impuestos=round($DatosProductoGeneral["IVA"]*$Subtotal+$DatosImpuestosAdicionales["ValorImpuesto"]);
             $TotalVenta=$Subtotal+$Impuestos;
             $sql="UPDATE preventa SET Subtotal='$Subtotal', Impuestos='$Impuestos', TotalVenta='$TotalVenta', Cantidad='$Cantidad' WHERE idPrecotizacion='$DatosProduto[idPrecotizacion]'";
             
@@ -327,7 +327,7 @@ class Facturacion extends ProcesoVenta{
                 }
             }
             
-            $impuesto=($impuesto-1)*$Subtotal +($DatosImpuestosAdicionales["ValorImpuesto"]*$Cantidad);
+            $impuesto=round(($impuesto-1)*$Subtotal,2) + round(($DatosImpuestosAdicionales["ValorImpuesto"]*$Cantidad),2);
             
             
             $Total=$Subtotal+$impuesto;
@@ -398,6 +398,212 @@ class Facturacion extends ProcesoVenta{
             
         }
     }
+    
+    public function InsertarFacturaLibroDiarioV2($idFactura,$CuentaDestino,$idUser) {
+        $sql= $this->getSqlFacturaLibroDiario($idFactura, $CuentaDestino, $idUser);
+        $this->Query($sql);
+    }
+    
+    public function getSqlFacturaLibroDiario($idFactura,$CuentaDestino,$idUser) {
+        $sqlFactura="INSERT INTO `librodiario` ( `Fecha`, `Tipo_Documento_Intero`, `Num_Documento_Interno`, `Num_Documento_Externo`, `Tercero_Tipo_Documento`, `Tercero_Identificacion`, `Tercero_DV`, `Tercero_Primer_Apellido`, `Tercero_Segundo_Apellido`, `Tercero_Primer_Nombre`, `Tercero_Otros_Nombres`, `Tercero_Razon_Social`, `Tercero_Direccion`, `Tercero_Cod_Dpto`, `Tercero_Cod_Mcipio`, `Tercero_Pais_Domicilio`, `Concepto`, `CuentaPUC`, `NombreCuenta`, `Detalle`, `Debito`, `Credito`, `Neto`, `Mayor`, `Esp`, `idCentroCosto`, `idEmpresa`, `idSucursal`, `Estado`, `idUsuario`) VALUES ";
+        
+        $DatosFactura= $this->DevuelveValores("facturas", "idFacturas", $idFactura);
+        $DatosTercero= $this->DevuelveValores("clientes", "idClientes", $DatosFactura["Clientes_idClientes"]);
+        $Fecha=$DatosFactura["Fecha"];
+        $TerceroTipoDocumento=$DatosTercero["Tipo_Documento"];
+        $NIT=$DatosTercero["Tipo_Documento"];
+        $DV=$DatosTercero["DV"];
+        $TerceroNombre1=$DatosTercero["Primer_Apellido"];
+        $TerceroNombre2=$DatosTercero["Segundo_Apellido"];
+        $TerceroNombre3=$DatosTercero["Primer_Nombre"];
+        $TerceroNombre4=$DatosTercero["Otros_Nombres"];
+        $RazonSocial=$DatosTercero["RazonSocial"];
+        $Direccion=$DatosTercero["Direccion"];
+        $CodDepartamento=$DatosTercero["Cod_Dpto"];
+        $CodMunicipo=$DatosTercero["Cod_Mcipio"];
+        $codPais=$DatosTercero["Pais_Domicilio"];
+        $idCentroCostos=$DatosFactura["CentroCosto"];
+        $idEmpresa=$DatosFactura["EmpresaPro_idEmpresaPro"];
+        $idSucursal=$DatosFactura["idSucursal"];
+        
+        $sql="SELECT  sum(SubtotalItem) as SubtotalItem,sum(TotalItem) as TotalItem,sum(IVAItem) as IVAItem "
+                    . "FROM facturas_items WHERE idFactura='$idFactura'";
+        $Consulta=$this->Query($sql);
+        $DatosTotales=$this->FetchAssoc($Consulta);
+        
+        $Subtotal=round($DatosTotales["SubtotalItem"],2);
+        $Impuestos=round($DatosTotales["IVAItem"],2);
+        $Total=$Subtotal+$Impuestos;
+        
+        
+        //Registramos la partida inicial
+        
+        if($DatosFactura["FormaPago"]=="Contado"){
+                    
+            $TotalOtrasFormasPago=$DatosFactura["Tarjetas"]+$DatosFactura["Cheques"]+$DatosFactura["Otros"];
+            $DiferenciaFormasPago=$Total-$TotalOtrasFormasPago;
+            if($DiferenciaFormasPago<>0){
+                $CuentaPUC=$CuentaDestino;
+                $DatosCuenta= $this->DevuelveValores("subcuentas", "PUC", $CuentaDestino);
+                $NombreCuenta=$DatosCuenta["Nombre"];
+                if($Total>0){
+                    $Debito=$DiferenciaFormasPago;
+                    $Credito=0;
+                    $Neto=$DiferenciaFormasPago;
+                }else{
+                    $Debito=0;
+                    $Credito=$DiferenciaFormasPago;
+                    $Neto=$DiferenciaFormasPago*(-1);
+                }
+                $sqlFactura.="('$Fecha','FACTURA','$idFactura','','$TerceroTipoDocumento','$NIT','$DV','$TerceroNombre1','$TerceroNombre2','$TerceroNombre3','$TerceroNombre4','$RazonSocial','$Direccion','$CodDepartamento','$CodMunicipo','$codPais','Ventas','$CuentaPUC','$NombreCuenta',	'Ventas',$Debito,$Credito,$Neto,'NO','NO',$idCentroCostos,$idEmpresa,$idSucursal,'',$idUser),";
+            }
+            //Si se paga con tarjetas
+            if($DatosFactura["Tarjetas"]>0){ 
+                $Parametros=$this->DevuelveValores("parametros_contables", "ID", 17);
+                $CuentaPUC=$Parametros["CuentaPUC"]; //cuenta para bancos
+                $NombreCuenta=$Parametros["NombreCuenta"];
+
+                $Debito=$DatosFactura["Tarjetas"];
+                $Credito=0;
+                $Neto=$DatosFactura["Tarjetas"];
+                $sqlFactura.="('$Fecha','FACTURA','$idFactura','','$TerceroTipoDocumento','$NIT','$DV','$TerceroNombre1','$TerceroNombre2','$TerceroNombre3','$TerceroNombre4','$RazonSocial','$Direccion','$CodDepartamento','$CodMunicipo','$codPais','Ventas','$CuentaPUC','$NombreCuenta',	'Ventas',$Debito,$Credito,$Neto,'NO','NO',$idCentroCostos,$idEmpresa,$idSucursal,'',$idUser),";
+
+            }
+            //Si hay pagos con cheques
+            if($DatosFactura["Cheques"]>0){ 
+                $Parametros=$this->DevuelveValores("parametros_contables", "ID", 18);
+                $CuentaPUC=$Parametros["CuentaPUC"]; //cuenta para bancos
+                $NombreCuenta=$Parametros["NombreCuenta"];
+
+                $Debito=$DatosFactura["Cheques"];
+                $Credito=0;
+                $Neto=$DatosFactura["Cheques"];
+                $sqlFactura.="('$Fecha','FACTURA','$idFactura','','$TerceroTipoDocumento','$NIT','$DV','$TerceroNombre1','$TerceroNombre2','$TerceroNombre3','$TerceroNombre4','$RazonSocial','$Direccion','$CodDepartamento','$CodMunicipo','$codPais','Ventas','$CuentaPUC','$NombreCuenta',	'Ventas',$Debito,$Credito,$Neto,'NO','NO',$idCentroCostos,$idEmpresa,$idSucursal,'',$idUser),";
+
+            }
+
+            //Si hay pagos con otros medios
+            if($DatosFactura["Otros"]>0){ 
+                $Parametros=$this->DevuelveValores("parametros_contables", "ID", 30);
+                $CuentaPUC=$Parametros["CuentaPUC"]; //cuenta para bancos
+                $NombreCuenta=$Parametros["NombreCuenta"];
+
+                $Debito=$DatosFactura["Otros"];
+                $Credito=0;
+                $Neto=$DatosFactura["Otros"];
+                $sqlFactura.="('$Fecha','FACTURA','$idFactura','','$TerceroTipoDocumento','$NIT','$DV','$TerceroNombre1','$TerceroNombre2','$TerceroNombre3','$TerceroNombre4','$RazonSocial','$Direccion','$CodDepartamento','$CodMunicipo','$codPais','Ventas','$CuentaPUC','$NombreCuenta',	'Ventas',$Debito,$Credito,$Neto,'NO','NO',$idCentroCostos,$idEmpresa,$idSucursal,'',$idUser),";
+
+            }
+
+        }
+
+        if($DatosFactura["FormaPago"]<>"Contado" and $DatosFactura['FormaPago']<>"Separado"){
+
+            $Parametros=$this->DevuelveValores("parametros_contables", "ID", 6); //Cuenta para clientes
+            $CuentaPUC=$Parametros["CuentaPUC"];
+            $NombreCuenta=$Parametros["NombreCuenta"];
+
+            $Debito=$Total;
+            $Credito=0;
+            $Neto=$Total;
+            $sqlFactura.="('$Fecha','FACTURA','$idFactura','','$TerceroTipoDocumento','$NIT','$DV','$TerceroNombre1','$TerceroNombre2','$TerceroNombre3','$TerceroNombre4','$RazonSocial','$Direccion','$CodDepartamento','$CodMunicipo','$codPais','Ventas','$CuentaPUC','$NombreCuenta',	'Ventas',$Debito,$Credito,$Neto,'NO','NO',$idCentroCostos,$idEmpresa,$idSucursal,'',$idUser),";
+
+
+        }
+
+        if($DatosFactura["FormaPago"]=="Separado"){
+
+            $Parametros=$this->DevuelveValores("parametros_contables", "ID", 31); //Cuenta por pagar a los separados
+            $CuentaPUC=$Parametros["CuentaPUC"];
+            $NombreCuenta=$Parametros["NombreCuenta"];
+
+            $Debito=$Total;
+            $Credito=0;
+            $Neto=$Total;
+            $sqlFactura.="('$Fecha','FACTURA','$idFactura','','$TerceroTipoDocumento','$NIT','$DV','$TerceroNombre1','$TerceroNombre2','$TerceroNombre3','$TerceroNombre4','$RazonSocial','$Direccion','$CodDepartamento','$CodMunicipo','$codPais','Ventas','$CuentaPUC','$NombreCuenta',	'Ventas',$Debito,$Credito,$Neto,'NO','NO',$idCentroCostos,$idEmpresa,$idSucursal,'',$idUser),";
+
+
+        }
+        
+        
+        
+        $sql="SELECT PorcentajeIVA,CuentaPUC, TipoItem, sum(SubtotalItem) as SubtotalItem,sum(TotalItem) as TotalItem,sum(IVAItem) as IVAItem ,sum(SubtotalCosto) as SubtotalCosto  "
+                    . "FROM facturas_items WHERE idFactura='$idFactura' GROUP BY CuentaPUC, PorcentajeIVA";
+        $Consulta2=$this->Query($sql);
+        
+        while($DatosItems=$this->FetchArray($Consulta2)){
+
+            $Subtotal=round($DatosItems["SubtotalItem"],2);
+            $Impuestos=round($DatosItems["IVAItem"],2);
+            $Total=$Subtotal+$Impuestos;
+            $TotalCostosM=$DatosItems["SubtotalCosto"];
+            
+            
+
+            ///////////////////////Registramos ingresos
+
+            $CuentaPUC=$DatosItems["CuentaPUC"]; 
+            $DatosCuenta=$this->DevuelveValores("subcuentas","PUC",$CuentaPUC);
+            $NombreCuenta=$DatosCuenta["Nombre"];
+            $Debito=0;
+            $Credito=$Subtotal;
+            $Neto=$Subtotal*(-1);
+            
+            $sqlFactura.="('$Fecha','FACTURA','$idFactura','','$TerceroTipoDocumento','$NIT','$DV','$TerceroNombre1','$TerceroNombre2','$TerceroNombre3','$TerceroNombre4','$RazonSocial','$Direccion','$CodDepartamento','$CodMunicipo','$codPais','Ventas','$CuentaPUC','$NombreCuenta',	'Ventas',$Debito,$Credito,$Neto,'NO','NO',$idCentroCostos,$idEmpresa,$idSucursal,'',$idUser),";
+         
+            ///////////////////////Registramos IVA Generado si aplica
+
+            if($Impuestos<>0){
+                $TipoIVA=str_replace("%", "", $DatosItems["PorcentajeIVA"]);
+                $TipoIVA=str_pad($TipoIVA, 2, "0", STR_PAD_LEFT);
+                $TipoIVA="0.".$TipoIVA;
+                $DatosIVA=$this->DevuelveValores("porcentajes_iva", "Valor", $TipoIVA);
+                $CuentaPUC=$DatosIVA["CuentaPUCIVAGenerado"]; //   IVA Generado
+                $NombreCuenta=$DatosIVA["NombreCuenta"];
+                $Debito=0;
+                $Credito=$Impuestos;
+                $Neto=$Impuestos*(-1);
+
+                $sqlFactura.="('$Fecha','FACTURA','$idFactura','','$TerceroTipoDocumento','$NIT','$DV','$TerceroNombre1','$TerceroNombre2','$TerceroNombre3','$TerceroNombre4','$RazonSocial','$Direccion','$CodDepartamento','$CodMunicipo','$codPais','Ventas','$CuentaPUC','$NombreCuenta',	'Ventas',$Debito,$Credito,$Neto,'NO','NO',$idCentroCostos,$idEmpresa,$idSucursal,'',$idUser),";
+         
+            }
+
+
+            ///////////////////////Ajustamos el inventario
+
+            if($DatosItems["TipoItem"]=="PR"){
+                $Parametros=$this->DevuelveValores("parametros_contables", "ID", 2);
+                $CuentaPUC=$Parametros["CuentaPUC"]; //6135   costo de mercancia vendida
+
+                $NombreCuenta=$Parametros["NombreCuenta"];
+
+                $Debito=$TotalCostosM;
+                $Credito=0;
+                $Neto=$TotalCostosM;
+
+                $sqlFactura.="('$Fecha','FACTURA','$idFactura','','$TerceroTipoDocumento','$NIT','$DV','$TerceroNombre1','$TerceroNombre2','$TerceroNombre3','$TerceroNombre4','$RazonSocial','$Direccion','$CodDepartamento','$CodMunicipo','$codPais','Ventas','$CuentaPUC','$NombreCuenta',	'Ventas',$Debito,$Credito,$Neto,'NO','NO',$idCentroCostos,$idEmpresa,$idSucursal,'',$idUser),";
+         
+                ///////////////////////Ajustamos el inventario
+                $Parametros=$this->DevuelveValores("parametros_contables", "ID", 4);
+                $CuentaPUC=$Parametros["CuentaPUC"]; //1435   Mercancias no fabricadas por la empresa
+
+                //$DatosCuenta=$this->DevuelveValores('cuentas',"idPUC",$CuentaPUC);
+                $NombreCuenta=$Parametros["NombreCuenta"];
+
+                $Debito=0;
+                $Credito=$TotalCostosM;
+                $Neto=$TotalCostosM*(-1);
+
+                $sqlFactura.="('$Fecha','FACTURA','$idFactura','','$TerceroTipoDocumento','$NIT','$DV','$TerceroNombre1','$TerceroNombre2','$TerceroNombre3','$TerceroNombre4','$RazonSocial','$Direccion','$CodDepartamento','$CodMunicipo','$codPais','Ventas','$CuentaPUC','$NombreCuenta',	'Ventas',$Debito,$Credito,$Neto,'NO','NO',$idCentroCostos,$idEmpresa,$idSucursal,'',$idUser),";
+         
+
+            }
+
+        }
+        $sqlFactura = substr($sqlFactura, 0, -1);       
+        return($sqlFactura);
+    }
+    
     /**
      * Fin Clase
      */

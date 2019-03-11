@@ -459,7 +459,7 @@ $('#idCliente').select2({
 function ModoBacula(){
     
     var form_data = new FormData();        
-        form_data.append('Accion', 13);
+        form_data.append('Accion', 6);
         
         
         $.ajax({
@@ -528,7 +528,7 @@ function AbrirModalFacturarPOS(){
 }  
 
 function CalculeDevuelta(){
-    var TotalFactura = parseFloat(document.getElementById("TxtTotalDocumento").value);
+    var TotalFactura = parseFloat(document.getElementById("TxtTotalFactura").value);
     var Efectivo = parseFloat(document.getElementById("Efectivo").value);
     var Tarjetas = parseFloat(document.getElementById("Tarjetas").value);
     var Cheque = parseFloat(document.getElementById("Cheque").value);
@@ -598,8 +598,189 @@ function atajosPOS(){
     shortcut("Ctrl+D",function(){
     document.getElementById("Efectivo").select();
     });
+    
+    shortcut("Ctrl+A",function(){
+    document.getElementById("BntModalPOS").click();
+    });
 
 }
+
+function AccionesPOS(){
+    document.getElementById("BntModalPOS").disabled=true;
+    document.getElementById("BntModalPOS").value="Guardando...";
+    var idFormulario=document.getElementById('idFormulario').value; //determina el tipo de formulario que se va a guardar
+    
+    if(idFormulario==1){
+        GuardarFactura();
+    }
+    
+    
+    
+}
+
+function GuardarFactura(){
+       
+    var idPreventa = document.getElementById('idPreventa').value;       
+    var Efectivo = parseFloat(document.getElementById('Efectivo').value);
+    var Tarjetas = parseFloat(document.getElementById('Tarjetas').value);
+    var Cheque = parseFloat(document.getElementById('Cheque').value);
+    var Otros = parseFloat(document.getElementById('Otros').value);
+    var Devuelta = parseFloat(document.getElementById('Devuelta').value);
+    var CmbFormaPago = document.getElementById('CmbFormaPago').value;
+    var CmbColaboradores = document.getElementById('CmbColaboradores').value;
+    var CmbPrint = document.getElementById('CmbPrint').value;
+    var TxtObservacionesFactura = document.getElementById('TxtObservacionesFactura').value;
+    var AnticiposCruzados = parseFloat(document.getElementById('AnticiposCruzados').value);
+    var TxtTotalFactura = parseFloat(document.getElementById('TxtTotalFactura').value);
+    var TxtTotalAnticipos = parseFloat(document.getElementById('TxtTotalAnticiposFactura').value);
+    var idCliente = (document.getElementById('idCliente').value);
+    
+    if(!$.isNumeric(Devuelta) ||  Devuelta<0){
+        
+        alertify.alert("La suma de las formas de pago debe ser mayor o igual al total de la factura");
+        document.getElementById("Efectivo").style.backgroundColor="pink";
+        document.getElementById("BntModalPOS").disabled=false;
+        return;
+    }else{
+        document.getElementById("Efectivo").style.backgroundColor="white";
+    }
+    
+    if(!$.isNumeric(Efectivo) ||  Efectivo<0){
+        
+        alertify.alert("El campo Efectivo debe ser un número mayor o igual a cero");
+        document.getElementById("Efectivo").style.backgroundColor="pink";
+        document.getElementById("BntModalPOS").disabled=false;
+        return;
+    }else{
+        document.getElementById("Efectivo").style.backgroundColor="white";
+    }
+    
+    if(!$.isNumeric(Tarjetas) ||  Tarjetas<0){
+        
+        alertify.alert("El campo Tarjetas debe ser un número mayor o igual a cero");
+        document.getElementById("Tarjetas").style.backgroundColor="pink";
+        document.getElementById("BntModalPOS").disabled=false;
+        return;
+    }else{
+        document.getElementById("Tarjetas").style.backgroundColor="white";
+    }
+    
+    if(!$.isNumeric(Cheque) ||  Cheque<0){
+        
+        alertify.alert("El campo Cheques debe ser un número mayor o igual a cero");
+        document.getElementById("Cheque").style.backgroundColor="pink";
+        document.getElementById("BntModalPOS").disabled=false;
+        return;
+    }else{
+        document.getElementById("Cheque").style.backgroundColor="white";
+    }
+    
+    if(!$.isNumeric(Otros) ||  Otros<0){
+        
+        alertify.alert("El campo Otros debe ser un número mayor o igual a cero");
+        document.getElementById("Otros").style.backgroundColor="pink";
+        document.getElementById("BntModalPOS").disabled=false;
+        return;
+    }else{
+        document.getElementById("Otros").style.backgroundColor="white";
+    }
+    
+    
+    if(!$.isNumeric(AnticiposCruzados) ||  AnticiposCruzados<0){
+        
+        alertify.alert("El Anticipo debe ser un número mayor o igual a cero");
+        document.getElementById("AnticiposCruzados").style.backgroundColor="pink";
+        document.getElementById("BntModalPOS").disabled=false;
+        return;
+    }else{
+        document.getElementById("AnticiposCruzados").style.backgroundColor="white";
+    }
+    
+    if(TxtTotalAnticipos < AnticiposCruzados){
+        
+        alertify.alert("El Anticipo no puede ser mayor al total de anticipos realizados por el Cliente");
+        document.getElementById("AnticiposCruzados").style.backgroundColor="pink";
+        document.getElementById("BntModalPOS").disabled=false;
+        return;
+    }else{
+        document.getElementById("AnticiposCruzados").style.backgroundColor="white";
+    }
+    
+    if( AnticiposCruzados > TxtTotalFactura){
+        alertify.alert("El Anticipo no puede ser mayor al total de la Factura");
+        document.getElementById("AnticiposCruzados").style.backgroundColor="pink";
+        document.getElementById("BntModalPOS").disabled=false;
+        return;
+    }else{
+        document.getElementById("AnticiposCruzados").style.backgroundColor="white";
+    }
+    
+    
+    var form_data = new FormData();
+        form_data.append('Accion', '7'); 
+        form_data.append('idPreventa', idPreventa);
+        form_data.append('Efectivo', Efectivo );
+        form_data.append('Tarjetas', Tarjetas );
+        form_data.append('Cheque', Cheque );
+        form_data.append('Otros', Otros );
+        form_data.append('Devuelta', Devuelta);
+        form_data.append('CmbFormaPago', CmbFormaPago);
+        form_data.append('CmbColaboradores', CmbColaboradores);
+        form_data.append('TxtObservacionesFactura', TxtObservacionesFactura);
+        form_data.append('idCliente', idCliente);        
+        form_data.append('AnticiposCruzados', AnticiposCruzados);
+        form_data.append('CmbPrint', CmbPrint);
+        AnticiposCruzados=0;
+        $.ajax({
+        url: './procesadores/pos.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';'); 
+            if(respuestas[0]=="OK"){
+                var mensaje=respuestas[1];                
+                alertify.alert(mensaje);
+                CierraModal('ModalAccionesPOS');
+                document.getElementById("BntModalPOS").disabled=false;
+                document.getElementById("BntModalPOS").value="Guardar";
+                DibujePreventa();
+                
+            }else if(respuestas[0]=="E1"){
+                alertify.error("Error: La Resolución seleccionada ya está Completada",0);
+                document.getElementById("BntModalPOS").disabled=false;
+                document.getElementById("BntModalPOS").value="Guardar";
+            }else if(respuestas[0]=="E2"){
+                alertify.error("Error: La Resolución seleccionada Está Ocupada, intentelo nuevamente",0);
+                document.getElementById("BntModalPOS").disabled=false;  
+                document.getElementById("BntModalPOS").value="Guardar";
+            }else if(respuestas[0]=="E3"){
+                alertify.error("Error: El Cliente ya no cuenta con el saldo en anticipos escrito",0);
+                document.getElementById("BntModalPOS").disabled=false;  
+                document.getElementById("BntModalPOS").value="Guardar";    
+            }else{
+                alertify.alert("Error: <br>"+data);
+                document.getElementById("BntModalPOS").disabled=false;
+                document.getElementById("BntModalPOS").value="Guardar";
+            }
+            
+            
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            document.getElementById("BntModalPOS").disabled=false;
+            document.getElementById("BntModalPOS").value="Guardar";
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      });
+    
+    
+}
+
 
 atajosPOS();
 ConvertirSelectBusquedas();

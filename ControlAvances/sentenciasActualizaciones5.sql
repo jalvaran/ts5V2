@@ -62,4 +62,15 @@ INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOr
 INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOrigen`, `TablaAsociada`, `CampoAsociado`, `IDCampoAsociado`, `Updated`, `Sync`) VALUES ('14', 'clientes', 'Cod_Mcipio', 'cod_municipios_dptos', 'Ciudad', 'Cod_mcipio', '2019-03-01 23:38:29', '2019-02-01 23:38:29');
 INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOrigen`, `TablaAsociada`, `CampoAsociado`, `IDCampoAsociado`, `Updated`, `Sync`) VALUES ('15', 'clientes', 'Pais_Domicilio', 'cod_paises', 'Pais', 'Codigo', '2019-03-01 23:38:29', '2019-02-01 23:38:29');
 
+ALTER TABLE `cajas` ADD `idEmpresa` INT NOT NULL AFTER `idTerceroIntereses`;
+ALTER TABLE `cajas` ADD `idEmpresa` INT NOT NULL DEFAULT '1' AFTER `idTerceroIntereses`;
+ALTER TABLE `cajas` ADD `idSucursal` INT NOT NULL DEFAULT '1' AFTER `idEmpresa`;
+
+INSERT INTO `parametros_contables` (`ID`, `Descripcion`, `CuentaPUC`, `NombreCuenta`, `Updated`, `Sync`) VALUES
+(30,	'Cuenta para registrar los abonos o pagos en ventas rapidas a los creditos o ventas con otras formas de pago',	11050599,	'OTRAS FORMAS DE PAGO',	'2019-01-13 09:12:55',	'2018-01-13 09:12:55');
+
+INSERT INTO `parametros_contables` (`ID`, `Descripcion`, `CuentaPUC`, `NombreCuenta`, `Updated`, `Sync`) VALUES
+(31,	'Anticipos realizados por clientes para los separados',	28050501,	'ANTICIPOS REALIZADOS POR CLIENTES EN SEPARADOS',	'2019-02-26 15:55:46',	'2019-02-26 15:55:46');
+
+
 

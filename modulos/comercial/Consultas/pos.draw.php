@@ -102,102 +102,34 @@ if( !empty($_REQUEST["Accion"]) ){
             $consulta=$obCon->Query($sql);
             $DatosDevuelta=$obCon->FetchArray($consulta);
     
-            $css->input("hidden", "TxtTotalDocumento", "", "TxtTotalDocumento", "", $Total, "", "", "", "");
+            //$css->input("hidden", "TxtTotalDocumento", "", "TxtTotalDocumento", "", $Total, "", "", "", "");
             if($Total>0){ //Verifico que hayan productos, servicios o insumos agregados
                 
                 $css->CrearTabla();
                     $css->FilaTabla(16);
-                        $css->ColTabla("<strong>TOTALES</strong>", 3,'C');
+                        $css->ColTabla("<strong>TOTALES</strong>", 2,'C');
                     $css->CierraFilaTabla();
                     $css->FilaTabla(16);
                         $css->ColTabla("<strong>Última Devuelta:</strong>", 1,'L'); 
-                        $css->ColTabla("<strong>Items:</strong>", 1,'L'); 
-                        $css->ColTabla("<strong>Efectivo:</strong>", 1,'L');       
-                        
+                        $css->ColTabla(number_format($DatosDevuelta["Devuelve"]), 1,'R'); 
                     $css->CierraFilaTabla();
-                    
                     $css->FilaTabla(16);
-                        $css->ColTabla(number_format($DatosDevuelta["Devuelve"]), 1,'R');                       
+                        $css->ColTabla("<strong>Items:</strong>", 1,'L'); 
                         $css->ColTabla(($Totales["TotalItems"]), 1,'R');
-                        print("<td>");
-                        $css->input("number", "Efectivo", "form-control input-lg", "Efectivo", "Efectivo", $Total, "Efectivo", "off", "", "onKeyUp=CalculeDevuelta()");
-                        print("</td>");
                     $css->CierraFilaTabla();
-                    
                     $css->FilaTabla(16);
                         $css->ColTabla("<strong>Subtotal:</strong>", 1,'L'); 
-                        $css->ColTabla("<strong>Impuestos:</strong>", 1,'L'); 
-                        $css->ColTabla("<strong>Total:</strong>", 1,'L');       
-                        
+                        $css->ColTabla(number_format($Subtotal), 1,'R');  
                     $css->CierraFilaTabla();
-                    
                     $css->FilaTabla(16);
-                        $css->ColTabla(number_format($Subtotal), 1,'R');                       
+                        $css->ColTabla("<strong>Impuestos:</strong>", 1,'L');
                         $css->ColTabla(number_format($IVA), 1,'R');
+                    $css->CierraFilaTabla();
+                    $css->FilaTabla(16);
+                        $css->ColTabla("<strong>Total:</strong>", 1,'L');
                         $css->ColTabla(number_format($Total), 1,'R');
                     $css->CierraFilaTabla();
                     
-                    $css->FilaTabla(20);
-                                         
-                        
-                    $css->CierraFilaTabla();
-                    
-                    
-                    $css->FilaTabla(20);
-                        print("<td >");
-                            print("<a onclick=MuestraOcultaXID('DivFormasPago') style=cursor:pointer ><strong>Otros:</strong></a>");
-                            $css->CrearDiv("DivFormasPago", "", "center", 0, 1);
-                                $css->input("number", "Tarjetas", "form-control input-lg", "Tarjetas", "Tarjetas", "", "Tarjetas", "off", "", "onKeyUp=CalculeDevuelta()");
-                                $css->input("number", "Cheque", "form-control input-lg", "Cheque", "Cheque", "", "Cheque", "off", "", "onKeyUp=CalculeDevuelta()");
-                                $css->input("number", "Otros", "form-control input-lg", "Otros", "Otros", "", "Otros", "off", "", "onKeyUp=CalculeDevuelta()");
-                            $css->CerrarDiv();
-                        print("</td>");
-                        
-                        print("<td>");
-                        print("<a onclick=MuestraOcultaXID('DivMasOpciones') style=cursor:pointer  ><strong>Opciones:</strong></a>");
-                        $css->CrearDiv("DivMasOpciones", "", "center", 0, 1);
-                        $css->select("CmbFormaPago", "form-control", "CmbFormaPago", "", "", "", "");
-
-                            $sql="SELECT * FROM repuestas_forma_pago";
-                            $Consulta=$obCon->Query($sql);
-                            while($DatosFormaPago=$obCon->FetchAssoc($Consulta)){
-                                $css->option("", "",'' , $DatosFormaPago["DiasCartera"], "", "", "", "");
-                                    print($DatosFormaPago["Etiqueta"]);
-                                $css->Coption();
-                            }
-
-
-                        $css->Cselect();
-                   
-                        $css->select("CmbColaboradores", "form-control", "CmbColaboradores", "", "", "", "");
-
-                            $sql="SELECT * FROM colaboradores WHERE Activo='SI'";
-                            $Consulta=$obCon->Query($sql);
-                                $css->option("", "",'' , '', "", "", "", "");
-                                    print("Seleccione un colaborador");
-                                $css->Coption();
-                            while($DatosColaboradores=$obCon->FetchAssoc($Consulta)){
-                                $css->option("", "",'' , $DatosColaboradores["idColaboradores"], "", "", "", "");
-                                    print($DatosColaboradores["Nombre"]." ".$DatosColaboradores["Identificacion"]);
-                                $css->Coption();
-                            }
-
-
-                        $css->Cselect();
-                    
-                        $css->textarea("TxtObservacionesFactura", "form-control", "TxtObservacionesFactura", "Observaciones", "Observaciones", "", "");
-                        $css->Ctextarea();
-                                            
-                        $css->input("number", "AnticiposCruzados", "form-control input-lg", "AnticiposCruzados", "Cruzar Anticipos", "", "Anticipos", "", "", "");
-                        print("</div></td>");
-                    
-                        
-                        print("<td >");      
-                            print("<strong>Devuelta:</strong>");
-                            $css->input("number", "Devuelta", "form-control input-lg", "Devuelta", "Devuelta", 0, "Efectivo", "off", "", " disabled");
-                        print("</td>");
-                        
-                    $css->CierraFilaTabla();
                     
                                         
                     $css->FilaTabla(16);
@@ -250,7 +182,7 @@ if( !empty($_REQUEST["Accion"]) ){
             $css->input("hidden", "TxtTotalFactura", "", "TxtTotalFactura", "", $TotalFactura, "", "", "", ""); 
             $css->input("hidden", "TxtTotalAnticiposFactura", "", "TxtTotalAnticiposFactura", "", $SaldoAnticiposTercero, "", "", "", "");  
             
-            $css->input("hidden", "idFormulario", "", "idFormulario", "", 1, "", "", "", ""); // 2 sirve para indicarle al sistema que debe guardar el formulario de crear una factura
+            $css->input("hidden", "idFormulario", "", "idFormulario", "", 1, "", "", "", ""); //1 sirve para indicarle al sistema que debe guardar el formulario de crear una factura
             
             $css->CrearTabla();
                 $css->FilaTabla(22);
@@ -295,7 +227,8 @@ if( !empty($_REQUEST["Accion"]) ){
                 $css->FilaTabla(14);
                     $css->ColTabla("<strong>Forma de Pago</strong>", 1);
                     $css->ColTabla("<strong>Asignar</strong>", 1);
-                    $css->ColTabla("<strong>Observaciones</strong>", 2);
+                    $css->ColTabla("<strong>Imprimir</strong>", 1);
+                    $css->ColTabla("<strong>Observaciones</strong>", 1);
                     $css->ColTabla("<strong>Anticipos del Cliente: $".number_format($SaldoAnticiposTercero)."</strong>", 1);
                 $css->CierraFilaTabla();
                 
@@ -332,7 +265,23 @@ if( !empty($_REQUEST["Accion"]) ){
 
                         $css->Cselect();
                     print("</td>");
-                    print("<td colspan=2>");
+                    
+                    print("<td>");
+                        $css->select("CmbPrint", "form-control", "CmbPrint", "", "", "", "");
+
+                            $css->option("", "",'' , 'SI', "", "", "", "");
+                                print("SI");
+                            $css->Coption();
+                            
+                            $css->option("", "",'' , 'NO', "", "", "", "");
+                                print("NO");
+                            $css->Coption();
+                            
+                            
+                        $css->Cselect();
+                    print("</td>");
+                    
+                    print("<td>");
                         $css->textarea("TxtObservacionesFactura", "form-control", "TxtObservacionesFactura", "Observaciones", "Observaciones", "", "");
                         $css->Ctextarea();
                     print("</td>"); 

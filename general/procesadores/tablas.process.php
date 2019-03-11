@@ -27,9 +27,17 @@ if( !empty($_REQUEST["idAccion"]) ){
                     
                 }
             }
+            
             $sql=$obCon->getSQLInsert($Tabla, $Datos);
             $obCon->Query($sql);
-            
+            if($Tabla=="clientes"){
+                $sql=$obCon->getSQLInsert("proveedores", $Datos);
+                $obCon->Query($sql);
+            }
+            if($Tabla=="proveedores"){
+                $sql=$obCon->getSQLInsert("clientes", $Datos);
+                $obCon->Query($sql);
+            }
             print("OK");
             
         break; 

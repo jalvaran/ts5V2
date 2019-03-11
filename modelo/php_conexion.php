@@ -1924,25 +1924,9 @@ public function CalculePesoRemision($idCotizacion)
                 $PorcentajeIVA="Exc";
             }
             $this->ItemFacturaVenta($NumFactura, $DatosCotizacion, $DatosProducto, $SubtotalItem, $IVAItem, $TotalItem, $PorcentajeIVA, $SubtotalCosto, $FechaFactura, $DatosOtrosImpuestos, "");
-            /*
-            if($DatosCotizacion["TipoItem"]=="PR"){
-                
-                $DatosKardex["Cantidad"]=$DatosCotizacion['Cantidad'];
-                $DatosKardex["idProductosVenta"]=$DatosProducto["idProductosVenta"];
-                $DatosKardex["CostoUnitario"]=$DatosProducto['CostoUnitario'];
-                $DatosKardex["Existencias"]=$DatosProducto['Existencias'];
-                $DatosKardex["Detalle"]="Factura";
-                $DatosKardex["idDocumento"]=$NumFactura;
-                $DatosKardex["TotalCosto"]=$SubtotalCosto;
-                $DatosKardex["Movimiento"]="SALIDA";
-                
-                $this->InserteKardex($DatosKardex);
-            }
-            *
-             * 
-             */ 
-             
+                         
         }
+        /* para pos 1
         $ID=$Datos["ID"]; 
         $TotalSubtotal=$TotalSubtotal;
         $TotalIVA=round($TotalIVA);
@@ -1951,7 +1935,7 @@ public function CalculePesoRemision($idCotizacion)
         $sql="UPDATE facturas SET Subtotal='$TotalSubtotal', IVA='$TotalIVA', Total='$GranTotal', "
                 . "SaldoFact='$GranTotal', TotalCostos='$TotalCostos' WHERE idFacturas='$ID'";
         $this->Query($sql);
-        
+        */
         
     } 
     //inserta item de factura
