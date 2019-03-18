@@ -17,6 +17,12 @@ $css->PageInit($myTitulo);
         $css->Cdiv();
        
     $css->CModal("BntModalPOS", "onclick=AccionesPOS(event)", "button", "Guardar");
+    
+    $css->Modal("ModalAccionesPOSSmall", "POS TS5", "", 0);
+        $css->div("DivFrmPOSSmall", "", "", "", "", "", "");
+        $css->Cdiv();
+       
+    $css->CModal("BntModalPOSSmall", "onclick=AccionesPOS(event)", "button", "Guardar");
     $DatosCaja=$obCon->DevuelveValores("cajas", "idUsuario", $idUser);
     $Habilita=1;
     if($DatosCaja["ID"]==''){
@@ -143,8 +149,8 @@ $css->PageInit($myTitulo);
                     <ul class="dropdown-menu">
                     
                         <li><a href="#" onclick="AutorizarPreventa()">Autorizar Preventa</a></li>
-                        <li><a href="#" onclick="PreciosMayoristas()">Cambiar Precios Mayoristas</a></li>
-                        <li><a href="#" onclick="OtrasAutorizaciones()">Otros</a></li>
+                        <li><a href="#" onclick="PreciosMayoristas()">Cambiar Precios a Mayorista</a></li>
+                        <li><a href="#" onclick="AbrirModalAutorizacionesPOS()">Otros</a></li>
                     
                   </ul>
                 </div>

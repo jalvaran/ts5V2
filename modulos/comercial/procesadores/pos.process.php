@@ -378,6 +378,136 @@ if( !empty($_REQUEST["Accion"]) ){
             
         break;//fin caso 9
         
+        case 10:// Colocar todos los precios de venta como mayoristas
+            $idPreventa=$obCon->normalizar($_REQUEST['idPreventa']);            
+            $pw=$obCon->normalizar($_REQUEST['TxtAutorizaciones']);
+            $pw=md5($pw);
+            $sql="SELECT Identificacion FROM usuarios WHERE Password='$pw' AND (Role='ADMINISTRADOR' or Role='SUPERVISOR') LIMIT 1";
+            $Datos=$obCon->Query($sql);
+            $DatosAutorizacion=$obCon->FetchArray($Datos);
+
+            if($DatosAutorizacion["Identificacion"]==''){
+                print("E1;Clave incorrecta");
+                exit();
+            }
+            
+            $sql="SELECT idPrecotizacion FROM preventa WHERE VestasActivas_idVestasActivas='$idPreventa'";
+            $Consulta=$obCon->Query($sql);
+            while($DatosPreventa=$obCon->FetchAssoc($Consulta)){
+                $obCon->POS_EditarPrecio($DatosPreventa["idPrecotizacion"],1, 1);
+            }
+            
+            print("OK;Valores de Mayoristas Actualizados");
+        break;//Fin caso 10
+        
+        case 11:// Descuento general por porcentaje
+            $idPreventa=$obCon->normalizar($_REQUEST['idPreventa']);            
+            $pw=$obCon->normalizar($_REQUEST['TxtAutorizaciones']);
+            $Descuento=$obCon->normalizar($_REQUEST['TxtPorcentajeDescuento']);
+            $pw=md5($pw);
+            $sql="SELECT Identificacion FROM usuarios WHERE Password='$pw' AND (Role='ADMINISTRADOR' or Role='SUPERVISOR') LIMIT 1";
+            $Datos=$obCon->Query($sql);
+            $DatosAutorizacion=$obCon->FetchArray($Datos);
+
+            if($DatosAutorizacion["Identificacion"]==''){
+                print("E1;Clave incorrecta");
+                exit();
+            }
+            $DatosGeneral=$obCon->DevuelveValores("configuracion_general", "ID", 6);
+            $DescuentoMaximo=$DatosGeneral["Valor"];
+            if($Descuento>$DescuentoMaximo){
+                print("E1;El descuento máximo para esta acción es de: $DescuentoMaximo");
+                exit();
+            }
+            $Descuento=(100-$Descuento)/100;
+            
+            $sql="UPDATE preventa SET Subtotal=round(Subtotal*$Descuento), Impuestos=round(Impuestos*$Descuento),"
+                    . " TotalVenta=round(TotalVenta*$Descuento), ValorAcordado=round(ValorAcordado*$Descuento) "
+                    . " WHERE VestasActivas_idVestasActivas='$idPreventa'";
+            $obCon->Query($sql);
+            print("OK;Descuento Aplicado");
+        break;//Fin caso 11  
+        
+        case 12:// Colocar todos los precios segun una lista de precios
+            $idPreventa=$obCon->normalizar($_REQUEST['idPreventa']);            
+            $pw=$obCon->normalizar($_REQUEST['TxtAutorizaciones']);
+            $pw=md5($pw);
+            $sql="SELECT Identificacion FROM usuarios WHERE Password='$pw' AND (Role='ADMINISTRADOR' or Role='SUPERVISOR') LIMIT 1";
+            $Datos=$obCon->Query($sql);
+            $DatosAutorizacion=$obCon->FetchArray($Datos);
+
+            if($DatosAutorizacion["Identificacion"]==''){
+                print("E1;Clave incorrecta");
+                exit();
+            }
+            
+            $Listado=$obCon->normalizar($_REQUEST['CmbListaPrecio']);
+            
+            $consulta=$obCon->ConsultarTabla("preventa", " WHERE VestasActivas_idVestasActivas='$idPreventa'");
+            while ($DatosPreventa=$obCon->FetchAssoc($consulta)){
+                $Cantidad=$DatosPreventa["Cantidad"];
+                $idProducto=$DatosPreventa["ProductosVenta_idProductosVenta"];
+                $idItem=$DatosPreventa["idPrecotizacion"];
+                $Tabla=$DatosPreventa["TablaItem"];
+                $Datos=$obCon->ConsultarTabla("productos_precios_adicionales", " WHERE idProducto='$idProducto' AND idListaPrecios='$Listado' AND TablaVenta='$Tabla'");
+                $DatosListado=$obCon->FetchArray($Datos);
+                if($DatosListado["PrecioVenta"]>0){
+                    $DatosProductos=$obCon->DevuelveValores($Tabla,"idProductosVenta",$idProducto);
+                    $ValorAcordado=$DatosListado["PrecioVenta"];
+                    $DatosTablaItem=$obCon->DevuelveValores("tablas_ventas", "NombreTabla", $Tabla);
+                    if($DatosTablaItem["IVAIncluido"]=="SI"){
+
+                        $ValorAcordado=round($ValorAcordado/($DatosProductos["IVA"]+1),2);
+
+                    }
+                    $Subtotal=round($ValorAcordado*$Cantidad,2);
+
+
+                    $IVA=round($Subtotal*$DatosProductos["IVA"],2);
+                    //$SubtotalCosto=$DatosProductos["CostoUnitario"]*$Cantidad;
+                    $Total=$Subtotal+$IVA;
+                    $filtro="idPrecotizacion";
+
+                    $obCon->ActualizaRegistro("preventa","Subtotal", $Subtotal, $filtro, $idItem);
+                    $obCon->ActualizaRegistro("preventa","Impuestos", $IVA, $filtro, $idItem);
+                    $obCon->ActualizaRegistro("preventa","TotalVenta", $Total, $filtro, $idItem);
+                    $obCon->ActualizaRegistro("preventa","ValorAcordado", $ValorAcordado, $filtro, $idItem);
+                }
+                
+            }
+            
+            print("OK;Valores Actualizados");
+        break;//Fin caso 12
+        
+        case 13:// Descuento general a precio costo
+            $idPreventa=$obCon->normalizar($_REQUEST['idPreventa']);            
+            $pw=$obCon->normalizar($_REQUEST['TxtAutorizaciones']);
+            
+            $pw=md5($pw);
+            $sql="SELECT Identificacion FROM usuarios WHERE Password='$pw' AND (Role='ADMINISTRADOR' or Role='SUPERVISOR') LIMIT 1";
+            $Datos=$obCon->Query($sql);
+            $DatosAutorizacion=$obCon->FetchArray($Datos);
+
+            if($DatosAutorizacion["Identificacion"]==''){
+                print("E1;Clave incorrecta");
+                exit();
+            }
+            $DatosGeneral=$obCon->DevuelveValores("configuracion_general", "ID", 7);
+            $Habilitado=$DatosGeneral["Valor"];
+            if($Habilitado==0 or $Habilitado==''){
+                print("E1;Esta opción no está habilitada");
+                exit();
+            }
+            $sql="UPDATE `preventa` "
+                    . "SET `ValorAcordado`=round((`CostoUnitario`)/(`PorcentajeIVA`+1),2), "
+                    . "`Impuestos`=round(`PorcentajeIVA`*(`ValorAcordado`*`Cantidad`),2),"
+                    . "`Subtotal`=(`ValorAcordado`*`Cantidad`), `TotalVenta`=(`Subtotal`+`Impuestos`) "
+                    . "WHERE `VestasActivas_idVestasActivas`='$idPreventa' ";
+            
+            $obCon->Query($sql);
+            print("OK;Descuento Aplicado");
+        break;//Fin caso 13
+        
     }
     
     

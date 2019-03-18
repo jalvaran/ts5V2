@@ -321,7 +321,33 @@ if( !empty($_REQUEST["Accion"]) ){
             
         break;//Fin caso 6
         
-        
+        case 7://Dibuja las opciones al momento de autorizar
+            $css->CrearDiv("", "col-md-4", "center", 1, 1);
+                print("<strong>Descuento General</strong><br>");
+                
+                $css->input("text", "TxtPorcentajeDescuento", "form-control", "TxtPorcentajeDescuento", "Porcentaje descuento", "", "Porcentaje", "off", "", "");
+                $css->CrearBotonEvento("BtnDescuentoPorcentaje", "Aplicar", 1, "onclick", "DescuentoPorcentaje()", "naranja", "");
+            $css->CerrarDiv();
+            
+            $css->CrearDiv("", "col-md-4", "center", 1, 1);
+                print("<strong>Listas de Precios</strong><br>");
+                $css->select("CmbListaPrecio", "form-control", "CmbListaPrecio", "", "", "", "");
+                    $Consulta=$obCon->ConsultarTabla("productos_lista_precios", "");
+                    while($DatosListas=$obCon->FetchAssoc($Consulta)){
+                        $css->option("", "", "", $DatosListas["ID"], "", "");
+                            print($DatosListas["Nombre"]);
+                        $css->Coption();
+                    }
+                $css->Cselect();
+                $css->CrearBotonEvento("BtnListaPrecio", "Aplicar", 1, "onclick", "DescuentoListaPrecio()", "azul", "");
+            $css->CerrarDiv();
+            
+            $css->CrearDiv("", "col-md-4", "center", 1, 1);
+                print("<strong>Descuento Costo</strong><br>");                
+                $css->CrearBotonEvento("BtnDescuentoCosto", "Aplicar", 1, "onclick", "DescuentoCosto()", "rojo", "");
+            $css->CerrarDiv();
+            print("<br><br><br><br><br>");
+        break;
         
         
     }

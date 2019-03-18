@@ -867,6 +867,286 @@ function AutorizarPreventa(){
       })  
 }  
 
+function PreciosMayoristas(){    
+    
+    var idPreventa=document.getElementById('idPreventa').value;
+    var TxtAutorizaciones=document.getElementById('TxtAutorizaciones').value;
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 10);
+        form_data.append('idPreventa', idPreventa);
+        form_data.append('TxtAutorizaciones', TxtAutorizaciones);
+        document.getElementById("TxtAutorizaciones").value='';
+        $.ajax({
+        url: './procesadores/pos.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';');
+            if(respuestas[0]=="E1"){
+                alertify.alert(respuestas[1]);
+                
+            }else if(respuestas[0]=="OK"){
+                alertify.success(respuestas[1]);
+                
+            }else{
+                alertify.alert(data);
+            }
+            
+            DibujePreventa();
+            posiciona('Codigo');           
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}  
+
+function AbrirModalAutorizacionesPOS(){
+    
+    $("#ModalAccionesPOSSmall").modal();
+    
+    document.getElementById("BntModalPOSSmall").disabled=true;
+    
+    var idPreventa=document.getElementById('idPreventa').value;
+    var idCliente=document.getElementById('idCliente').value;
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 7);
+        form_data.append('idPreventa', idPreventa);
+        form_data.append('idCliente', idCliente);
+        $.ajax({
+        url: './Consultas/pos.draw.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            document.getElementById('DivFrmPOSSmall').innerHTML=data;
+                    
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}  
+
+function DescuentoPorcentaje(){    
+    
+    var idPreventa=document.getElementById('idPreventa').value;
+    var TxtAutorizaciones=document.getElementById('TxtAutorizaciones').value;
+    
+    var TxtPorcentajeDescuento=document.getElementById('TxtPorcentajeDescuento').value;
+    
+    
+    if(idPreventa==''){        
+        alertify.alert("Debe seleccionar una preventa");
+        document.getElementById("idPreventa").style.backgroundColor="pink";   
+        CierraModal('ModalAccionesPOSSmall');
+        return;
+    }else{
+        document.getElementById("idPreventa").style.backgroundColor="white";
+    }
+    
+    if(TxtPorcentajeDescuento==''){        
+        alertify.alert("Debe escribir un porcentaje");
+        document.getElementById("TxtPorcentajeDescuento").style.backgroundColor="pink";   
+        //CierraModal('ModalAccionesPOSSmall');
+        return;
+    }else{
+        document.getElementById("TxtPorcentajeDescuento").style.backgroundColor="white";
+    }
+    
+    if(TxtAutorizaciones==''){        
+        alertify.alert("Debe escribir una Clave");
+        document.getElementById("TxtAutorizaciones").style.backgroundColor="pink";   
+        CierraModal('ModalAccionesPOSSmall');
+        return;
+    }else{
+        document.getElementById("TxtAutorizaciones").style.backgroundColor="white";
+    }
+    
+    
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 11);
+        form_data.append('idPreventa', idPreventa);
+        form_data.append('TxtAutorizaciones', TxtAutorizaciones);
+        form_data.append('TxtPorcentajeDescuento', TxtPorcentajeDescuento);
+        document.getElementById("TxtAutorizaciones").value='';
+        $.ajax({
+        url: './procesadores/pos.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';');
+            if(respuestas[0]=="E1"){
+                alertify.alert(respuestas[1]);
+                
+            }else if(respuestas[0]=="OK"){
+                alertify.success(respuestas[1]);
+                
+            }else{
+                alertify.alert(data);
+            }
+            
+            CierraModal('ModalAccionesPOSSmall');
+            DibujePreventa();
+            posiciona('Codigo');           
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}  
+
+
+function DescuentoListaPrecio(){    
+    
+    var idPreventa=document.getElementById('idPreventa').value;
+    var TxtAutorizaciones=document.getElementById('TxtAutorizaciones').value;
+    
+    var CmbListaPrecio=document.getElementById('CmbListaPrecio').value;
+    
+    
+    if(idPreventa==''){        
+        alertify.alert("Debe seleccionar una preventa");
+        document.getElementById("idPreventa").style.backgroundColor="pink";   
+        CierraModal('ModalAccionesPOSSmall');
+        return;
+    }else{
+        document.getElementById("idPreventa").style.backgroundColor="white";
+    }
+    
+        
+    if(TxtAutorizaciones==''){        
+        alertify.alert("Debe escribir una Clave");
+        document.getElementById("TxtAutorizaciones").style.backgroundColor="pink";   
+        CierraModal('ModalAccionesPOSSmall');
+        return;
+    }else{
+        document.getElementById("TxtAutorizaciones").style.backgroundColor="white";
+    }
+    
+    
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 12);
+        form_data.append('idPreventa', idPreventa);
+        form_data.append('TxtAutorizaciones', TxtAutorizaciones);
+        form_data.append('CmbListaPrecio', CmbListaPrecio);
+        document.getElementById("TxtAutorizaciones").value='';
+        $.ajax({
+        url: './procesadores/pos.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';');
+            if(respuestas[0]=="E1"){
+                alertify.alert(respuestas[1]);
+                
+            }else if(respuestas[0]=="OK"){
+                alertify.success(respuestas[1]);
+                
+            }else{
+                alertify.alert(data);
+            }
+            
+            CierraModal('ModalAccionesPOSSmall');
+            DibujePreventa();
+            posiciona('Codigo');           
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}  
+
+function DescuentoCosto(){    
+    
+    var idPreventa=document.getElementById('idPreventa').value;
+    var TxtAutorizaciones=document.getElementById('TxtAutorizaciones').value;
+    
+    if(idPreventa==''){        
+        alertify.alert("Debe seleccionar una preventa");
+        document.getElementById("idPreventa").style.backgroundColor="pink";   
+        CierraModal('ModalAccionesPOSSmall');
+        return;
+    }else{
+        document.getElementById("idPreventa").style.backgroundColor="white";
+    }
+    
+        
+    if(TxtAutorizaciones==''){        
+        alertify.alert("Debe escribir una Clave");
+        document.getElementById("TxtAutorizaciones").style.backgroundColor="pink";   
+        CierraModal('ModalAccionesPOSSmall');
+        return;
+    }else{
+        document.getElementById("TxtAutorizaciones").style.backgroundColor="white";
+    }
+    
+    
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 13);
+        form_data.append('idPreventa', idPreventa);
+        form_data.append('TxtAutorizaciones', TxtAutorizaciones);
+        
+        document.getElementById("TxtAutorizaciones").value='';
+        $.ajax({
+        url: './procesadores/pos.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';');
+            if(respuestas[0]=="E1"){
+                alertify.alert(respuestas[1]);
+                
+            }else if(respuestas[0]=="OK"){
+                alertify.success(respuestas[1]);
+                
+            }else{
+                alertify.alert(data);
+            }
+            
+            CierraModal('ModalAccionesPOSSmall');
+            DibujePreventa();
+            posiciona('Codigo');           
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}  
 
 atajosPOS();
 ConvertirSelectBusquedas();

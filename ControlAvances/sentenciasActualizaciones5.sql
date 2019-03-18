@@ -84,3 +84,10 @@ INSERT INTO `configuracion_general` (`ID`, `Descripcion`, `Valor`, `Updated`, `S
 INSERT INTO `configuracion_general` (`ID`, `Descripcion`, `Valor`, `Updated`, `Sync`) VALUES
 (5,	'Determina si se debe pedir autorizacion para cambiar el precio de venta de un item en pos',	'1',	'2019-02-18 08:27:46',	'2019-03-18 08:27:46');
 
+INSERT INTO `configuracion_general` (`ID`, `Descripcion`, `Valor`, `Updated`, `Sync`) VALUES
+(6,	'Determina el valor maximo que se puede aplicar al descuento general',	'35',	'2019-03-18 08:33:01',	'2019-03-18 08:33:01');
+
+INSERT INTO `configuracion_general` (`ID`, `Descripcion`, `Valor`, `Updated`, `Sync`) VALUES
+(7,'Determina si se pueden realizar descuentos a precio de costo','1',	'2019-02-18 08:33:01',	'2019-03-18 08:33:01');
+
+
