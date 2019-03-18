@@ -109,8 +109,17 @@ if( !empty($_REQUEST["Accion"]) ){
         case 3://Se elimina un item
             $idItem=$obCon->normalizar($_REQUEST["idItem"]);
             $Tabla="preventa";
+            $DatosPreventa=$obCon->DevuelveValores("preventa", "idPrecotizacion", $idItem);
+            $DatoGenerales=$obCon->DevuelveValores("configuracion_general", "ID", 4); //Determina si se debe pedir autoirzacion para retornar un item
+            if($DatoGenerales["Valor"]>0){ //Si está en 1 pedirá autorización
+                if($DatosPreventa["Autorizado"]=='0'){
+                    print("E1;Esta acción requiere autorización");
+                    exit();
+                }
+            }
+            
             $obCon->BorraReg($Tabla, "idPrecotizacion", $idItem);
-            print("Item Eliminado");
+            print("OK;Item Eliminado");
         break;//Fin caso 3
         
         
@@ -119,11 +128,18 @@ if( !empty($_REQUEST["Accion"]) ){
             $idItem=$obCon->normalizar($_REQUEST["idItem"]);            
             $Cantidad=$obCon->normalizar($_REQUEST["Cantidad"]);
             if($Cantidad==0){
-                print("E1,No se puede editar la cantidad en cero");
+                print("E1;No se puede editar la cantidad en cero");
                 exit();
             }
             
             $DatosPreventa=$obCon->DevuelveValores("preventa", "idPrecotizacion", $idItem);
+            $DatoGenerales=$obCon->DevuelveValores("configuracion_general", "ID", 3); //Determina si se debe pedir autoirzacion para retornar un item
+            if($DatoGenerales["Valor"]>0){ //Si está en 1 pedirá autorización
+                if($DatosPreventa["Autorizado"]=='0' and $Cantidad<0){
+                    print("E1;Esta acción requiere autorización");
+                    exit();
+                }
+            }
             $ValorAcordado=$DatosPreventa["ValorAcordado"];
             $idProducto=$DatosPreventa["ProductosVenta_idProductosVenta"];
             $Tabla=$DatosPreventa["TablaItem"];
@@ -152,6 +168,15 @@ if( !empty($_REQUEST["Accion"]) ){
             if($ValorAcordado<=0){
                 print("OK;El Valor del producto debe ser mayor a cero");
                 exit();
+            }
+            
+            $DatosPreventa=$obCon->DevuelveValores("preventa", "idPrecotizacion", $idItem);
+            $DatoGenerales=$obCon->DevuelveValores("configuracion_general", "ID", 5); //Determina si se debe pedir autoirzacion para retornar un item
+            if($DatoGenerales["Valor"]>0){ //Si está en 1 pedirá autorización
+                if($DatosPreventa["Autorizado"]=='0'){
+                    print("E1;Esta acción requiere autorización");
+                    exit();
+                }
             }
             
             $obCon->POS_EditarPrecio($idItem,$ValorAcordado, $Mayorista);
@@ -307,7 +332,7 @@ if( !empty($_REQUEST["Accion"]) ){
             
             $LinkFactura="../../general/Consultas/PDF_Documentos.draw.php?idDocumento=2&ID=$idFactura";
             $Mensaje="<br><strong>Factura $NumFactura Creada Correctamente </strong><a href='$LinkFactura'  target='blank'> Imprimir</a>";
-            
+            $Mensaje.="<br><h3>Devuelta: ".number_format($Devuelta)."</h3>";
             
             
             print("OK;$Mensaje");
@@ -315,6 +340,43 @@ if( !empty($_REQUEST["Accion"]) ){
             
             
         break;//fin case 7
+        
+        case 8:
+            $obPrint = new PrintPos($idUser);            
+            $fecha=date("Y-m-d");
+            $idPreventa=$obCon->normalizar($_REQUEST['idPreventa']);
+            $Observaciones="";
+            $idCliente=$obCon->normalizar($_REQUEST['idCliente']);
+            $idCotizacion=$obCon->CotizarDesdePreventa($idPreventa,$fecha,$idCliente,$Observaciones,"");
+            $obCon->BorraReg("preventa","VestasActivas_idVestasActivas",$idPreventa);
+            $DatosImpresora=$obCon->DevuelveValores("config_puertos", "ID", 1);
+            if($DatosImpresora["Habilitado"]=="SI"){
+                $obPrint->ImprimeCotizacionPOS($idCotizacion,$DatosImpresora["Puerto"],1);
+            }
+            
+            $RutaPrintCot="../../general/Consultas/PDF_Documentos.draw.php?idDocumento=1&ID=".$idCotizacion;			
+            print("Cotización almacenada Correctamente <a href='$RutaPrintCot' target='_blank'>Imprimir Cotización No. $idCotizacion</a>");
+            
+        break;//fin caso 8
+        
+        case 9:
+            
+            $idPreventa=$obCon->normalizar($_REQUEST['idPreventa']);            
+            $pw=$obCon->normalizar($_REQUEST['TxtAutorizaciones']);
+            $pw=md5($pw);
+            $sql="SELECT Identificacion FROM usuarios WHERE Password='$pw' AND (Role='ADMINISTRADOR' or Role='SUPERVISOR') LIMIT 1";
+            $Datos=$obCon->Query($sql);
+            $DatosAutorizacion=$obCon->FetchArray($Datos);
+
+            if($DatosAutorizacion["Identificacion"]==''){
+                print("E1;Clave incorrecta");
+                exit();
+            }
+            $obCon->ActualizaRegistro("preventa", "Autorizado", $DatosAutorizacion["Identificacion"], "VestasActivas_idVestasActivas", $idPreventa);
+        
+            print("OK;Preventa $idPreventa Autorizada");
+            
+        break;//fin caso 9
         
     }
     

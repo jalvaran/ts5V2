@@ -103,7 +103,7 @@ if( !empty($_REQUEST["Accion"]) ){
             $DatosDevuelta=$obCon->FetchArray($consulta);
     
             //$css->input("hidden", "TxtTotalDocumento", "", "TxtTotalDocumento", "", $Total, "", "", "", "");
-            if($Total>0){ //Verifico que hayan productos, servicios o insumos agregados
+           
                 
                 $css->CrearTabla();
                     $css->FilaTabla(16);
@@ -134,11 +134,18 @@ if( !empty($_REQUEST["Accion"]) ){
                                         
                     $css->FilaTabla(16);
                         print("<td colspan=3 style='text-align:center'>");
-                            $css->CrearBotonEvento("BtnFacturar", "Facturar", 1, "onclick", "AbrirModalFacturarPOS()", "naranja", "");
+                            $habilitaBotones=0;
+                             if($Total>0){ //Verifico que hayan productos, servicios o insumos agregados
+                                 $habilitaBotones=1;
+                             }
+                             $css->CrearBotonEvento("BtnFacturar", "Facturar", $habilitaBotones, "onclick", "AbrirModalFacturarPOS()", "naranja", "");
+                            
+                            print("<br><br>");
+                            $css->CrearBotonEvento("BtnCotizar", "Cotizar", $habilitaBotones, "onclick", "CotizarPOS()", "verde", "");
                         print("</td>");
                     $css->CierraFilaTabla();
                 $css->CerrarTabla(); 
-            }
+            
                    
             
             
@@ -238,10 +245,17 @@ if( !empty($_REQUEST["Accion"]) ){
 
                             $sql="SELECT * FROM repuestas_forma_pago";
                             $Consulta=$obCon->Query($sql);
-                            while($DatosFormaPago=$obCon->FetchAssoc($Consulta)){
-                                $css->option("", "",'' , $DatosFormaPago["DiasCartera"], "", "", "", "");
-                                    print($DatosFormaPago["Etiqueta"]);
+                            if($idCliente==1){
+                                $css->option("", "",'' , "Contado", "", "", "", "");
+                                    print("Contado");
                                 $css->Coption();
+                            }
+                            while($DatosFormaPago=$obCon->FetchAssoc($Consulta)){
+                                if($idCliente<>1){
+                                    $css->option("", "",'' , $DatosFormaPago["DiasCartera"], "", "", "", "");
+                                        print($DatosFormaPago["Etiqueta"]);
+                                    $css->Coption();
+                                }
                             }
 
 
@@ -267,13 +281,22 @@ if( !empty($_REQUEST["Accion"]) ){
                     print("</td>");
                     
                     print("<td>");
+                        $DatosImpresion=$obCon->DevuelveValores("configuracion_general", "ID", 2);  //aqui está almaceda la info para saber si debe imprimir o no el tikete por defecto
+                        $Imprime=$DatosImpresion["Valor"];
                         $css->select("CmbPrint", "form-control", "CmbPrint", "", "", "", "");
-
-                            $css->option("", "",'' , 'SI', "", "", "", "");
+                            $Defecto=0;
+                            if($Imprime==1){
+                                $Defecto=1;
+                            }
+                            
+                            $css->option("", "",'' , 'SI', "", "", $Defecto, "");
                                 print("SI");
                             $css->Coption();
-                            
-                            $css->option("", "",'' , 'NO', "", "", "", "");
+                            $Defecto=0;
+                            if($Imprime==0){
+                                $Defecto=1;
+                            }
+                            $css->option("", "",'' , 'NO', "", "", $Defecto, "");
                                 print("NO");
                             $css->Coption();
                             

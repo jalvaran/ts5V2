@@ -235,7 +235,13 @@ function EliminarItem(idItem){
         data: form_data,
         type: 'post',
         success: function(data){
-            alertify.error(data);
+            var respuestas = data.split(';'); 
+            if(respuestas[0]=="OK"){
+                alertify.error(respuestas[1]);
+            }
+            if(respuestas[0]=="E1"){
+                alertify.alert(respuestas[1]);
+            }
             DibujePreventa();
             
         },
@@ -325,7 +331,7 @@ function EditarPrecioVenta(idItem,Mayorista=0){
             
             if(respuestas[0]=="E1"){
                 
-                alertify.error(respuestas[1]);
+                alertify.alert(respuestas[1]);
             }else if(respuestas[0]=="OK"){
                 alertify.success(respuestas[1]);
             }else{
@@ -743,11 +749,15 @@ function GuardarFactura(){
             var respuestas = data.split(';'); 
             if(respuestas[0]=="OK"){
                 var mensaje=respuestas[1];                
-                alertify.alert(mensaje);
+                //alertify.alert(mensaje);
+                document.getElementById("DivMensajesModulo").innerHTML=mensaje;
                 CierraModal('ModalAccionesPOS');
                 document.getElementById("BntModalPOS").disabled=false;
                 document.getElementById("BntModalPOS").value="Guardar";
+                document.getElementById("idCliente").value=1;
+                document.getElementById("select2-idCliente-container").innerHTML="Clientes Varios";
                 DibujePreventa();
+                posiciona('Codigo');
                 
             }else if(respuestas[0]=="E1"){
                 alertify.error("Error: La Resolución seleccionada ya está Completada",0);
@@ -780,6 +790,82 @@ function GuardarFactura(){
     
     
 }
+
+function CotizarPOS(){
+    
+    
+    var idPreventa=document.getElementById('idPreventa').value;
+    var idCliente=document.getElementById('idCliente').value;
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 8);
+        form_data.append('idPreventa', idPreventa);
+        form_data.append('idCliente', idCliente);
+        $.ajax({
+        url: './procesadores/pos.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            document.getElementById('DivMensajesModulo').innerHTML=data;
+            document.getElementById("idCliente").value=1;
+            document.getElementById("select2-idCliente-container").innerHTML="Clientes Varios";
+            DibujePreventa();
+            posiciona('Codigo');           
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}  
+
+
+function AutorizarPreventa(){
+    
+    
+    var idPreventa=document.getElementById('idPreventa').value;
+    var TxtAutorizaciones=document.getElementById('TxtAutorizaciones').value;
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 9);
+        form_data.append('idPreventa', idPreventa);
+        form_data.append('TxtAutorizaciones', TxtAutorizaciones);
+        document.getElementById("TxtAutorizaciones").value='';
+        $.ajax({
+        url: './procesadores/pos.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';');
+            if(respuestas[0]=="E1"){
+                alertify.alert(respuestas[1]);
+                
+            }else if(respuestas[0]=="OK"){
+                alertify.success(respuestas[1]);
+                
+            }else{
+                alertify.alert(data);
+            }
+            
+            DibujePreventa();
+            posiciona('Codigo');           
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}  
 
 
 atajosPOS();

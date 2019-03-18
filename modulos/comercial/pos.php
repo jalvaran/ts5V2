@@ -136,15 +136,15 @@ $css->PageInit($myTitulo);
             $css->CrearDiv("", "col-md-3", "left", 1, 1);
             
             print('<div class="input-group input-group-md">
-                <input type="text" id="TxtAutorizaciones" class="form-control" placeholder="Autorizaciones">
+                <input type="password" id="TxtAutorizaciones" class="form-control" placeholder="Autorizaciones">
                 <div class="input-group-btn">
                   <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false" >Acción
                     <span class="fa fa-caret-down"></span></button>
                     <ul class="dropdown-menu">
                     
-                        <li><a href="#" onclick="AbrirCotizacion()">Abrir</a></li>
-                        <li><a href="#" onclick="ClonarCotizacion()">Clonar</a></li>
-                        <li><a href="#" onclick="CopiarCotizacion()">Copiar</a></li>
+                        <li><a href="#" onclick="AutorizarPreventa()">Autorizar Preventa</a></li>
+                        <li><a href="#" onclick="PreciosMayoristas()">Cambiar Precios Mayoristas</a></li>
+                        <li><a href="#" onclick="OtrasAutorizaciones()">Otros</a></li>
                     
                   </ul>
                 </div>
@@ -163,8 +163,11 @@ $css->PageInit($myTitulo);
     $css->CerrarDiv();  
     
     $css->CrearDiv("DivDatos", "col-md-12", "left", $Habilita, 1); //Datos para la creacion de la compra
+        
+            
         $css->CrearDiv("DivMensajesModulo", "", "center", 1, 1); 
-        $css->CerrarDiv();  
+        $css->CerrarDiv(); 
+        
         $css->fieldset("", "", "FieldDatos", "Agregar Items", "", "");
                     $css->legend("", "");
                         print("<a href='#'>Agregar items</a>");

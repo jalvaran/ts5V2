@@ -72,5 +72,15 @@ INSERT INTO `parametros_contables` (`ID`, `Descripcion`, `CuentaPUC`, `NombreCue
 INSERT INTO `parametros_contables` (`ID`, `Descripcion`, `CuentaPUC`, `NombreCuenta`, `Updated`, `Sync`) VALUES
 (31,	'Anticipos realizados por clientes para los separados',	28050501,	'ANTICIPOS REALIZADOS POR CLIENTES EN SEPARADOS',	'2019-02-26 15:55:46',	'2019-02-26 15:55:46');
 
+INSERT INTO `configuracion_general` (`ID`, `Descripcion`, `Valor`, `Updated`, `Sync`) VALUES
+(2,'Valor por defecto si se imprime o no al momento de realizar una factura pos',	'1',	'2019-03-18 07:36:48',	'0000-00-00 00:00:00');
 
+INSERT INTO `configuracion_general` (`ID`, `Descripcion`, `Valor`, `Updated`, `Sync`) VALUES
+(3,	'Determina si se debe pedir autorizacion para retornar un item en pos',	'1',	'2019-02-18 07:44:40',	'2019-03-18 07:44:40');
+
+INSERT INTO `configuracion_general` (`ID`, `Descripcion`, `Valor`, `Updated`, `Sync`) VALUES
+(4,	'Determina si se debe pedir autorizacion para elimininar un item en pos',	'1',	'2019-02-18 08:20:26',	'2019-03-18 08:20:26');
+
+INSERT INTO `configuracion_general` (`ID`, `Descripcion`, `Valor`, `Updated`, `Sync`) VALUES
+(5,	'Determina si se debe pedir autorizacion para cambiar el precio de venta de un item en pos',	'1',	'2019-02-18 08:27:46',	'2019-03-18 08:27:46');
 

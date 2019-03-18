@@ -68,8 +68,12 @@ CREATE TABLE `configuracion_campos_asociados` (
   `TablaAsociada` varchar(50) COLLATE utf8_spanish_ci NOT NULL,
   `CampoAsociado` varchar(50) COLLATE utf8_spanish_ci NOT NULL,
   `IDCampoAsociado` varchar(50) COLLATE utf8_spanish_ci NOT NULL,
+  `Updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `Sync` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
+
+
 
 INSERT INTO `configuracion_campos_asociados` (`ID`, `TablaOrigen`, `CampoTablaOrigen`, `TablaAsociada`, `CampoAsociado`, `IDCampoAsociado`) VALUES
 (1,	'empresapro',	'Ciudad',	'cod_municipios_dptos',	'Ciudad',	'Ciudad'),
