@@ -92,3 +92,6 @@ INSERT INTO `configuracion_general` (`ID`, `Descripcion`, `Valor`, `Updated`, `S
 
 ALTER TABLE `clientes` ADD `CodigoTarjeta` VARCHAR(20) NOT NULL AFTER `Cupo`;
 ALTER TABLE `proveedores` ADD `CodigoTarjeta` VARCHAR(20) NOT NULL AFTER `Cupo`;
+
+INSERT INTO `configuracion_general` (`ID`, `Descripcion`, `Valor`, `Updated`, `Sync`) VALUES
+(8,	'Determina cuantas copias saldrán del separado al crearse',	'2',	'2019-02-18 15:54:51',	'2019-03-18 15:54:51');

@@ -452,7 +452,24 @@ if( !empty($_REQUEST["Accion"]) ){
             $css->CerrarTabla();
         break;//Fin caso 8
         
-        
+        case 9://Crear un separado
+            
+            $css->CrearDiv("", "col-md-8", "center", 1, 1);
+                print("<strong>Abono</strong><br>");
+                
+                $css->input("number", "TxtAbonoCrearSeparado", "form-control", "TxtAbonoCrearSeparado", "Abono a Separado", "", "Abono a Separado", "off", "", "");
+                
+            $css->CerrarDiv();
+            
+            $css->CrearDiv("", "col-md-4", "center", 1, 1);
+                print("<strong>Crear Separado</strong><br>");
+                $css->CrearBotonEvento("BtnCrearSeparado", "Ejecutar", 1, "onclick", "CrearSeparado()", "rojo", "");
+            $css->CerrarDiv();
+            
+            
+            print("<br><br><br><br><br>");
+            
+        break;//Fin caso 9
     }
     
     

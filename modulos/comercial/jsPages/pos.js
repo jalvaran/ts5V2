@@ -764,6 +764,13 @@ function CrearTercero(){
             }else if(respuestas[0]=="OK"){
                 alertify.success(respuestas[1]);
                 CierraModal('ModalAccionesPOS');
+                var x = document.getElementById("idCliente");
+                var option = document.createElement("option");
+                option.text = respuestas[3];
+                option.value = respuestas[2];
+
+                x.add(option); 
+                $("#idCliente option:last").attr('selected','selected');
             }else{
                 alertify.alert(data);
             }
@@ -1581,7 +1588,138 @@ function ModalCrearTercero(){
           }
       })  
 }
-
+/**
+ * abre el modal para Crear un separado
+ * @returns {undefined}
+ */
+function ModalCrearSeparado(){
+    
+    $("#ModalAccionesPOSSmall").modal();
+    
+    document.getElementById("BntModalPOSSmall").disabled=true;
+    
+    var idPreventa=document.getElementById('idPreventa').value;
+    var idCliente=document.getElementById('idCliente').value;
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 9);
+        form_data.append('idPreventa', idPreventa);
+        form_data.append('idCliente', idCliente);
+        $.ajax({
+        url: './Consultas/pos.draw.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            document.getElementById('DivFrmPOSSmall').innerHTML=data;
+            setTimeout(function(){document.getElementById("TxtAbonoCrearSeparado").select();}, 100);       
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}  
+/**
+ * Crea el separado
+ * @returns {undefined}
+ */
+function CrearSeparado(){    
+    document.getElementById("BtnCrearSeparado").disabled=true;
+    document.getElementById("BtnCrearSeparado").value="Creando Separado...";
+    var idPreventa=document.getElementById('idPreventa').value;
+    var idCliente=document.getElementById('idCliente').value;
+    var TxtAbonoCrearSeparado=parseFloat(document.getElementById('TxtAbonoCrearSeparado').value);
+    
+    if(idPreventa==''){        
+        alertify.alert("Debe seleccionar una preventa");
+        document.getElementById("idPreventa").style.backgroundColor="pink";   
+        document.getElementById("BtnCrearSeparado").disabled=false;
+        document.getElementById("BtnCrearSeparado").value="Ejecutar";
+        CierraModal('ModalAccionesPOSSmall'); 
+        return;
+    }else{
+        document.getElementById("idPreventa").style.backgroundColor="white";
+    }
+    
+    if(idCliente<=1){        
+        alertify.alert("Debe seleccionar un cliente diferente a Clientes Varios");
+        document.getElementById("idCliente").style.backgroundColor="pink";   
+        document.getElementById("BtnCrearSeparado").disabled=false;
+        document.getElementById("BtnCrearSeparado").value="Ejecutar";
+        CierraModal('ModalAccionesPOSSmall'); 
+        return;
+    }else{
+        document.getElementById("idCliente").style.backgroundColor="white";
+    }
+    
+    if(TxtAbonoCrearSeparado==''){
+        
+        alertify.error("El campo Abono no puede estar vacío");
+        document.getElementById("TxtAbonoCrearSeparado").style.backgroundColor="pink";
+        document.getElementById("BtnCrearSeparado").disabled=false;
+        document.getElementById("BtnCrearSeparado").value="Ejecutar";
+        posiciona('TxtAbonoCrearSeparado');  
+        return;
+    }else{
+        document.getElementById("TxtAbonoCrearSeparado").style.backgroundColor="white";
+    }
+    
+    if(!$.isNumeric(TxtAbonoCrearSeparado) ||  TxtAbonoCrearSeparado<0){
+        
+        alertify.error("El Abono debe ser un número mayor o igual a cero");
+        document.getElementById("TxtAbonoCrearSeparado").style.backgroundColor="pink";
+        document.getElementById("BtnCrearSeparado").disabled=false;
+        document.getElementById("BtnCrearSeparado").value="Ejecutar";
+        posiciona('TxtAbonoCrearSeparado'); 
+        return;
+    }else{
+        document.getElementById("TxtAbonoCrearSeparado").style.backgroundColor="white";
+    }
+    
+    document.getElementById('TxtAbonoCrearSeparado').value='';
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 19);
+        form_data.append('idPreventa', idPreventa); 
+        form_data.append('idCliente', idCliente); 
+        form_data.append('TxtAbonoCrearSeparado', TxtAbonoCrearSeparado); 
+        
+        $.ajax({
+        url: './procesadores/pos.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';');
+            if(respuestas[0]=="E1"){
+                alertify.alert(respuestas[1]);
+                
+            }else if(respuestas[0]=="OK"){
+                alertify.success(respuestas[1]);
+                CierraModal('ModalAccionesPOSSmall');                
+            }else{
+                alertify.alert(data);
+            }
+            document.getElementById("BtnCrearSeparado").disabled=false;
+            document.getElementById("BtnCrearSeparado").value="Ejecutar";
+            DibujePreventa();
+            posiciona('Codigo');       
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}  
 
 atajosPOS();
 ConvertirSelectBusquedas();

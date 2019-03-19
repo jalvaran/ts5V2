@@ -578,8 +578,9 @@ if( !empty($_REQUEST["Accion"]) ){
             $sqlProveedores=$obCon->getSQLInsert("proveedores", $Datos);
             $obCon->Query($sqlClientes);
             $obCon->Query($sqlProveedores);
+            $DatosCliente=$obCon->ValorActual("clientes", "idClientes", " Num_Identificacion='$nit'");
             
-            print("OK;Se ha creado el tercero ".$Datos["RazonSocial"].", con Identificación: ".$nit);
+            print("OK;Se ha creado el tercero ".$Datos["RazonSocial"].", con Identificación: ".$nit.";".$DatosCliente["idClientes"].";".$Datos["RazonSocial"]);
             
         break;//FIn caso 16
         
@@ -603,6 +604,51 @@ if( !empty($_REQUEST["Accion"]) ){
                 exit();
             }
             print("OK;Código disponible");
+        break;//Fin caso 18
+        
+        case 19://Crea un separado
+            $fecha=date("Y-m-d");
+            $Hora=date("H:i:s");
+            $obPrint = new PrintPos($idUser);
+            $Abono=$obCon->normalizar($_REQUEST['TxtAbonoCrearSeparado']);
+            $idCliente=$obCon->normalizar($_REQUEST['idCliente']);
+            $idPreventa=$obCon->normalizar($_REQUEST['idPreventa']);
+            if($idCliente<=1){
+                print("E1;Debe seleccionar un cliente diferente a Clientes Varios");
+                exit();
+            }
+            $TotalSeparado=$obCon->Sume("preventa", "TotalVenta", " WHERE VestasActivas_idVestasActivas='$idPreventa'");
+            if($Abono>=$TotalSeparado){
+                print("E1;El Abono no puede ser mayor o igual al total del separado");
+                exit();
+            }
+            if($Abono<=0){
+                print("E1;El Abono debe ser un número mayor a cero");
+                exit();
+            }
+            if($TotalSeparado==0){
+                print("E1;La Preventa no tiene items agregados");
+                exit();
+            }
+            $consulta=$obCon->ConsultarTabla("preventa", " WHERE VestasActivas_idVestasActivas='$idPreventa'");
+            if($obCon->NumRows($consulta)){
+                $DatosCaja=$obCon->DevuelveValores("cajas", "idUsuario", $idUser);
+                $CentroCosto=$DatosCaja["CentroCostos"];
+                $CuentaDestino=$DatosCaja["CuentaPUCEfectivo"];
+                $Concepto="ANTICIPO POR SEPARADO";
+                $VectorIngreso["Separado"]=1;
+
+                $idComprobanteIngreso=$obCon->RegistreAnticipo2($fecha,$CuentaDestino,$idCliente,$Abono,$CentroCosto,$Concepto,$idUser,$VectorIngreso);
+
+                $DatosSeparado["idCompIngreso"]=$idComprobanteIngreso;
+                $idSeparado=$obCon->RegistreSeparado($fecha,$Hora,$idPreventa,$idCliente,$Abono,$DatosSeparado);
+                $DatosImpresora=$obCon->DevuelveValores("config_puertos", "ID", 1);
+                if($DatosImpresora["Habilitado"]=="SI"){
+                    $Configuracion=$obCon->DevuelveValores("configuracion_general", "ID", 8);  //Trae el numero de copias que se debe imprimir al hacer el separado
+                    $obPrint->ImprimeSeparado($idSeparado, $DatosImpresora["Puerto"], $Configuracion["Valor"]);
+                }
+            }
+            print("OK;Separado $idSeparado Creado Exitósamente");
         break;//Fin caso 18
     }
     

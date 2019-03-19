@@ -811,10 +811,13 @@ public function InicializarPreventas()
             $Tipo="ANTICIPO";
             if(isset($VectorIngreso["Separado"])){
                 $Tipo="SEPARADO";
+                $Parametros=$this->DevuelveValores("parametros_contables", "ID", 31);
+            }else{
+                $Parametros=$this->DevuelveValores("parametros_contables", "ID", 20);
             }
             $DatosCentro=$this->DevuelveValores("centrocosto","ID",$CentroCosto);
             $DatosCliente=$this->DevuelveValores("clientes","idClientes",$idCliente);
-            $DatosCuentasFrecuentes=$this->DevuelveValores("cuentasfrecuentes","CuentaPUC",$CuentaDestino);
+            $DatosCuentasFrecuentes=$this->DevuelveValores("subcuentas","PUC",$CuentaDestino);
             $NIT=$DatosCliente["Num_Identificacion"];
             $RazonSocialC=$DatosCliente["RazonSocial"];
             
@@ -841,7 +844,7 @@ public function InicializarPreventas()
             $NumRegistros=27;
             $CuentaPUC=$CuentaDestino;
             $NombreCuenta=$DatosCuentasFrecuentes["Nombre"];
-            $Parametros=$this->DevuelveValores("parametros_contables", "ID", 20);
+            
             $CuentaPUCContraPartida=$Parametros["CuentaPUC"];
             $NombreCuentaContraPartida=$Parametros["NombreCuenta"];
 
