@@ -508,6 +508,102 @@ if( !empty($_REQUEST["Accion"]) ){
             print("OK;Descuento Aplicado");
         break;//Fin caso 13
         
+        case 14:// Cerrar turno
+            $obPrint = new PrintPos($idUser);
+            $idCaja=1;
+            $idCierre=$obCon->CierreTurno($idUser,$idCaja,"");
+            $VectorCierre["idCierre"]=$idCierre;
+            $DatosImpresora=$obCon->DevuelveValores("config_puertos", "ID", 1);
+                        
+            if($DatosImpresora["Habilitado"]=="SI"){
+
+                $obPrint->ImprimeCierre($idUser,$VectorCierre,$DatosImpresora["Puerto"],1);
+            }
+            
+            print("OK;Se ha cerrado el turno de usuario $idUser");
+        break;//Fin caso 14
+        
+        case 15:// Colocar todos los precios de venta como mayoristas si se digita el codigo de un cliente
+            $idPreventa=$obCon->normalizar($_REQUEST['idPreventa']);            
+            $CodigoTarjeta=$obCon->normalizar($_REQUEST['CodigoTarjeta']);
+            
+            $sql="SELECT idClientes, RazonSocial FROM clientes WHERE CodigoTarjeta='$CodigoTarjeta' LIMIT 1";
+            $Datos=$obCon->Query($sql);
+            $DatosCliente=$obCon->FetchArray($Datos);
+
+            if($DatosCliente["idClientes"]==''){
+                print("E1;Código inexistente");
+                exit();
+            }
+            $idCliente=$DatosCliente["idClientes"];
+            $RazonSocial=$DatosCliente["RazonSocial"];
+            $sql="SELECT idPrecotizacion FROM preventa WHERE VestasActivas_idVestasActivas='$idPreventa'";
+            $Consulta=$obCon->Query($sql);
+            while($DatosPreventa=$obCon->FetchAssoc($Consulta)){
+                $obCon->POS_EditarPrecio($DatosPreventa["idPrecotizacion"],1, 1);
+            }
+            
+            print("OK;Valores de Mayoristas Actualizados;$idCliente;$RazonSocial");
+        break;//Fin caso 15
+        
+        case 16://Crear un tercero
+            $nit=$obCon->normalizar($_REQUEST['Num_Identificacion']);
+            $idCiudad=$obCon->normalizar($_REQUEST['CodigoMunicipio']);
+            $DatosCiudad=$obCon->DevuelveValores("cod_municipios_dptos", "ID", $idCiudad);
+            $DV=$obCon->CalcularDV($nit);
+            $DatosCliente=$obCon->ValorActual("clientes", "idClientes", " Num_Identificacion='$nit'");
+            if($DatosCliente["idClientes"]<>''){
+                print("E1;El Nit Digitado ya existe");
+                exit();
+            }
+            $Datos["Tipo_Documento"]=$obCon->normalizar($_REQUEST['TipoDocumento']);  
+            $Datos["Num_Identificacion"]=$nit;    
+            $Datos["DV"]=$DV;  
+            $Datos["Primer_Apellido"]=$obCon->normalizar($_REQUEST['PrimerApellido']);    
+            $Datos["Segundo_Apellido"]=$obCon->normalizar($_REQUEST['SegundoApellido']);    
+            $Datos["Primer_Nombre"]=$obCon->normalizar($_REQUEST['PrimerNombre']);    
+            $Datos["Otros_Nombres"]=$obCon->normalizar($_REQUEST['OtrosNombres']);    
+            $Datos["RazonSocial"]=$obCon->normalizar($_REQUEST['RazonSocial']);    
+            $Datos["Direccion"]=$obCon->normalizar($_REQUEST['Direccion']);    
+            $Datos["Cod_Dpto"]=$DatosCiudad["Cod_Dpto"];    
+            $Datos["Cod_Mcipio"]=$DatosCiudad["Cod_mcipio"];    
+            $Datos["Pais_Domicilio"]=169;   
+            $Datos["Telefono"]=$obCon->normalizar($_REQUEST['Telefono']);             
+            $Datos["Ciudad"]=$DatosCiudad["Ciudad"];    
+            $Datos["Email"]=$obCon->normalizar($_REQUEST['Email']); 
+            $Datos["Cupo"]=$obCon->normalizar($_REQUEST['Cupo']);    
+            $Datos["CodigoTarjeta"]=$obCon->normalizar($_REQUEST['CodigoTarjeta']); 
+            
+            $sqlClientes=$obCon->getSQLInsert("clientes", $Datos);
+            $sqlProveedores=$obCon->getSQLInsert("proveedores", $Datos);
+            $obCon->Query($sqlClientes);
+            $obCon->Query($sqlProveedores);
+            
+            print("OK;Se ha creado el tercero ".$Datos["RazonSocial"].", con Identificación: ".$nit);
+            
+        break;//FIn caso 16
+        
+        case 17://Verifica si ya existe un nit
+            $nit=$obCon->normalizar($_REQUEST['Num_Identificacion']);
+            
+            $DatosCliente=$obCon->ValorActual("clientes", "idClientes", " Num_Identificacion='$nit'");
+            if($DatosCliente["idClientes"]<>''){
+                print("E1;El Nit Digitado ya existe");
+                exit();
+            }
+            print("OK;El cliente no existe aún");
+        break;//Fin caso 17
+        
+        case 18://Verifica si ya existe el codigo de una tarjeta
+            $Codigo=$obCon->normalizar($_REQUEST['CodigoTarjeta']);
+            
+            $DatosCliente=$obCon->ValorActual("clientes", "idClientes", " CodigoTarjeta='$Codigo'");
+            if($DatosCliente["idClientes"]<>''){
+                print("E1;El Código de la tarjeta Digitado ya existe");
+                exit();
+            }
+            print("OK;Código disponible");
+        break;//Fin caso 18
     }
     
     

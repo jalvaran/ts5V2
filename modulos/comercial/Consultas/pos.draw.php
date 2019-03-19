@@ -347,7 +347,110 @@ if( !empty($_REQUEST["Accion"]) ){
                 $css->CrearBotonEvento("BtnDescuentoCosto", "Aplicar", 1, "onclick", "DescuentoCosto()", "rojo", "");
             $css->CerrarDiv();
             print("<br><br><br><br><br>");
-        break;
+        break;//Fin caso 7
+        
+        case 8: //Dibuja las opciones para crear un tercero
+            $css->input("hidden", "idFormulario", "", "idFormulario", "", 2, "", "", "", ""); //2 sirve para indicarle al sistema que debe guardar el formulario de crear un tercero
+            
+            $css->CrearTabla();
+                $css->FilaTabla(16);
+                    $css->ColTabla("<strong>Tipo de Documento</strong>", 1);
+                    $css->ColTabla("<strong>Identificación</strong>", 1);
+                    $css->ColTabla("<strong>Ciudad</strong>", 1);
+                    $css->ColTabla("<strong>Teléfono</strong>", 1);
+                $css->CierraFilaTabla();
+                
+                $css->FilaTabla(16);
+                    print("<td>");
+                        $css->select("TipoDocumento", "form-control", "TipoDocumento", "", "", "", "style=width:300px");
+                        $Consulta=$obCon->ConsultarTabla("cod_documentos", "");
+                        while($DatosTipoDocumento=$obCon->FetchAssoc($Consulta)){
+                            $sel=0;
+                            if($DatosTipoDocumento["Codigo"]==13){
+                                $sel=1;
+                            }
+                            $css->option("", "", "", $DatosTipoDocumento["Codigo"], "", "", $sel);
+                                print($DatosTipoDocumento["Codigo"]." ".$DatosTipoDocumento["Descripcion"]);
+                            $css->Coption();
+                        }    
+                        $css->Cselect();
+                    print("</td>");
+                    print("<td>");
+                        $css->input("number", "Num_Identificacion", "form-control", "Num_Identificacion", "", "", "Identificación", "off", "", "onchange=VerificaNIT()");
+                    print("</td>");
+                    print("<td>");
+                        $css->select("CodigoMunicipio", "form-control", "CodigoMunicipio", "", "", "", "");
+                            $Consulta=$obCon->ConsultarTabla("cod_municipios_dptos", "");
+                            while($DatosMunicipios=$obCon->FetchAssoc($Consulta)){
+                                $sel=0;
+                                if($DatosMunicipios["ID"]==1011){
+                                    $sel=1;
+                                }
+                                $css->option("", "", "", $DatosMunicipios["ID"], "", "", $sel);
+                                    print($DatosMunicipios["Ciudad"]." ".$DatosMunicipios["Cod_mcipio"]);
+                                $css->Coption();
+                            }    
+                        $css->Cselect();
+                    print("</td>");
+                    
+                    print("<td>");
+                        $css->input("text", "Telefono", "form-control", "Telefono", "", "", "Teléfono", "off", "", "");
+                    print("</td>");
+                    
+                    
+                $css->CierraFilaTabla();
+                
+                $css->FilaTabla(16);
+                    $css->ColTabla("<strong>Nombres</strong>", 4,"C");
+                    
+                $css->CierraFilaTabla();
+                
+                $css->FilaTabla(16);
+                    print("<td>");
+                        $css->input("text", "PrimerNombre", "form-control", "PrimerNombre", "Primer Nombre", "", "Primer Nombre", "off", "", "onkeyup=CompletaRazonSocial()", "");
+                    print("</td>");
+                    print("<td>");
+                        $css->input("text", "OtrosNombres", "form-control", "OtrosNombres", "Otros Nombres", "", "Otros Nombres", "off", "", "onkeyup=CompletaRazonSocial()", "");
+                    print("</td>");
+                    print("<td>");
+                        $css->input("text", "PrimerApellido", "form-control", "PrimerApellido", "Primer Apellido", "", "Primer Apellido", "off", "", "onkeyup=CompletaRazonSocial()", "");
+                    print("</td>");
+                    print("<td>");
+                        $css->input("text", "SegundoApellido", "form-control", "SegundoApellido", "Segundo Apellido", "", "Segundo Apellido", "off", "", "onkeyup=CompletaRazonSocial()", "");
+                    print("</td>");
+                    $css->FilaTabla(16);
+                        print("<td colspan=4>");
+                            $css->input("text", "RazonSocial", "form-control", "RazonSocial", "Razon Social", "", "RazonSocial", "off", "", "", "");
+                        print("</td>");
+                    $css->CierraFilaTabla(); 
+                    
+                $css->CierraFilaTabla();
+                
+                
+                $css->FilaTabla(16);
+                    $css->ColTabla("<strong>Dirección</strong>", 1);
+                    $css->ColTabla("<strong>Email</strong>", 1);
+                    $css->ColTabla("<strong>Cupo</strong>", 1);
+                    $css->ColTabla("<strong>Código Tarjeta</strong>", 1);
+                $css->CierraFilaTabla();
+                
+                $css->FilaTabla(16);
+                    print("<td>");
+                        $css->input("text", "Direccion", "form-control", "Direccion", "Direccion", "", "Dirección", "off", "", "", "");
+                    print("</td>");
+                    print("<td>");
+                        $css->input("text", "Email", "form-control", "Email", "Email", "", "Email", "off", "", "", "");
+                    print("</td>");
+                    print("<td>");
+                        $css->input("number", "Cupo", "form-control", "Cupo", "Cupo", 0, "Cupo Crédito", "off", "", "", "");
+                    print("</td>");
+                    print("<td>");
+                        $css->input("number", "CodigoTarjeta", "form-control", "CodigoTarjeta", "Codigo Tarjeta", "", "Código Tarjeta", "off", "", "", "onchange=VerificaCodigoTarjeta()");
+                    print("</td>");
+                $css->CierraFilaTabla();
+                
+            $css->CerrarTabla();
+        break;//Fin caso 8
         
         
     }

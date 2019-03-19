@@ -220,7 +220,11 @@ function DibujeTotales(idPreventa=""){
       
 }
 
-
+/**
+ * Elimina un item de la preventa
+ * @param {type} idItem
+ * @returns {undefined}
+ */
 function EliminarItem(idItem){
         
     var form_data = new FormData();
@@ -252,7 +256,11 @@ function EliminarItem(idItem){
       });
 }
 
-
+/**
+ *Editar la cantidad en una preventa
+ * @param {type} idItem
+ * @returns {undefined}
+ */
 function EditarItemCantidad(idItem){
     var idCantidad='TxtCantidad_'+idItem
     var Cantidad=parseFloat(document.getElementById(idCantidad).value);
@@ -299,7 +307,12 @@ function EditarItemCantidad(idItem){
           }
       });
 }
-
+/**
+ * Editar precio de venta
+ * @param {type} idItem
+ * @param {type} Mayorista
+ * @returns {undefined}
+ */
 function EditarPrecioVenta(idItem,Mayorista=0){
     var idPrecioVenta='TxtValorUnitario_'+idItem
     var PrecioVenta=parseFloat(document.getElementById(idPrecioVenta).value);
@@ -461,7 +474,10 @@ $('#idCliente').select2({
     }
   });
 
-
+/**
+ * Establece el modo bascula donde consulta el valor de la bascula en un intervalo de tiempo
+ * @returns {undefined}
+ */
 function ModoBacula(){
     
     var form_data = new FormData();        
@@ -501,7 +517,10 @@ function ModoBacula(){
           }
       })  
 }
-
+/**
+ * Abre un modal con las opciones para realizar una factura POS
+ * @returns {undefined}
+ */
 function AbrirModalFacturarPOS(){
     
     $("#ModalAccionesPOS").modal();
@@ -532,7 +551,10 @@ function AbrirModalFacturarPOS(){
           }
       })  
 }  
-
+/**
+ * Calcula la devuelta 
+ * @returns {undefined}
+ */
 function CalculeDevuelta(){
     var TotalFactura = parseFloat(document.getElementById("TxtTotalFactura").value);
     var Efectivo = parseFloat(document.getElementById("Efectivo").value);
@@ -590,7 +612,10 @@ function CalculeDevuelta(){
     
 }
 
-
+/**
+ * Establece los atajos
+ * @returns {undefined}
+ */
 function atajosPOS(){
 
     shortcut("Ctrl+E",function(){
@@ -610,7 +635,10 @@ function atajosPOS(){
     });
 
 }
-
+/**
+ * Determina la accion a seguir según el formulario dibujado
+ * @returns {undefined}
+ */
 function AccionesPOS(){
     document.getElementById("BntModalPOS").disabled=true;
     document.getElementById("BntModalPOS").value="Guardando...";
@@ -620,10 +648,248 @@ function AccionesPOS(){
         GuardarFactura();
     }
     
-    
+    if(idFormulario==2){
+        CrearTercero();
+    }
     
 }
+/**
+ * Crear un tercero
+ * @returns {undefined}
+ */
+function CrearTercero(){
+    
+    var TipoDocumento=document.getElementById('TipoDocumento').value;
+    var Num_Identificacion=document.getElementById('Num_Identificacion').value;    
+    var CodigoMunicipio=document.getElementById('CodigoMunicipio').value;
+    var Telefono=document.getElementById('Telefono').value;
+    var PrimerNombre=document.getElementById('PrimerNombre').value;
+    var OtrosNombres=document.getElementById('OtrosNombres').value;
+    var PrimerApellido=document.getElementById('PrimerApellido').value;
+    var SegundoApellido=document.getElementById('SegundoApellido').value;
+    var RazonSocial=document.getElementById('RazonSocial').value;
+    var Direccion=document.getElementById('Direccion').value;
+    var Email=document.getElementById('Email').value;
+    var Cupo=document.getElementById('Cupo').value;
+    var CodigoTarjeta=document.getElementById('CodigoTarjeta').value;
+    
+    if(!$.isNumeric(Num_Identificacion) || Num_Identificacion <= 0){
+        alertify.error("El Campo Identificacion debe ser un número mayor a Cero y no puede estar en blanco");
+        document.getElementById("Num_Identificacion").style.backgroundColor="pink";
+        
+        return;
+    }else{
+        document.getElementById("Num_Identificacion").style.backgroundColor="white";
+    }
+    
+    if(Telefono==''){
+        alertify.error("El Campo Teléfono no puede estar vacío");
+        document.getElementById("Telefono").style.backgroundColor="pink";
+        
+        return;
+    }else{
+        document.getElementById("Telefono").style.backgroundColor="white";
+    }
+    
+    if(RazonSocial==''){
+        alertify.error("El Campo Razón Social no puede estar vacío");
+        document.getElementById("RazonSocial").style.backgroundColor="pink";
+        
+        return;
+    }else{
+        document.getElementById("RazonSocial").style.backgroundColor="white";
+    }
+    
+    
+    if(Direccion==''){
+        alertify.error("El Campo Dirección no puede estar vacío");
+        document.getElementById("Direccion").style.backgroundColor="pink";
+        
+        return;
+    }else{
+        document.getElementById("Direccion").style.backgroundColor="white";
+    }
+    
+    if(Email==''){
+        alertify.error("El Campo Email no puede estar vacío");
+        document.getElementById("Email").style.backgroundColor="pink";
+        
+        return;
+    }else{
+        document.getElementById("Email").style.backgroundColor="white";
+    }
+    
+    if(!$.isNumeric(Cupo) || Cupo < 0){
+        alertify.error("El Campo Cupo debe ser un número mayor o igual a Cero y no puede estar en blanco");
+        document.getElementById("Cupo").style.backgroundColor="pink";
+        
+        return;
+    }else{
+        document.getElementById("Cupo").style.backgroundColor="white";
+    }
+    
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 16);
+        form_data.append('TipoDocumento', TipoDocumento);
+        form_data.append('Num_Identificacion', Num_Identificacion);
+        form_data.append('CodigoMunicipio', CodigoMunicipio);
+        form_data.append('Telefono', Telefono);
+        form_data.append('TipoDocumento', TipoDocumento);
+        form_data.append('PrimerNombre', PrimerNombre);
+        form_data.append('OtrosNombres', OtrosNombres);
+        form_data.append('PrimerApellido', PrimerApellido);
+        form_data.append('SegundoApellido', SegundoApellido);
+        form_data.append('RazonSocial', RazonSocial);
+        form_data.append('Direccion', Direccion);
+        form_data.append('Email', Email);
+        form_data.append('Cupo', Cupo);
+        form_data.append('CodigoTarjeta', CodigoTarjeta);
+        
+        document.getElementById("RazonSocial").value='';
+        
+        $.ajax({
+        url: './procesadores/pos.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';');
+            if(respuestas[0]=="E1"){
+                alertify.alert(respuestas[1]);
+                
+            }else if(respuestas[0]=="OK"){
+                alertify.success(respuestas[1]);
+                CierraModal('ModalAccionesPOS');
+            }else{
+                alertify.alert(data);
+            }
+            document.getElementById("BntModalPOS").disabled=false;
+            document.getElementById("BntModalPOS").value="Guardar";
+            posiciona('Codigo');           
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+    
+}
+/**
+ * Verifica si existe un nit
+ * @returns {undefined}
+ */
+function VerificaNIT(){
+    var Num_Identificacion=document.getElementById('Num_Identificacion').value;
+    
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 17);
+        form_data.append('Num_Identificacion', Num_Identificacion);
+        
+        $.ajax({
+        url: './procesadores/pos.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';');
+            if(respuestas[0]=="E1"){
+                alertify.error(respuestas[1]);
+                document.getElementById("Num_Identificacion").style.backgroundColor="pink";
+                posiciona('Num_Identificacion');
+                document.getElementById("BntModalPOS").disabled=true;
+            }else if(respuestas[0]=="OK"){
+                alertify.success(respuestas[1]);
+                document.getElementById("Num_Identificacion").style.backgroundColor="white";
+                document.getElementById("BntModalPOS").disabled=false;
+            }else{
+                alertify.alert(data);
+                document.getElementById("BntModalPOS").disabled=false;
+            }
+            
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}
+/**
+ * Verifica si el codigo de una tarjeta ya existe
+ * @returns {undefined}
+ */
+function VerificaCodigoTarjeta(){
+    var CodigoTarjeta=document.getElementById('CodigoTarjeta').value;
+    
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 18);
+        form_data.append('CodigoTarjeta', CodigoTarjeta);
+        
+        $.ajax({
+        url: './procesadores/pos.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';');
+            if(respuestas[0]=="E1"){
+                alertify.error(respuestas[1]);
+                document.getElementById("CodigoTarjeta").style.backgroundColor="pink";
+                posiciona('CodigoTarjeta');
+                document.getElementById("BntModalPOS").disabled=true;
+            }else if(respuestas[0]=="OK"){
+                alertify.success(respuestas[1]);
+                document.getElementById("CodigoTarjeta").style.backgroundColor="white";
+                document.getElementById("BntModalPOS").disabled=false;
+            }else{
+                alertify.alert(data);
+                document.getElementById("BntModalPOS").disabled=false;
+            }
+            
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}
+/**
+ * Crea la razon social
+ * @returns {undefined}
+ */
+function CompletaRazonSocial() {
 
+    var PrimerApellido=document.getElementById('PrimerApellido').value;
+    var SegundoApellido=document.getElementById('SegundoApellido').value;
+    var PrimerNombre=document.getElementById('PrimerNombre').value;
+    var OtrosNombres=document.getElementById('OtrosNombres').value;
+	
+
+    var RazonSocial=PrimerNombre+" "+OtrosNombres+" "+PrimerApellido+" "+SegundoApellido;
+
+    document.getElementById('RazonSocial').value=RazonSocial;
+
+
+}
+
+/**
+ * Crea y guarda una factura a partir de una preventa
+ * @returns {undefined}
+ */
 function GuardarFactura(){
        
     var idPreventa = document.getElementById('idPreventa').value;       
@@ -790,7 +1056,10 @@ function GuardarFactura(){
     
     
 }
-
+/**
+ * Crea y guarda una cotizacion a partir de una preventa
+ * @returns {undefined}
+ */
 function CotizarPOS(){
     
     
@@ -824,7 +1093,10 @@ function CotizarPOS(){
       })  
 }  
 
-
+/**
+ * Autoriza una preventa
+ * @returns {undefined}
+ */
 function AutorizarPreventa(){
     
     
@@ -866,7 +1138,10 @@ function AutorizarPreventa(){
           }
       })  
 }  
-
+/**
+ * Realiza un descuento a mayoristas
+ * @returns {undefined}
+ */
 function PreciosMayoristas(){    
     
     var idPreventa=document.getElementById('idPreventa').value;
@@ -907,7 +1182,10 @@ function PreciosMayoristas(){
           }
       })  
 }  
-
+/**
+ * Abre un modal con las opciones para las autorizaciones de un POS
+ * @returns {undefined}
+ */
 function AbrirModalAutorizacionesPOS(){
     
     $("#ModalAccionesPOSSmall").modal();
@@ -940,7 +1218,10 @@ function AbrirModalAutorizacionesPOS(){
           }
       })  
 }  
-
+/**
+ * Realiza un descuento por porcentaje
+ * @returns {undefined}
+ */
 function DescuentoPorcentaje(){    
     
     var idPreventa=document.getElementById('idPreventa').value;
@@ -1016,7 +1297,10 @@ function DescuentoPorcentaje(){
       })  
 }  
 
-
+/**
+ * Realiza un descuento de acuerdo a lo que se haya escrito
+ * @returns {undefined}
+ */
 function DescuentoListaPrecio(){    
     
     var idPreventa=document.getElementById('idPreventa').value;
@@ -1083,7 +1367,10 @@ function DescuentoListaPrecio(){
           }
       })  
 }  
-
+/**
+ * REaliza un descuento a precio de costo
+ * @returns {undefined}
+ */
 function DescuentoCosto(){    
     
     var idPreventa=document.getElementById('idPreventa').value;
@@ -1147,6 +1434,154 @@ function DescuentoCosto(){
           }
       })  
 }  
+
+/**
+ * Cierra el turno
+ * @returns {undefined}
+ */
+function CerrarTurno(){    
+    document.getElementById("BtnCerrarTurno").disabled=true;
+    document.getElementById("BtnCerrarTurno").value="Cerrando Turno...";
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 14);
+               
+        $.ajax({
+        url: './procesadores/pos.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';');
+            if(respuestas[0]=="E1"){
+                alertify.alert(respuestas[1]);
+                
+            }else if(respuestas[0]=="OK"){
+                alertify.alert(respuestas[1]);
+                document.getElementById("BtnCerrarTurno").disabled=false;
+                document.getElementById("BtnCerrarTurno").value="Cerrar Turno";
+            }else{
+                alertify.alert(data);
+            }
+            
+            posiciona('Codigo');           
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}  
+/**
+ * Cambia el precio de venta a mayorista si el codigo que se digite está asociado a un cliente
+ * @returns {undefined}
+ */
+function CodigoTarjeta(){
+    var idPreventa=document.getElementById('idPreventa').value;
+    var CodigoTarjeta=document.getElementById('CodigoTarjeta').value;
+    
+    if(idPreventa==''){        
+        alertify.alert("Debe seleccionar una preventa");
+        document.getElementById("idPreventa").style.backgroundColor="pink";   
+        document.getElementById("CodigoTarjeta").value='';
+        return;
+    }else{
+        document.getElementById("idPreventa").style.backgroundColor="white";
+    }
+    
+        
+    if(CodigoTarjeta==''){        
+        alertify.alert("Debe escribir una Clave");
+        document.getElementById("CodigoTarjeta").style.backgroundColor="pink";   
+        
+        return;
+    }else{
+        document.getElementById("CodigoTarjeta").style.backgroundColor="white";
+    }
+    
+    
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 15);
+        form_data.append('idPreventa', idPreventa);
+        form_data.append('CodigoTarjeta', CodigoTarjeta);
+        
+        document.getElementById("CodigoTarjeta").value='';
+        $.ajax({
+        url: './procesadores/pos.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';');
+            console.log(data);
+            if(respuestas[0]=="E1"){
+                alertify.alert(respuestas[1]);
+                
+            }else if(respuestas[0]=="OK"){
+                
+                               
+                var x = document.getElementById("idCliente");
+                  var option = document.createElement("option");
+                  option.text = respuestas[3];
+                  option.value = respuestas[2];
+
+                  x.add(option); 
+                  $("#idCliente option:last").attr('selected','selected');
+                
+                alertify.success(respuestas[1]+" al Cliente "+respuestas[3]);
+                
+            }else{
+                alertify.alert(data);
+            }
+            
+            DibujePreventa();
+            posiciona('Codigo');           
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}
+/**
+ * Abre el modal para crear un tercero
+ * @returns {undefined}
+ */
+function ModalCrearTercero(){
+    $("#ModalAccionesPOS").modal();
+    
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 8);
+        
+        $.ajax({
+        url: './Consultas/pos.draw.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            document.getElementById('DivFrmPOS').innerHTML=data;
+            $('#CodigoMunicipio').select2();
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}
+
 
 atajosPOS();
 ConvertirSelectBusquedas();

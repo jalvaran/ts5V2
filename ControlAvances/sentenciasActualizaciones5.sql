@@ -90,4 +90,5 @@ INSERT INTO `configuracion_general` (`ID`, `Descripcion`, `Valor`, `Updated`, `S
 INSERT INTO `configuracion_general` (`ID`, `Descripcion`, `Valor`, `Updated`, `Sync`) VALUES
 (7,'Determina si se pueden realizar descuentos a precio de costo','1',	'2019-02-18 08:33:01',	'2019-03-18 08:33:01');
 
-
+ALTER TABLE `clientes` ADD `CodigoTarjeta` VARCHAR(20) NOT NULL AFTER `Cupo`;
+ALTER TABLE `proveedores` ADD `CodigoTarjeta` VARCHAR(20) NOT NULL AFTER `Cupo`;

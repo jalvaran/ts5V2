@@ -32,7 +32,7 @@ $css->PageInit($myTitulo);
     $css->CrearDiv("", "col-md-12", "left", $Habilita, 1); 
         $css->fieldset("", "", "FieldDatosCotizacion", "DatosCotizacion", "", "");
             $css->legend("", "");
-                print("<a href='#'>POS TS5,<span id='SpEstadoCaja'> Usted está asignado a la caja No. $DatosCaja[ID]</span></a>");
+                print("<a href='#'>POS TS5,<span id='SpEstadoCaja'> Usted está asignad@ a la caja No. $DatosCaja[ID]</span></a>");
                 
             $css->Clegend(); 
          
@@ -103,7 +103,7 @@ $css->PageInit($myTitulo);
                 print("<a href='#'>Opciones Adicionales:</a>");
             $css->Clegend();  
             $css->CrearDiv("", "col-md-3", "left", 1, 1);
-                $css->CrearBotonEvento("BtnAgregarPreventa", "Agregar Preventa", 1, "onclick", "AgregarPreventa();", "verde", "");
+                $css->CrearBotonEvento("BtnAgregarPreventa", "Agregar Preventa", 1, "onclick", "AgregarPreventa();", "azulclaro", "");
             $css->CerrarDiv();
             
             $css->CrearDiv("", "col-md-3", "left", 1, 1);
@@ -111,11 +111,11 @@ $css->PageInit($myTitulo);
             $css->CerrarDiv();
             
             $css->CrearDiv("", "col-md-3", "left", 1, 1);
-                $css->CrearBotonEvento("BtnCrearSeparado", "Crear Separado", 1, "onclick", "ModalCrearSeparado();", "verde", "");
+                $css->CrearBotonEvento("BtnCrearSeparado", "Crear Separado", 1, "onclick", "ModalCrearSeparado();", "naranja", "");
             $css->CerrarDiv();
             
             $css->CrearDiv("", "col-md-3", "left", 1, 1);
-               $css->CrearBotonEvento("BtnCrearEgreso", "Crear Egreso", 1, "onclick", "ModalCrearEgreso();", "verde", "");
+               $css->CrearBotonEvento("BtnCrearEgreso", "Crear Egreso", 1, "onclick", "ModalCrearEgreso();", "azul", "");
             $css->CerrarDiv();
             print("<br><br><br>");           
             $css->CrearDiv("", "col-md-3", "left", 1, 1);
@@ -158,6 +158,10 @@ $css->PageInit($myTitulo);
               </div>');
             
                 
+            $css->CerrarDiv();
+            
+            $css->CrearDiv("", "col-md-3", "left", 1, 1);
+               $css->input("password", "CodigoTarjeta", "form-control", "CodigoTarjeta", "CodigoTarjeta", "", "Tarjeta Código", "off", "", "onchange=CodigoTarjeta()");
             $css->CerrarDiv();
             
             $css->CrearDiv("", "col-md-3", "left", 1, 1);
