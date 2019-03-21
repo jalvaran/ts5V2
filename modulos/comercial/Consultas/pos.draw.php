@@ -607,7 +607,133 @@ if( !empty($_REQUEST["Accion"]) ){
             }else{
                 print("No hay resultados");
             }
-        break;
+        break;//Fin Caso 11
+        
+        case 12://Dibujo el formulario para abonar a un credito
+            
+            $key=$obCon->normalizar($_REQUEST["TxtBuscarCredito"]);
+            if(strlen($key)<=3){
+
+                print("Escriba mas de 3 caracteres");
+                exit();  
+            }
+            $sql="SELECT cart.idCartera,cart.TipoCartera,cart.Facturas_idFacturas, cl.RazonSocial, cl.Num_Identificacion, cart.TotalFactura, cart.Saldo,cart.TotalAbonos, cl.idClientes FROM cartera cart"
+                    . " INNER JOIN clientes cl ON cart.idCliente = cl.idClientes "
+                    . " WHERE (cl.RazonSocial LIKE '%$key%' OR cl.Num_Identificacion LIKE '%$key%') AND cart.Saldo>1 LIMIT 40";
+            $Datos=$obCon->Query($sql);
+            if($obCon->NumRows($Datos)){
+                $css->CrearTabla();
+
+                while($DatosCredito=$obCon->FetchArray($Datos)){
+                    $DatosFactura=$obCon->DevuelveValores("facturas", "idFacturas", $DatosCredito["Facturas_idFacturas"]);
+                    $idCartera=$DatosCredito["idCartera"];
+                    $idFactura=$DatosFactura["idFacturas"];
+                            
+                    $css->FilaTabla(14);
+                    if($DatosFactura["FormaPago"]=='SisteCredito'){
+
+                        print("<td colspan=6 style='background-color:#ff391a; color:white'>");
+                    }else{
+                        print("<td colspan=6 style='background-color:#daeecf;'>");
+                    }
+
+                    print("<strong>Factura No. ".$DatosFactura["Prefijo"]." - ".$DatosFactura["NumeroFactura"]." TIPO DE CREDITO: $DatosFactura[FormaPago] Fecha: $DatosFactura[Fecha]<strong>");
+                    print("</td>");
+                    $css->CierraFilaTabla();
+                    $css->FilaTabla(14);
+                    print("</td>");
+                    
+                    $css->ColTabla("<strong>".$DatosCredito["RazonSocial"]."</strong>", 1);
+                    $css->ColTabla("<strong>".$DatosCredito["Num_Identificacion"]."</strong>", 1);
+                    $css->ColTabla("<strong>Total: </strong>".($DatosCredito["TotalFactura"]), 1);
+                    $css->ColTabla("<strong>Abonos: </strong>".($DatosCredito["TotalFactura"]-$DatosCredito["Saldo"]), 1);
+                    $css->ColTabla("<strong>Saldo: </strong>".($DatosFactura["SaldoFact"]), 1);
+                    $css->CierraFilaTabla();
+                    
+                    $css->FilaTabla(14);
+                    
+                    print("<td>");
+                        print("<strong>Efectivo:</strong>"); 
+                        $css->input("number", "TxtAbonoCredito_$idCartera", "form-control", "TxtAbonoCredito_$idCartera", "Abono", $DatosFactura["SaldoFact"], "Efectivo: ", "off", "", "", "");
+                    print("</td>");
+                    
+                    print("<td>");
+                        print("<strong>Intereses:</strong>"); 
+                        $css->input("number", "TxtInteresCredito_$idCartera", "form-control", "TxtInteresCredito_$idCartera", "Intereses", 0, "Intereses: ", "off", "", "", "");
+                    print("</td>");
+                    
+                    print("<td>");
+                        print("<strong>Tarjetas:</strong>"); 
+                        $css->input("number", "TxtTarjetasCredito_$idCartera", "form-control", "TxtTarjetasCredito_$idCartera", "Tarjetas", 0, "Tarjetas: ", "off", "", "", "");
+                    print("</td>");
+                    
+                    print("<td>");
+                        print("<strong>Cheques:</strong>"); 
+                        $css->input("number", "TxtChequesCredito_$idCartera", "form-control", "TxtChequesCredito_$idCartera", "Cheques", 0, "Cheques: ", "off", "", "", "");
+                    print("</td>");
+                    
+                    print("<td>");
+                        print("<strong>Otros:</strong>"); 
+                        $css->input("number", "TxtOtrosCredito_$idCartera", "form-control", "TxtOtrosCredito_$idCartera", "Otros", 0, "Otros: ", "off", "", "", "");
+                    print("</td>");
+                    $css->FilaTabla(16);
+                        print("<td colspan=3>");
+                            $css->CrearBotonEvento("BtnItemFactura_$idCartera", "Ver Items de la Factura", 1, "onclick", "MostrarItemsFacturaCredito(`$idFactura`,`DivCredito_Items_$idCartera`)", "naranja", "");
+                        print("</td>");
+                        print("<td colspan=2>");
+                            $css->CrearBotonEvento("BtnAbonoCredito_$idCartera", "Abonar a Credito", 1, "onclick", "AbonarCredito(`$idCartera`,`$idFactura`)", "rojo", "");
+                        print("</td>");
+                        
+                    $css->CierraFilaTabla();
+                    
+                    $css->FilaTabla(16);
+                    print("<td colspan='5' style='text-align:center'>");
+                        $css->CrearDiv("DivCredito_Items_$idCartera", "", "center", 1, 1);
+                        $css->CerrarDiv();
+                    print("</td>");   
+                    $css->CierraFilaTabla();
+
+                }
+                $css->CerrarTabla();
+
+            }else{
+                print("No se encontraron datos");
+            }
+            
+        break;//Fin caso 12
+        
+        case 13://Dibujo los items de una factura
+            
+            $idFactura=$obCon->normalizar($_REQUEST["idFactura"]);
+            
+            $css->CrearTabla();
+            $css->FilaTabla(12);
+                $css->ColTabla("<strong>REFERENCIA</strong>", 1);
+                $css->ColTabla("<strong>NOMBRE</strong>", 1);
+                $css->ColTabla("<strong>VALOR UNITARIO</strong>", 1);
+                $css->ColTabla("<strong>CANTIDAD</strong>", 1);
+                $css->ColTabla("<strong>SUBTOTAL</strong>", 1);
+                $css->ColTabla("<strong>IVA</strong>", 1);
+                $css->ColTabla("<strong>TOTAL</strong>", 1);
+            $css->CierraFilaTabla();
+            
+            $sql="SELECT Referencia,Nombre,ValorUnitarioItem,Cantidad,SubtotalItem,IVAItem,TotalItem FROM facturas_items "
+                    . " WHERE idFactura='$idFactura' LIMIT 100";
+            $Consulta=$obCon->Query($sql);
+            while ($DatosFactura=$obCon->FetchArray($Consulta)){
+                $css->FilaTabla(12);
+                    $css->ColTabla($DatosFactura["Referencia"], 1);
+                    $css->ColTabla($DatosFactura["Nombre"], 1);
+                    $css->ColTabla($DatosFactura["ValorUnitarioItem"], 1);
+                    $css->ColTabla($DatosFactura["Cantidad"], 1);
+                    $css->ColTabla($DatosFactura["SubtotalItem"], 1);
+                    $css->ColTabla($DatosFactura["IVAItem"], 1);
+                    $css->ColTabla($DatosFactura["TotalItem"], 1);
+                $css->CierraFilaTabla();
+            }
+            $css->CerrarTabla();
+        break;    
+        
     }
     
     

@@ -978,7 +978,7 @@ function GuardarFactura(){
     }else{
         document.getElementById("AnticiposCruzados").style.backgroundColor="white";
     }
-    
+    /*
     if(TxtTotalAnticipos < AnticiposCruzados){
         
         alertify.alert("El Anticipo no puede ser mayor al total de anticipos realizados por el Cliente");
@@ -988,7 +988,7 @@ function GuardarFactura(){
     }else{
         document.getElementById("AnticiposCruzados").style.backgroundColor="white";
     }
-    
+    */
     if( AnticiposCruzados > TxtTotalFactura){
         alertify.alert("El Anticipo no puede ser mayor al total de la Factura");
         document.getElementById("AnticiposCruzados").style.backgroundColor="pink";
@@ -2076,6 +2076,213 @@ function FacturarItemSeparado(idItemSeparado,TotalAbonos,CantidadMaxima,ValorUni
           }
       })  
 }
+/**
+ * Busca un credito
+ * @returns {undefined}
+ */
+function BuscarCreditos(){
+    var TxtBuscarCredito=(document.getElementById('TxtBuscarCredito').value);    
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 12);
+        form_data.append('TxtBuscarCredito', TxtBuscarCredito);
+        $.ajax({
+        url: './Consultas/pos.draw.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            document.getElementById('DivBusquedasPOS').innerHTML=data;
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}  
+/**
+ * Muestra los items de una factura
+ * @param {type} idFactura
+ * @param {type} idDiv
+ * @returns {undefined}
+ */
+function MostrarItemsFacturaCredito(idFactura,idDiv){
+        
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 13);
+        form_data.append('idFactura', idFactura);
+        $.ajax({
+        url: './Consultas/pos.draw.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            document.getElementById(idDiv).innerHTML=data;
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}  
+
+/**
+ * Muestra u oculta un elemento de acuerdo a su id
+ * @param {type} id
+ * @returns {undefined}
+ */
+function MuestraOculta(id){
+    
+    var estado=document.getElementById(id).style.display;
+    if(estado=="none" | estado==""){
+        document.getElementById(id).style.display="block";
+    }
+    if(estado=="block"){
+        document.getElementById(id).style.display="none";
+    }
+    
+}
+/**
+ * Abona a un credito
+ * @param {type} idCredito
+ * @param {type} idFactura
+ * @returns {undefined}
+ */
+function AbonarCredito(idCredito,idFactura){
+    var idAbono='TxtAbonoCredito_'+idCredito;
+    var idInteres='TxtInteresCredito_'+idCredito;
+    var idTarjetas='TxtTarjetasCredito_'+idCredito;
+    var idCheques='TxtChequesCredito_'+idCredito;
+    var idOtros='TxtOtrosCredito_'+idCredito;
+    var Abono = parseFloat(document.getElementById(idAbono).value);
+    var Intereses = parseFloat(document.getElementById(idInteres).value);
+    var Tarjetas = parseFloat(document.getElementById(idTarjetas).value);
+    var Cheques = parseFloat(document.getElementById(idCheques).value);
+    var Otros = parseFloat(document.getElementById(idOtros).value);
+      
+    var idBoton="BtnAbonoCredito_"+idCredito;
+    
+    document.getElementById(idBoton).disabled=true;
+    document.getElementById(idBoton).value="Procesando...";
+    
+     
+    if(!$.isNumeric(Abono) ||  Abono<0){
+        
+        alertify.error("El Efectivo debe ser un número mayor a cero");
+        document.getElementById(idAbono).style.backgroundColor="pink";   
+        document.getElementById(idBoton).disabled=false;
+        document.getElementById(idBoton).value="Facturar Item";   
+        posiciona(idAbono); 
+        return;
+    }else{
+        document.getElementById(idAbono).style.backgroundColor="white";
+    }
+    
+           
+    if(!$.isNumeric(Intereses) ||  Intereses<0){
+        
+        alertify.error("El campo Intereses debe ser un número mayor a cero");
+        document.getElementById(idInteres).style.backgroundColor="pink";   
+        document.getElementById(idBoton).disabled=false;
+        document.getElementById(idBoton).value="Facturar Item";   
+        posiciona(idInteres); 
+        return;
+    }else{
+        document.getElementById(idInteres).style.backgroundColor="white";
+    }
+    
+      
+    if(!$.isNumeric(Tarjetas) ||  Tarjetas<0){
+        
+        alertify.error("El campo Tarjetas debe ser un número mayor a cero");
+        document.getElementById(idTarjetas).style.backgroundColor="pink";   
+        document.getElementById(idBoton).disabled=false;
+        document.getElementById(idBoton).value="Facturar Item";   
+        posiciona(idTarjetas); 
+        return;
+    }else{
+        document.getElementById(idTarjetas).style.backgroundColor="white";
+    }
+    
+    
+       
+    if(!$.isNumeric(Cheques) ||  Cheques<0){
+        
+        alertify.error("El campo Cheques debe ser un número mayor a cero");
+        document.getElementById(idCheques).style.backgroundColor="pink";   
+        document.getElementById(idBoton).disabled=false;
+        document.getElementById(idBoton).value="Facturar Item";   
+        posiciona(idCheques); 
+        return;
+    }else{
+        document.getElementById(idCheques).style.backgroundColor="white";
+    }
+    
+    
+    if(!$.isNumeric(Otros) ||  Otros<0){
+        
+        alertify.error("El campo Otros debe ser un número mayor a cero");
+        document.getElementById(idOtros).style.backgroundColor="pink";   
+        document.getElementById(idBoton).disabled=false;
+        document.getElementById(idBoton).value="Facturar Item";   
+        posiciona(idOtros); 
+        return;
+    }else{
+        document.getElementById(idOtros).style.backgroundColor="white";
+    }
+    
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 23);
+        form_data.append('idCredito', idCredito); 
+        form_data.append('idFactura', idFactura); 
+        form_data.append('Abono', Abono);
+        form_data.append('Tarjetas', Tarjetas);
+        form_data.append('Intereses', Intereses);
+        form_data.append('Cheques', Cheques);
+        form_data.append('Otros', Otros);
+                
+        $.ajax({
+        url: './procesadores/pos.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';');
+            if(respuestas[0]=="E1"){
+                alertify.alert(respuestas[1]);
+                
+            }else if(respuestas[0]=="OK"){
+                alertify.alert(respuestas[1]);
+                document.getElementById("DivBusquedasPOS").innerHTML="Abono Realizado";               
+            }else{
+                alertify.alert(data);
+            }
+            document.getElementById(idBoton).disabled=false;
+            document.getElementById(idBoton).value="Facturar Item";   
+            
+            posiciona('Codigo');       
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}
+
 atajosPOS();
 ConvertirSelectBusquedas();
 document.getElementById("BtnMuestraMenuLateral").click();

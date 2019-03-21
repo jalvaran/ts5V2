@@ -761,7 +761,69 @@ if( !empty($_REQUEST["Accion"]) ){
            
             }
             print("OK;$MensajeFactura");
-        break;//Fin caso 22    
+        break;//Fin caso 22   
+        
+        case 23: //Abona a una factura a credito
+            $obPrint=new PrintPos($idUser);
+            $fecha=date("Y-m-d");
+            $Hora=date("H:i:s");
+            $idCartera=$obCon->normalizar($_REQUEST['idCredito']);
+            $idFactura=$obCon->normalizar($_REQUEST['idFactura']);
+            
+            $Valor=$obCon->normalizar($_REQUEST["Abono"]);
+            $Intereses=$obCon->normalizar($_REQUEST["Intereses"]);
+            $AbonoTarjetas=$obCon->normalizar($_REQUEST["Tarjetas"]);
+            $AbonoCheques=$obCon->normalizar($_REQUEST["Cheques"]);
+            $AbonoOtros=$obCon->normalizar($_REQUEST["Otros"]);
+            $TotalAbono=$Valor+$AbonoTarjetas+$AbonoCheques+$AbonoOtros;
+            $DatosFactura=$obCon->DevuelveValores("facturas", "idFacturas", $idFactura);
+            if($TotalAbono+$Intereses==0){
+                print("E1;Debe enviar algún valor");
+                exit();
+            }
+            if($TotalAbono<=$DatosFactura["SaldoFact"]){
+                $DatosCaja=$obCon->DevuelveValores("cajas", "idUsuario", $idUser);
+                $CuentaDestino=$DatosCaja["CuentaPUCEfectivo"];
+                $CentroCosto=$DatosCaja["CentroCostos"];
+                $idTerceroInteres=$DatosCaja["idTerceroIntereses"];
+                $CentroCosto=$DatosCaja["CentroCostos"];
+                $Concepto="ABONO A FACTURA No $DatosFactura[Prefijo] - $DatosFactura[NumeroFactura]";
+                $VectorIngreso["fut"]="";
+                $TipoPago="";
+                $idComprobanteAbono=$obCon->RegistreAbonoCarteraCliente($fecha,$Hora,$CuentaDestino,$idFactura,$Valor,$TipoPago,$CentroCosto,$Concepto,$idUser,$VectorIngreso);
+                if($AbonoTarjetas>0){
+                    $TipoPago="Tarjetas";
+                    $DatosParametros=$obCon->DevuelveValores("parametros_contables", "ID", 17);
+                    $idComprobanteAbono=$obCon->RegistreAbonoCarteraCliente($fecha,$Hora,$DatosParametros["CuentaPUC"],$idFactura,$AbonoTarjetas,$TipoPago,$CentroCosto,$Concepto,$idUser,$VectorIngreso);
+                }
+                if($AbonoCheques>0){
+                    $TipoPago="Cheques";
+                    $DatosParametros=$obCon->DevuelveValores("parametros_contables", "ID", 18);
+                    $idComprobanteAbono=$obCon->RegistreAbonoCarteraCliente($fecha,$Hora,$DatosParametros["CuentaPUC"],$idFactura,$AbonoCheques,$TipoPago,$CentroCosto,$Concepto,$idUser,$VectorIngreso);
+                }
+                if($AbonoOtros>0){
+                    $TipoPago="Bonos";
+                    $idComprobanteAbono=$obCon->RegistreAbonoCarteraCliente($fecha,$Hora,$DatosCaja["CuentaPUCEfectivo"],$idFactura,$AbonoCheques,$TipoPago,$CentroCosto,$Concepto,$idUser,$VectorIngreso);
+                }
+                if($Intereses>0){
+                    $obCon->RegistrePagoInteresesSisteCredito($fecha,$Hora,$Intereses,$idFactura,$idUser,$idTerceroInteres,$DatosCaja["CuentaPUCEfectivo"],$CentroCosto,"");
+                }
+                $DatosImpresora=$obCon->DevuelveValores("config_puertos", "ID", 1);
+
+                if($DatosImpresora["Habilitado"]=="SI"){
+                    $obPrint->ImprimeComprobanteAbonoFactura($idComprobanteAbono, $DatosImpresora["Puerto"], 2);
+
+                }
+                $DatosAbono=$obCon->DevuelveValores("facturas_abonos", "ID", $idComprobanteAbono);
+                $idComprobanteIngreso=$DatosAbono["idComprobanteIngreso"];
+                print("OK;Abono Registrado Exitosamente <a href='../../VAtencion/PDF_Documentos.php?idDocumento=4&idIngreso=$idComprobanteIngreso' target='_blank'> Imprimir</a>");
+           
+            }else{
+                print("E1;El Saldo de la Factura es inferior a los abonos digitados, vuelva a intentarlo");
+                exit();
+            }
+            
+        break;
         
     }
     
