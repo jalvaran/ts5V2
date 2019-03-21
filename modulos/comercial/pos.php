@@ -110,34 +110,29 @@ $css->PageInit($myTitulo);
                 $css->CrearBotonEvento("BtnCrearTercero", "Crear Tercero", 1, "onclick", "ModalCrearTercero();", "verde", "");
             $css->CerrarDiv();
             
-            $css->CrearDiv("", "col-md-3", "left", 1, 1);
+            $css->CrearDiv("", "col-md-2", "left", 1, 1);
                 $css->CrearBotonEvento("BtnCrearSeparado", "Crear Separado", 1, "onclick", "ModalCrearSeparado();", "naranja", "");
             $css->CerrarDiv();
             
-            $css->CrearDiv("", "col-md-3", "left", 1, 1);
+            $css->CrearDiv("", "col-md-2", "left", 1, 1);
                $css->CrearBotonEvento("BtnCrearEgreso", "Crear Egreso", 1, "onclick", "ModalCrearEgreso();", "azul", "");
             $css->CerrarDiv();
-            print("<br><br><br>");           
-            $css->CrearDiv("", "col-md-3", "left", 1, 1);
             
-            print('<div class="input-group input-group-md">
-                <input type="text" id="TxtBusquedas" class="form-control" placeholder="Busquedas">
-                <div class="input-group-btn">
-                  <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false" >Buscar
-                    <span class="fa fa-caret-down"></span></button>
-                    <ul class="dropdown-menu">
-                    
-                        <li><a href="#" onclick="AbrirCotizacion()">Separado</a></li>
-                        <li><a href="#" onclick="ClonarCotizacion()">Credito</a></li>
-                        
-                    
-                  </ul>
-                </div>
-               
-              </div>');
-            
-                
+            $css->CrearDiv("", "col-md-2", "left", 1, 1);
+               $css->CrearBotonEvento("BtnCerrarTurno", "Cerrar Turno", 1, "onclick", "CerrarTurno();", "rojo", "");
             $css->CerrarDiv();
+            print("<br><br><br>");           
+            
+            
+            $css->CrearDiv("", "col-md-3", "left", 1, 1);
+               $css->input("text", "TxtBuscarSeparado", "form-control", "TxtBuscarSeparado", "TxtBuscarSeparado", "", "Buscar Separado", "off", "", "onkeyup=BuscarSeparados()");
+            $css->CerrarDiv();
+            
+            $css->CrearDiv("", "col-md-3", "left", 1, 1);
+               $css->input("text", "TxtBuscarCredito", "form-control", "TxtBuscarCredito", "TxtBuscarCredito", "", "Buscar Crédito", "off", "", "onkeyup=BuscarCreditos()");
+            $css->CerrarDiv();
+                
+            
             
             $css->CrearDiv("", "col-md-3", "left", 1, 1);
             
@@ -161,11 +156,12 @@ $css->PageInit($myTitulo);
             $css->CerrarDiv();
             
             $css->CrearDiv("", "col-md-3", "left", 1, 1);
-               $css->input("password", "CodigoTarjeta", "form-control", "CodigoTarjeta", "CodigoTarjeta", "", "Tarjeta Código", "off", "", "onchange=CodigoTarjeta()");
+               $css->input("password", "CodigoTarjetaEntrada", "form-control", "CodigoTarjetaEntrada", "CodigoTarjeta", "", "Tarjeta Código", "off", "", "onchange=CodigoTarjeta()");
             $css->CerrarDiv();
             
-            $css->CrearDiv("", "col-md-3", "left", 1, 1);
-               $css->CrearBotonEvento("BtnCerrarTurno", "Cerrar Turno", 1, "onclick", "CerrarTurno();", "rojo", "");
+            
+            $css->CrearDiv("DivBusquedasPOS", "col-md-12", "left", 1, 1);
+              
             $css->CerrarDiv();
             
         $css->Cfieldset();

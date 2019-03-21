@@ -470,6 +470,144 @@ if( !empty($_REQUEST["Accion"]) ){
             print("<br><br><br><br><br>");
             
         break;//Fin caso 9
+    
+        case 10://Formulario para crear un egreso
+            $css->input("hidden", "idFormulario", "", "idFormulario", "", 3, "", "", "", ""); //3 sirve para indicarle al sistema que debe guardar el formulario de crear un egreso
+            
+            $css->CrearTabla();
+                $css->FilaTabla(16);
+                    $css->ColTabla("<strong>Tipo de Egreso</strong>", 1);
+                    $css->ColTabla("<strong>Tercero</strong>", 1);
+                    
+                    $css->ColTabla("<strong>Número de Soporte</strong>", 1);
+                $css->CierraFilaTabla();
+                
+                $css->FilaTabla(16);
+                    print("<td>");
+                        $css->select("TipoEgreso", "form-control", "TipoEgreso", "", "", "", "style=width:300px");
+                        $Consulta=$obCon->ConsultarTabla("subcuentas", " WHERE (PUC LIKE '5135%' or PUC LIKE '5105%' or PUC LIKE '5195%') AND LENGTH(PUC)>4 ");
+                        while($DatosCuenta=$obCon->FetchAssoc($Consulta)){
+                                                       
+                            $css->option("", "", "", $DatosCuenta["PUC"], "", "", 0);
+                                print($DatosCuenta["PUC"]." ".$DatosCuenta["Nombre"]);
+                            $css->Coption();
+                        }    
+                        $css->Cselect();
+                    print("</td>");
+                    print("<td>");
+                        $css->select("CmbTerceroEgreso", "form-control", "CmbTerceroEgreso", "", "", "", "style=width:300px");
+                            $css->option("", "", "", "", "", "");
+                                print("Seleccione un tercero");
+                            $css->Coption();
+                        $css->Cselect();
+                    print("</td>");
+                    
+                    
+                    print("<td>");
+                        $css->input("text", "TxtNumeroSoporteEgreso", "form-control", "TxtNumeroSoporteEgreso", "", "", "Número de Soporte", "off", "", "");
+                    print("</td>");
+                    
+                    
+                $css->CierraFilaTabla();
+                                
+                $css->FilaTabla(16);
+                    $css->ColTabla("<strong>Concepto</strong>", 2);
+                    $css->ColTabla("<strong>Valor</strong>", 1);
+                    
+                $css->CierraFilaTabla();
+                
+                $css->FilaTabla(16);
+                    print("<td colspan=2>");
+                        $css->textarea("TxtConcepto", "form-control", "TxtConcepto", "Concepto", "Concepto", "", "");
+                        $css->Ctextarea();
+                    print("</td>");
+                    
+                    print("<td>");
+                        $css->input("number", "SubtotalEgreso", "form-control", "SubtotalEgreso", "SubtotalEgreso", "", "Subtotal", "off", "", "", "onkeyup=CalculeTotalEgreso()");                    
+                        $css->input("number", "IVAEgreso", "form-control", "IVAEgreso", "IVAEgreso", 0, "IVA", "off", "", "", "onkeyup=CalculeTotalEgreso()");
+                        $css->input("number", "TotalEgreso", "form-control", "TotalEgreso", "TotalEgreso", "", "Total", "off", "", "", "","disabled");
+                        
+                    print("</td>");
+                $css->CierraFilaTabla();
+                
+            $css->CerrarTabla();
+        break;//fin caso 10
+        
+        case 11://Crea el formulario para abonar a un separado
+            $key=$obCon->normalizar($_REQUEST["TxtBuscarSeparado"]);
+            if(strlen($key)<4){
+                print("Digite una palabra de más de 3 carácteres");
+                exit();
+            }
+            $sql="SELECT sp.ID, cl.RazonSocial, cl.Num_Identificacion, sp.Total, sp.Saldo, sp.idCliente FROM separados sp"
+                    . " INNER JOIN clientes cl ON sp.idCliente = cl.idClientes "
+                    . " WHERE (sp.Estado<>'Cerrado' AND sp.Estado<>'ANULADO' AND sp.Saldo>0) AND (cl.RazonSocial LIKE '%$key%' OR cl.Num_Identificacion LIKE '%$key%') LIMIT 20";
+            $Datos=$obCon->Query($sql);
+            if($obCon->NumRows($Datos)){
+                $css->CrearTabla();
+
+                while($DatosSeparado=$obCon->FetchArray($Datos)){
+                    $css->FilaTabla(14);
+                    $css->ColTabla("<strong>Separado No. $DatosSeparado[ID]<strong>", 6);
+                    $css->CierraFilaTabla();
+                    $css->FilaTabla(14);
+                    print("<td>");
+                    //$css->CrearForm2("FormAbonosSeparados$DatosSeparado[ID]", $myPage, "post", "_self");
+                    $idSeparado=$DatosSeparado["ID"];
+                    
+                    $css->input("number", "TxtAbonoSeparado_$idSeparado", "form-control", "TxtAbono", "Abonar", $DatosSeparado["Saldo"], "Abonar", "off", "", "");
+                    
+                    $css->CrearBotonEvento("BtnAbono_$idSeparado", "Abonar", 1, "onclick", "AbonarSeparado($idSeparado)", "rojo", "");
+                    
+                    print("</td>");
+                    $css->ColTabla($DatosSeparado["ID"], 1);
+                    $css->ColTabla($DatosSeparado["RazonSocial"], 1);
+                    $css->ColTabla($DatosSeparado["Num_Identificacion"], 1);
+                    $css->ColTabla("<strong>Total: </strong>".number_format($DatosSeparado["Total"]), 1);
+                    $css->ColTabla("<strong>Abonos: </strong>".number_format($DatosSeparado["Total"]-$DatosSeparado["Saldo"]), 1);
+                    $css->ColTabla("<strong>Saldo: </strong>".number_format($DatosSeparado["Saldo"]), 1);
+                    $css->CierraFilaTabla();
+
+                    $css->FilaTabla(16);
+                    $css->ColTabla("ID Separado", 1);
+                    $css->ColTabla("Referencia", 1);
+                    $css->ColTabla("Nombre", 2);
+                    $css->ColTabla("Cantidad", 1);
+                    $css->ColTabla("TotalItem", 1);
+                    $css->ColTabla("Opciones", 1);
+                    $css->CierraFilaTabla();
+                    $TotalAbonos=$DatosSeparado["Total"]-$DatosSeparado["Saldo"];
+                    $ConsultaItems=$obCon->ConsultarTabla("separados_items", "WHERE idSeparado='$DatosSeparado[ID]'");
+                    while($DatosItemsSeparados=$obCon->FetchArray($ConsultaItems)){
+                        $CantidadMaxima=$DatosItemsSeparados["Cantidad"];
+                        $ValorUnitarioItem=$DatosItemsSeparados["ValorUnitarioItem"];
+                        $idItemSeparado=$DatosItemsSeparados["ID"];
+                        $css->FilaTabla(14);
+                        $css->ColTabla($DatosItemsSeparados["idSeparado"], 1);
+                        $css->ColTabla($DatosItemsSeparados["Referencia"], 1);
+
+                        $css->ColTabla($DatosItemsSeparados["Nombre"], 2);
+                        print("<td>");
+                        $css->input("number", "TxtCantidadItemSeparado_$idItemSeparado", "form-control", "Cantidad", "Cantidad", $DatosItemsSeparados["Cantidad"], "Cantidad", "off", "", "");
+                        
+                        print("</td>");
+
+                        $css->ColTabla(number_format($DatosItemsSeparados["TotalItem"]), 1);
+                        print("<td>");
+
+                            $css->CrearBotonEvento("BtnFactItemSeparado_$idItemSeparado", "Facturar Item", 1, "onClick", "FacturarItemSeparado('$idItemSeparado','$TotalAbonos','$CantidadMaxima','$ValorUnitarioItem')", "naranja", "");
+                        print("</td>");
+                        $css->CierraFilaTabla();
+                    }           
+
+
+
+                }
+                $css->CerrarTabla();
+            }else{
+                print("No hay resultados");
+            }
+        break;
     }
     
     

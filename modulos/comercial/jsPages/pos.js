@@ -652,6 +652,10 @@ function AccionesPOS(){
         CrearTercero();
     }
     
+    if(idFormulario==3){
+        CrearEgreso();
+    }
+    
 }
 /**
  * Crear un tercero
@@ -1489,12 +1493,12 @@ function CerrarTurno(){
  */
 function CodigoTarjeta(){
     var idPreventa=document.getElementById('idPreventa').value;
-    var CodigoTarjeta=document.getElementById('CodigoTarjeta').value;
+    var CodigoTarjeta=document.getElementById('CodigoTarjetaEntrada').value;
     
     if(idPreventa==''){        
         alertify.alert("Debe seleccionar una preventa");
         document.getElementById("idPreventa").style.backgroundColor="pink";   
-        document.getElementById("CodigoTarjeta").value='';
+        document.getElementById("CodigoTarjetaEntrada").value='';
         return;
     }else{
         document.getElementById("idPreventa").style.backgroundColor="white";
@@ -1503,11 +1507,11 @@ function CodigoTarjeta(){
         
     if(CodigoTarjeta==''){        
         alertify.alert("Debe escribir una Clave");
-        document.getElementById("CodigoTarjeta").style.backgroundColor="pink";   
+        document.getElementById("CodigoTarjetaEntrada").style.backgroundColor="pink";   
         
         return;
     }else{
-        document.getElementById("CodigoTarjeta").style.backgroundColor="white";
+        document.getElementById("CodigoTarjetaEntrada").style.backgroundColor="white";
     }
     
     
@@ -1517,7 +1521,7 @@ function CodigoTarjeta(){
         form_data.append('idPreventa', idPreventa);
         form_data.append('CodigoTarjeta', CodigoTarjeta);
         
-        document.getElementById("CodigoTarjeta").value='';
+        document.getElementById("CodigoTarjetaEntrada").value='';
         $.ajax({
         url: './procesadores/pos.process.php',
         //dataType: 'json',
@@ -1720,7 +1724,358 @@ function CrearSeparado(){
           }
       })  
 }  
+/**
+ * Abre el modal con el formulario para crear un egreso
+ * @returns {undefined}
+ */
+function ModalCrearEgreso(){
+    
+    $("#ModalAccionesPOS").modal();
+    
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 10);
+        
+        $.ajax({
+        url: './Consultas/pos.draw.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            document.getElementById('DivFrmPOS').innerHTML=data;
+            $('#TipoEgreso').select2();
+            $('#CmbTerceroEgreso').select2({
+		  
+                placeholder: 'Selecciona un Tercero',
+                ajax: {
+                  url: 'buscadores/proveedores.search.php',
+                  dataType: 'json',
+                  delay: 250,
+                  processResults: function (data) {
+                      
+                    return {                     
+                      results: data
+                    };
+                  },
+                 cache: true
+                }
+              });
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}  
+/**
+ * Crear un egreso
+ * @returns {undefined}
+ */
+function CrearEgreso(){
+    var CuentaPUC=document.getElementById('TipoEgreso').value;
+    var Tercero=document.getElementById('CmbTerceroEgreso').value;
+    var SubtotalEgreso=parseFloat(document.getElementById('SubtotalEgreso').value);
+    var IVAEgreso=parseFloat(document.getElementById('IVAEgreso').value);
+    var TotalEgreso=parseFloat(document.getElementById('TotalEgreso').value);
+    var TxtNumeroSoporteEgreso=(document.getElementById('TxtNumeroSoporteEgreso').value);
+    var TxtConcepto=document.getElementById('TxtConcepto').value;
+    
+    if(Tercero==''){        
+        alertify.error("Debe seleccionar un tercero");
+        document.getElementById("select2-CmbTerceroEgreso-container").style.backgroundColor="pink";   
+        document.getElementById("BntModalPOS").disabled=false;        
+        return;
+    }else{
+        document.getElementById("select2-CmbTerceroEgreso-container").style.backgroundColor="white";
+    }
+    
+    if(TxtConcepto==''){        
+        alertify.error("El campo Concepto no puede estar vacío");
+        document.getElementById("TxtConcepto").style.backgroundColor="pink";   
+        document.getElementById("BntModalPOS").disabled=false;        
+        return;
+    }else{
+        document.getElementById("TxtConcepto").style.backgroundColor="white";
+    }
+    
+    if(TxtNumeroSoporteEgreso==''){        
+        alertify.error("El campo Número de Soporte no puede estar vacío");
+        document.getElementById("TxtNumeroSoporteEgreso").style.backgroundColor="pink";   
+        document.getElementById("BntModalPOS").disabled=false;        
+        return;
+    }else{
+        document.getElementById("TxtNumeroSoporteEgreso").style.backgroundColor="white";
+    }
+    
+      
+    if(!$.isNumeric(SubtotalEgreso) ||  SubtotalEgreso<0){
+        
+        alertify.error("El Subtotal debe ser un número mayor o igual a cero");
+        document.getElementById("SubtotalEgreso").style.backgroundColor="pink";
+        document.getElementById("BntModalPOS").disabled=false;
+        posiciona('SubtotalEgreso'); 
+        return;
+    }else{
+        document.getElementById("SubtotalEgreso").style.backgroundColor="white";
+    }
+    
+    if(!$.isNumeric(TotalEgreso) ||  TotalEgreso<0){
+        
+        alertify.error("El Total debe ser un número mayor o igual a cero");
+        document.getElementById("TotalEgreso").style.backgroundColor="pink";
+        document.getElementById("BntModalPOS").disabled=false;
+        posiciona('SubtotalEgreso'); 
+        return;
+    }else{
+        document.getElementById("TotalEgreso").style.backgroundColor="white";
+    }
+    
+    if(!$.isNumeric(IVAEgreso) ||  IVAEgreso<0){
+        
+        alertify.error("El IVA debe ser un número mayor o igual a cero");
+        document.getElementById("IVAEgreso").style.backgroundColor="pink";
+        document.getElementById("BntModalPOS").disabled=false;
+        posiciona('IVAEgreso'); 
+        return;
+    }else{
+        document.getElementById("IVAEgreso").style.backgroundColor="white";
+    }
+    
+    document.getElementById('SubtotalEgreso').value='';
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 20);
+        form_data.append('CuentaPUC', CuentaPUC); 
+        form_data.append('Tercero', Tercero); 
+        form_data.append('SubtotalEgreso', SubtotalEgreso); 
+        form_data.append('IVAEgreso', IVAEgreso); 
+        form_data.append('TotalEgreso', TotalEgreso); 
+        form_data.append('TxtNumeroSoporteEgreso', TxtNumeroSoporteEgreso); 
+        form_data.append('TxtConcepto', TxtConcepto); 
+        
+        $.ajax({
+        url: './procesadores/pos.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';');
+            if(respuestas[0]=="E1"){
+                alertify.alert(respuestas[1]);
+                
+            }else if(respuestas[0]=="OK"){
+                alertify.success(respuestas[1]);
+                CierraModal('ModalAccionesPOS');                
+            }else{
+                alertify.alert(data);
+            }
+            document.getElementById("BntModalPOS").disabled=false;
+            
+            posiciona('Codigo');       
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}
+/**
+ * Calcula el total de un egreso
+ * @returns {undefined}
+ */
+function CalculeTotalEgreso(){
+    var subtotal=parseFloat(document.getElementById('SubtotalEgreso').value);
+    var iva=parseFloat(document.getElementById('IVAEgreso').value);
+    
+    document.getElementById('TotalEgreso').value=subtotal+iva;
+    
+}
 
+/**
+ * abre formulario para registrar el abono a un separado
+ * @returns {undefined}
+ */
+function BuscarSeparados(){
+    var TxtBuscarSeparado=(document.getElementById('TxtBuscarSeparado').value);    
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 11);
+        form_data.append('TxtBuscarSeparado', TxtBuscarSeparado);
+        $.ajax({
+        url: './Consultas/pos.draw.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            document.getElementById('DivBusquedasPOS').innerHTML=data;
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}  
+/**
+ * Abonar a un separado
+ * @param {type} idSeparado
+ * @returns {undefined}
+ */
+function AbonarSeparado(idSeparado){
+    var idCaja="TxtAbonoSeparado_"+idSeparado;
+    var idBoton="BtnAbono_"+idSeparado;
+    
+    var Abono=parseFloat(document.getElementById(idCaja).value);
+    document.getElementById(idBoton).disabled=true;
+    document.getElementById(idBoton).value="Procesando...";
+    
+    if(Abono==''){        
+        alertify.error("El campo Abono no puede estar en blanco");
+        document.getElementById(idCaja).style.backgroundColor="pink";   
+        document.getElementById(idBoton).disabled=false;
+        document.getElementById(idBoton).value="Abonar";    
+        posiciona(idCaja); 
+        return;
+    }else{
+        document.getElementById(idCaja).style.backgroundColor="white";
+    }
+       
+    if(!$.isNumeric(Abono) ||  Abono<=0){
+        
+        alertify.error("El Abono debe ser un número mayor a cero");
+        document.getElementById(idCaja).style.backgroundColor="pink";   
+        document.getElementById(idBoton).disabled=false;
+        document.getElementById(idBoton).value="Abonar";   
+        posiciona(idCaja); 
+        return;
+    }else{
+        document.getElementById(idCaja).style.backgroundColor="white";
+    }
+    
+    
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 21);
+        form_data.append('Abono', Abono); 
+        form_data.append('idSeparado', idSeparado); 
+                
+        $.ajax({
+        url: './procesadores/pos.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';');
+            if(respuestas[0]=="E1"){
+                alertify.alert(respuestas[1]);
+                
+            }else if(respuestas[0]=="OK"){
+                alertify.alert(respuestas[1]+"<br>"+respuestas[2]);
+                document.getElementById("DivBusquedasPOS").innerHTML="Abono Realizado";               
+            }else{
+                alertify.alert(data);
+            }
+            document.getElementById(idBoton).disabled=false;
+            document.getElementById(idBoton).value="Abonar";   
+            
+            posiciona('Codigo');       
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}
+/**
+ * Se factura el item de un separado
+ * @param {type} idItemSeparado
+ * @param {type} TotalAbonos
+ * @param {type} CantidadMaxima
+ * @param {type} ValorUnitario
+ * @returns {undefined}
+ */
+function FacturarItemSeparado(idItemSeparado,TotalAbonos,CantidadMaxima,ValorUnitario){
+    var idCaja='TxtCantidadItemSeparado_'+idItemSeparado
+    var Cantidad = parseFloat(document.getElementById(idCaja).value);
+    var Total=Cantidad*ValorUnitario;    
+    var idBoton="BtnFactItemSeparado_"+idItemSeparado;
+    document.getElementById(idBoton).disabled=true;
+    document.getElementById(idBoton).value="Procesando...";
+    
+    if(Cantidad==''){        
+        alertify.error("El campo Cantidad no puede estar en blanco");
+        document.getElementById(idCaja).style.backgroundColor="pink";   
+        document.getElementById(idBoton).disabled=false;
+        document.getElementById(idBoton).value="Facturar Item";    
+        posiciona(idCaja); 
+        return;
+    }else{
+        document.getElementById(idCaja).style.backgroundColor="white";
+    }
+       
+    if(!$.isNumeric(Cantidad) ||  Cantidad<=0){
+        
+        alertify.error("La Cantidad debe ser un número mayor a cero");
+        document.getElementById(idCaja).style.backgroundColor="pink";   
+        document.getElementById(idBoton).disabled=false;
+        document.getElementById(idBoton).value="Facturar Item";   
+        posiciona(idCaja); 
+        return;
+    }else{
+        document.getElementById(idCaja).style.backgroundColor="white";
+    }
+    var form_data = new FormData();
+        
+        form_data.append('Accion', 22);
+        form_data.append('Cantidad', Cantidad); 
+        form_data.append('idItemSeparado', idItemSeparado); 
+                
+        $.ajax({
+        url: './procesadores/pos.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';');
+            if(respuestas[0]=="E1"){
+                alertify.alert(respuestas[1]);
+                
+            }else if(respuestas[0]=="OK"){
+                alertify.alert(respuestas[1]);
+                document.getElementById("DivBusquedasPOS").innerHTML="Item Facturado";               
+            }else{
+                alertify.alert(data);
+            }
+            document.getElementById(idBoton).disabled=false;
+            document.getElementById(idBoton).value="Facturar Item";   
+            
+            posiciona('Codigo');       
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      })  
+}
 atajosPOS();
 ConvertirSelectBusquedas();
 document.getElementById("BtnMuestraMenuLateral").click();

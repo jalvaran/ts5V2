@@ -95,3 +95,6 @@ ALTER TABLE `proveedores` ADD `CodigoTarjeta` VARCHAR(20) NOT NULL AFTER `Cupo`;
 
 INSERT INTO `configuracion_general` (`ID`, `Descripcion`, `Valor`, `Updated`, `Sync`) VALUES
 (8,	'Determina cuantas copias saldrán del separado al crearse',	'2',	'2019-02-18 15:54:51',	'2019-03-18 15:54:51');
+
+INSERT INTO `configuracion_general` (`ID`, `Descripcion`, `Valor`, `Updated`, `Sync`) VALUES
+(9,	'Determina cuantas copias saldrán del egreso al crearse desde pos',	'2',	'2019-02-19 14:19:59',	'2019-03-19 14:19:59');

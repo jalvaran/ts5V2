@@ -319,12 +319,12 @@ if( !empty($_REQUEST["Accion"]) ){
             $DatosImpresora=$obCon->DevuelveValores("config_puertos", "ID", 1);
             if($DatosImpresora["Habilitado"]=="SI" AND $CmbPrint=='SI'){
                 $obPrint->ImprimeFacturaPOS($idFactura,$DatosImpresora["Puerto"],1);
-                $DatosTikete=$obVenta->DevuelveValores("config_tiketes_promocion", "ID", 1);
-                if($TotalVenta>=$DatosTikete["Tope"] AND $DatosTikete["Activo"]=="SI"){
+                $DatosTikete=$obCon->DevuelveValores("config_tiketes_promocion", "ID", 1);
+                if($Total>=$DatosTikete["Tope"] AND $DatosTikete["Activo"]=="SI"){
                     $VectorTiket["F"]=0;
                     $Copias=1;
                     if($DatosTikete["Multiple"]=="SI"){
-                        $Copias=floor($TotalVenta/$DatosTikete["Tope"]);
+                        $Copias=floor($Total/$DatosTikete["Tope"]);
                     }
                     $obPrint->ImprimirTiketePromo($idFactura,$DatosTikete["NombreTiket"],$DatosImpresora["Puerto"],$Copias,$VectorTiket);
                 }
@@ -649,7 +649,120 @@ if( !empty($_REQUEST["Accion"]) ){
                 }
             }
             print("OK;Separado $idSeparado Creado Exitósamente");
-        break;//Fin caso 18
+        break;//Fin caso 19
+        
+        case 20://Crear un egreso
+            $fecha=date("Y-m-d");
+            $Hora=date("H:i:s");
+            $obPrint = new PrintPos($idUser);
+            $idProveedor=$obCon->normalizar($_REQUEST['Tercero']);
+            $CuentaDestino=$obCon->normalizar($_REQUEST['CuentaPUC']);
+            $Subtotal=$obCon->normalizar($_REQUEST['SubtotalEgreso']);
+            $IVA=$obCon->normalizar($_REQUEST['IVAEgreso']);
+            $Total=$obCon->normalizar($_REQUEST['TotalEgreso']);
+            $NumFact=$obCon->normalizar($_REQUEST['TxtNumeroSoporteEgreso']);
+            $Concepto=$obCon->normalizar($_REQUEST['TxtConcepto']);
+            
+            $DatosCaja=$obCon->DevuelveValores("cajas", "idUsuario", $idUser);
+            
+            $CuentaOrigen=$DatosCaja["CuentaPUCEfectivo"];
+            $CentroCostos=$DatosCaja["CentroCostos"];
+            $CuentaPUCIVA=$DatosCaja["CuentaPUCIVAEgresos"];
+            $TipoEgreso="VentasRapidas";
+            $TipoPago="Contado";
+            $Sanciones=0;
+            $Intereses=0;
+            $Impuestos=0;
+            $ReteFuente=0;
+            $ReteIVA=0;
+            $ReteICA=0;
+            $VectorEgreso["Fut"]=0;  //Uso futuro
+            ///                
+            
+            $idEgreso=$obCon->CrearEgreso($fecha,"",$idUser,$CentroCostos,$TipoPago,$CuentaOrigen,$CuentaDestino,$CuentaPUCIVA,$idProveedor, $Concepto,$NumFact,"",$TipoEgreso,$Subtotal,$IVA,$Total,$Sanciones,$Intereses,$Impuestos,$ReteFuente,$ReteIVA,$ReteICA,$VectorEgreso);
+            
+            $DatosImpresora=$obCon->DevuelveValores("config_puertos", "ID", 1);
+            $VectorEgresos["Fut"]=1;
+            if($DatosImpresora["Habilitado"]=="SI"){
+                $Configuracion=$obCon->DevuelveValores("configuracion_general", "ID", 9); //Copias del egreso
+                $obPrint->ImprimeEgresoPOS($idEgreso,$VectorEgresos,$DatosImpresora["Puerto"],$Configuracion["Valor"]);
+                    
+            }
+            print("OK;Egreso $idEgreso Realizado");
+        break;//fin caso 20
+        
+        case 21://Abono a un separado
+            $fecha=date("Y-m-d");
+            $Hora=date("H:i:s");
+            $obPrint = new PrintPos($idUser);
+            $Valor=$obCon->normalizar($_REQUEST['Abono']);
+            $idSeparado=$obCon->normalizar($_REQUEST['idSeparado']);
+            $DatosSeparado=$obCon->DevuelveValores("separados", "ID", $idSeparado);
+            
+            if($Valor>$DatosSeparado["Saldo"]){
+                print("E1;El abono no puede ser mayor a ". number_format($DatosSeparado["Saldo"]));
+                exit();
+            }
+            
+            $DatosCaja=$obCon->DevuelveValores("cajas", "idUsuario", $idUser);
+            $CuentaDestino=$DatosCaja["CuentaPUCEfectivo"];
+            $CentroCosto=$DatosCaja["CentroCostos"];
+            $Concepto="ABONO A SEPARADO No $idSeparado";
+            $VectorIngreso["Separado"]=1;
+            $idCliente=$DatosSeparado["idCliente"];
+            $idIngreso=$obCon->RegistreAnticipo2($fecha,$CuentaDestino,$idCliente,$Valor,$CentroCosto,$Concepto,$idUser,$VectorIngreso);
+            
+            $VectorSeparados["idCompIngreso"]=$idIngreso;
+            $Saldo=$obCon->RegistreAbonoSeparado($idSeparado,$Valor,$fecha,$Hora,$VectorSeparados);
+            
+            $DatosImpresora=$obCon->DevuelveValores("config_puertos", "ID", 1);
+            $Impresiones=2;
+            $NumFactura="";
+            if($Saldo==0){
+		$Impresiones=1;
+                $VectorSeparados["Ft"]="";
+                $CuentaDestino=$DatosCaja["CuentaPUCEfectivo"];
+                $NumFactura=$obCon->CreaFacturaDesdeSeparado($idSeparado,$CuentaDestino,$VectorSeparados);
+               if($DatosImpresora["Habilitado"]=="SI"){
+                    $obPrint->ImprimeFacturaPOS($NumFactura,$DatosImpresora["Puerto"],1);
+               }
+            }
+            
+            if($DatosImpresora["Habilitado"]=="SI"){
+                $obPrint->ImprimeSeparado($idSeparado, $DatosImpresora["Puerto"], $Impresiones);
+
+            }
+            $LinkComprobante="../../VAtencion/PDF_Documentos.php?idDocumento=4&idIngreso=$idIngreso";
+            $MensajeComprobante="<br><strong>Comprobante de ingreso $idIngreso Creado Correctamente </strong><a href='$LinkComprobante'  target='blank'> Imprimir</a>";
+            $MensajeFactura="";
+            if($NumFactura<>''){
+                $LinkFactura="../../general/Consultas/PDF_Documentos.draw.php?idDocumento=2&ID=$NumFactura";
+                $MensajeFactura="<br><strong>Factura Creada Correctamente </strong><a href='$LinkFactura'  target='blank'> Imprimir</a>";
+           
+            }
+            print("OK;$MensajeComprobante;$MensajeFactura");
+        break;//Fin caso 21
+        
+        case 22://Factura un item
+            $obPrint=new PrintPos($idUser);
+            $idItemSeparado=$obCon->normalizar($_REQUEST['idItemSeparado']);
+            $Cantidad=$obCon->normalizar($_REQUEST['Cantidad']);
+            $DatosItem=$obCon->DevuelveValores("separados_items", "ID", $idItemSeparado);
+            if($Cantidad>$DatosItem["Cantidad"]){
+                print("E1;La cantidad no puede ser mayor a ".$DatosItem["Cantidad"]);
+                exit();
+            }
+            $NumFactura=$obCon->FacturarItemSeparado($idItemSeparado,$Cantidad,$idUser,"");
+            $obPrint->ImprimeFacturaPOS($NumFactura, "", 1);
+            $MensajeFactura="";
+            if($NumFactura<>''){
+                $LinkFactura="../../general/Consultas/PDF_Documentos.draw.php?idDocumento=2&ID=$NumFactura";
+                $MensajeFactura="<br><strong>Factura Creada Correctamente </strong><a href='$LinkFactura'  target='blank'> Imprimir</a>";
+           
+            }
+            print("OK;$MensajeFactura");
+        break;//Fin caso 22    
+        
     }
     
     
