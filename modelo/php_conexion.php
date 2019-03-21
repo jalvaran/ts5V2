@@ -2861,15 +2861,17 @@ public function CalculePesoRemision($idCotizacion)
         
         
         $VectorCon["Fut"]=0;  
-        $this->ConToServer($DatosServer["IP"], $DatosServer["Usuario"], $DatosServer["Password"], $DatosServer["DataBase"], $VectorCon);
+        //$this->ConToServer($DatosServer["IP"], $DatosServer["Usuario"], $DatosServer["Password"], $DatosServer["DataBase"], $VectorCon);
         if(!empty($sql1)){
-            $this->Query($sql1);
+            $this->QueryExterno($sql1, $DatosServer["IP"], $DatosServer["Usuario"], $DatosServer["Password"], $DatosServer["DataBase"], "");
+            //$this->Query($sql1);
         }
         if(!empty($sql2)){
-            $this->Query($sql2);
+            $this->QueryExterno($sql2, $DatosServer["IP"], $DatosServer["Usuario"], $DatosServer["Password"], $DatosServer["DataBase"], "");
+            //$this->Query($sql2);
         }
         
-        $this->ConToServer($host, $user, $pw, $db, $VectorCon);   
+        //$this->ConToServer($host, $user, $pw, $db, $VectorCon);   
         $this->update("traslados_mercancia", "ServerSincronizado", $FechaSinc, $CondicionUpdate); 
         $this->update("traslados_items", "ServerSincronizado", $FechaSinc, $CondicionUpdate); 
         

@@ -243,9 +243,9 @@ if( !empty($_REQUEST["Accion"]) ){
                     . "FROM preventa WHERE VestasActivas_idVestasActivas='$idPreventa'";
             $Consulta=$obCon->Query($sql);
             $DatosTotalesCotizacion=$obCon->FetchAssoc($Consulta);
-            $Subtotal=$DatosTotalesCotizacion["Subtotal"];
-            $IVA=$DatosTotalesCotizacion["IVA"];
-            $Total=$DatosTotalesCotizacion["Total"];
+            $Subtotal=round($DatosTotalesCotizacion["Subtotal"],2);
+            $IVA=round($DatosTotalesCotizacion["IVA"],2);
+            $Total=round($DatosTotalesCotizacion["Total"],2);
             $TotalCostos=$DatosTotalesCotizacion["TotalCostos"];
             $SaldoFactura=$Total;
             $Descuentos=0;

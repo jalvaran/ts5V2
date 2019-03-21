@@ -433,8 +433,8 @@ class Facturacion extends ProcesoVenta{
         
         $Subtotal=round($DatosTotales["SubtotalItem"],2);
         $Impuestos=round($DatosTotales["IVAItem"],2);
-        $Total=$Subtotal+$Impuestos;
-        
+        $Total=round($Subtotal+$Impuestos,2);
+        $AjusteFactura=$Total-$Impuestos-$Subtotal;
         
         //Registramos la partida inicial
         

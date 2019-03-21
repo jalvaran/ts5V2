@@ -4,6 +4,7 @@ include_once("../sesiones/php_control.php");
 include_once("css_construct.php");
 
 $obTabla = new Tabla($db);
+$obVenta = new conexion($idUser);
 $sql="";
 
 if(isset($_REQUEST["LkSubir"])){
@@ -37,8 +38,16 @@ print("<body>");
     $css->CrearDiv("principal", "container", "center",1,1);
     $DatosServer=$obVenta->DevuelveValores("servidores", "ID", 1);
     $VectorCon["Fut"]=0;  //$DatosServer["IP"]
-    
-    $Mensaje=$obVenta->ConToServer($DatosServer["IP"], $DatosServer["Usuario"], $DatosServer["Password"], $DatosServer["DataBase"], $VectorCon);
+    $Consulta=$obVenta->QueryExterno("SELECT * FROM traslados_mercancia LIMIT 1", $DatosServer["IP"], $DatosServer["Usuario"], $DatosServer["Password"], $DatosServer["DataBase"], $VectorCon);
+    $DatosConsulta=$obVenta->FetchAssoc($Consulta);
+    $Mensaje="Sin Conexión";
+    if($DatosConsulta["ID"]<>''){
+        $Mensaje="Conexión Satisfactoria";
+    }
+    if($DatosConsulta["ID"]==''){
+        $Mensaje="Conectado";
+    }
+    //$Mensaje=$obVenta->ConToServer($DatosServer["IP"], $DatosServer["Usuario"], $DatosServer["Password"], $DatosServer["DataBase"], $VectorCon);
     $css->CrearNotificacionAzul($Mensaje, 16);
     //$css->CrearNotificacionAzul($sql, 16);
     print("<strong>Click para Subir</strong><br>");
