@@ -1493,7 +1493,7 @@ EOD;
                     
                 </tr>';
         $sql="SELECT CuentaPUC,Cuenta,PorcentajeRetenido,SUM(BaseRetencion) AS BaseRetencion,SUM(ValorRetencion) AS ValorRetencion"
-                . " FROM vista_retenciones WHERE Fecha >= '$FechaInicial' AND Fecha <= '$FechaFinal' AND Tercero='$Tercero' $CondicionAdicional GROUP BY CuentaPUC,PorcentajeRetenido";
+                . " FROM vista_retenciones WHERE Fecha >= '$FechaInicial' AND Fecha <= '$FechaFinal' AND Tercero='$Tercero' AND Estado<>'ANULADA' $CondicionAdicional GROUP BY CuentaPUC,PorcentajeRetenido";
         $Consulta=$obCon->Query($sql);        
         $h=1;  
         $TotalBase=0;

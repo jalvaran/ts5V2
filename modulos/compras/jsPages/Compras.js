@@ -393,7 +393,7 @@ function AgregarItem(){
     }else{
         document.getElementById('PrecioVenta').style.backgroundColor="white";
     }
-    
+    /*
     if((PrecioVenta<ValorUnitario) && CmbListado==1 ){
     
         alertify.alert("El Precio de Venta debe ser mayor al Costo Unitario");
@@ -402,7 +402,7 @@ function AgregarItem(){
     }else{
         document.getElementById('PrecioVenta').style.backgroundColor="white";
     }
-       
+       */
     var form_data = new FormData();
         form_data.append('Accion', 3);
         form_data.append('idCompra', idCompra);

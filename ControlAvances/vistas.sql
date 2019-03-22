@@ -219,7 +219,7 @@ CREATE VIEW vista_retenciones AS
 SELECT `idCompra`,
 (SELECT Fecha FROM factura_compra WHERE ID=`idCompra`) AS Fecha,
 (SELECT Tercero FROM factura_compra WHERE ID=`idCompra`) AS Tercero,
-
+(SELECT Estado FROM factura_compra WHERE ID=`idCompra`) AS Estado,
 (SELECT RazonSocial FROM proveedores WHERE Num_Identificacion=(SELECT Tercero) LIMIT 1) AS RazonSocial,
 (SELECT DV FROM proveedores WHERE Num_Identificacion=(SELECT Tercero) LIMIT 1) AS DV,
 (SELECT Direccion FROM proveedores WHERE Num_Identificacion=(SELECT Tercero) LIMIT 1) AS Direccion,

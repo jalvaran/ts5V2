@@ -98,3 +98,4 @@ INSERT INTO `configuracion_general` (`ID`, `Descripcion`, `Valor`, `Updated`, `S
 
 INSERT INTO `configuracion_general` (`ID`, `Descripcion`, `Valor`, `Updated`, `Sync`) VALUES
 (9,	'Determina cuantas copias saldrán del egreso al crearse desde pos',	'2',	'2019-02-19 14:19:59',	'2019-03-19 14:19:59');
+
