@@ -62,7 +62,10 @@ print("</div>");
 ///
  
 /////
-
+$sql="SELECT SUM(SubtotalCosto) as Total FROM $statement ";
+$Consulta=$obVenta->Query($sql);
+$DatosInventario=$obVenta->FetchArray($Consulta);
+$css->CrearNotificacionVerde("Total Inventario: ".number_format($DatosInventario["Total"]), 16);
 $obTabla->DibujeTabla($Vector);
 
 $css->CerrarDiv();//Cerramos contenedor Principal

@@ -232,5 +232,9 @@ ValorRetencion,PorcentajeRetenido,ROUND(((ValorRetencion/PorcentajeRetenido)*100
 FROM factura_compra_retenciones;
 
 
-
+DROP VIEW IF EXISTS `vista_inventario_separados`;
+CREATE VIEW vista_inventario_separados AS
+SELECT si.`ID`,si.`idSeparado` as idSeparado,`Referencia`,`Nombre`,si.ValorUnitarioItem,si.Cantidad,si.TotalItem,si.PrecioCostoUnitario,si.SubtotalCosto,`Departamento`,`SubGrupo1`,`SubGrupo2`,`SubGrupo3`,`SubGrupo4`,`SubGrupo5` 
+FROM `separados_items` si INNER JOIN separados s ON s.ID=si.`idSeparado` 
+WHERE s.Estado='Abierto' ;
 
