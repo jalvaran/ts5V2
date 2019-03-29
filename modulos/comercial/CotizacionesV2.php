@@ -42,7 +42,7 @@ $css->PageInit($myTitulo);
                 print("<a href='#'>Opciones Adicionales:</a>");
             $css->Clegend();   
             $css->CrearDiv("", "col-md-3", "left", 1, 1);
-                $css->CrearBotonEvento("BtnCrearTercero", "Crear Tercero", 1, "onclick", "SeleccioneTablaDB(`clientes`);", "azul", "");
+                $css->CrearBotonEvento("BtnCrearTercero", "Crear Tercero", 1, "onclick", "ModalCrearTercero(`ModalAccionesGrande`,`DivFrmModalAccionesGrande`);", "azul", "");
                 
                 
             $css->CerrarDiv();

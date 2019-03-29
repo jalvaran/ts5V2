@@ -720,6 +720,9 @@ function SeleccioneAccionFormularios(){
         ConviertaCotizacionEnFactura();
     }
     
+    if(idFormulario==100){
+        CrearTercero('ModalAccionesGrande','BntModalAcciones');
+    }
 }
 
 /**

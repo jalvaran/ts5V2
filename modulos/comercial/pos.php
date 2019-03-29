@@ -90,7 +90,7 @@ $css->PageInit($myTitulo);
     $css->CerrarDiv();
     
     $css->CrearDiv("", "col-md-2", "right", 1, 1); 
-         $css->CrearBotonEvento("BtnOpcionesAdicionales", "Opciones", 1, "onclick", "MuestraOcultaXID('DivOpcionesGenerales')", "naranja", "");
+         $css->CrearBotonEvento("BtnOpcionesAdicionales", "Opciones", 1, "onclick", "MuestraOculta('DivOpcionesGenerales')", "naranja", "");
         
     $css->CerrarDiv(); 
     $css->Cfieldset();    

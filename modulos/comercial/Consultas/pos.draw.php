@@ -125,9 +125,9 @@ if( !empty($_REQUEST["Accion"]) ){
                         $css->ColTabla("<strong>Impuestos:</strong>", 1,'L');
                         $css->ColTabla(number_format($IVA), 1,'R');
                     $css->CierraFilaTabla();
-                    $css->FilaTabla(16);
+                    $css->FilaTabla(30);
                         $css->ColTabla("<strong>Total:</strong>", 1,'L');
-                        $css->ColTabla(number_format($Total), 1,'R');
+                        $css->ColTabla("<strong>".number_format($Total)."</strong>", 1,'R');
                     $css->CierraFilaTabla();
                     
                     
