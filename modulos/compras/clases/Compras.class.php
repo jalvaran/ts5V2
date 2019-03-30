@@ -611,6 +611,34 @@ class Compras extends ProcesoVenta{
         }
     }
     /**
+     * Agrega items desde una orden de compra
+     * @param type $idCompra
+     * @param type $idOrdenCompra
+     * @param type $Vector
+     */
+    public function AgregueItemDesdeOrdenCompra($idCompra,$idOrdenCompra,$Vector) {
+        $sql="SELECT * FROM ordenesdecompra_items WHERE NumOrden='$idOrdenCompra'";
+        $Consulta=$this->Query($sql);
+        //////Agrego el registro           
+        $tab="factura_compra_items";
+        $NumRegistros=8;
+        while($DatosOC=$this->FetchAssoc($Consulta)){
+            $Columnas[0]="idFacturaCompra";     $Valores[0]=$idCompra;
+            $Columnas[1]="idProducto";          $Valores[1]=$DatosOC["idProducto"];
+            $Columnas[2]="Cantidad";            $Valores[2]=$DatosOC["Cantidad"];
+            $Columnas[3]="CostoUnitarioCompra"; $Valores[3]=$DatosOC["ValorUnitario"];
+            $Columnas[4]="SubtotalCompra";      $Valores[4]=$DatosOC["Subtotal"];
+            $Columnas[5]="ImpuestoCompra";      $Valores[5]=$DatosOC["IVA"];
+            $Columnas[6]="TotalCompra";         $Valores[6]=$DatosOC["Total"];
+            $Columnas[7]="Tipo_Impuesto";       $Valores[7]=$DatosOC["Tipo_Impuesto"];
+
+            $this->InsertarRegistro($tab,$NumRegistros,$Columnas,$Valores);
+            
+        }
+    }
+        
+        
+    /**
      * Fin Clase
      */
 }

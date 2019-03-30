@@ -1341,6 +1341,63 @@ function GuardarCompra(idCompra=''){
     
 }
 /**
+ * Copia los items desde una orden de compra
+ * @param {type} idOrdenCompra
+ * @returns {undefined}
+ */
+function CopiarItemsDesdeOrden(idOrdenCompra=''){
+    var idCompra = document.getElementById('idCompra').value;
+    if(idOrdenCompra==''){
+        var idOrdenCompra = document.getElementById('idCompraAcciones').value;
+    }
+        
+        
+    if(idCompra==''){
+        alertify.alert("Debes seleccionar una compra");
+        document.getElementById("idCompra").style.backgroundColor="pink";
+        return;
+    }else{
+        document.getElementById("idCompra").style.backgroundColor="white";
+    }
+    
+    var form_data = new FormData();
+        form_data.append('Accion', '10'); 
+        form_data.append('idCompra', idCompra);
+        form_data.append('idOrdenCompra', idOrdenCompra);
+                
+        document.getElementById("idCompraAcciones").value='';
+        $.ajax({
+        url: './procesadores/Compras.process.php',
+        //dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        data: form_data,
+        type: 'post',
+        success: function(data){
+            var respuestas = data.split(';'); 
+            if(respuestas[0]=="OK"){
+                var mensaje=respuestas[1];
+                alertify.success(mensaje);
+                
+                
+            }else{
+                alertify.error(data,10000);
+                
+            }
+            DibujeCompra();
+            //DibujeTotalesCompra(idCompra);
+            
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+          }
+      });
+    
+    
+}
+/**
  * Limpia los divs de la compra despues de guardar
  * @returns {undefined}
  */
@@ -1398,6 +1455,8 @@ $('#CmbBusquedas').bind('change', function() {
     BusquePrecioVentaCosto();
     
 });
+
+document.getElementById('BtnMuestraMenuLateral').click();
 
 //$('#ValorUnitario').mask('1.999.999.##0,00', {reverse: true});
 //$('#Cantidad').mask('9.999.##0,00', {reverse: true});

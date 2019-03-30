@@ -30,7 +30,7 @@ $css->PageInit($myTitulo);
         $css->CrearDiv("DivBtnCrear", "col-md-2", "left", 1, 1); 
             $css->CrearBotonEvento("BtnNuevaCompra", "Crear Compra", 1, "onClick", "AbrirModalNuevaCompra()", "azul", "");
         $css->CerrarDiv();
-        $css->CrearDiv("DivDatosCompras", "col-md-8", "left", 1, 1); 
+        $css->CrearDiv("DivDatosCompras", "col-md-4", "left", 1, 1); 
             $css->select("idCompra", "form-control", "idCompra", "", "", "onchange=DibujeCompra()", "");
             $css->option("", "", "","", "", "");
                 print("Seleccione una Compra");
@@ -49,6 +49,21 @@ $css->PageInit($myTitulo);
         $css->CrearDiv("DivBtnEditar", "col-md-2", "left", 1, 1); 
             $css->CrearBotonEvento("BtnEditarCompra", "Editar Datos", 0, "onClick", "AbrirModalNuevaCompra('Editar')", "azul", "");
         $css->CerrarDiv();
+        
+        print('<div class="input-group input-group-md">
+                
+                <div class="input-group-btn">
+                  <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false" >Acción
+                    <span class="fa fa-caret-down"></span></button>
+                    <ul class="dropdown-menu">
+                    
+                        <li><a href="#" onclick="CopiarItemsDesdeOrden()">Copiar Items desde Orden de Compra</a></li>
+                        
+                    
+                  </ul>
+                </div>
+               <input type="text" id="idCompraAcciones" class="form-control" placeholder="ID opción">
+              </div>');
         
         $css->Cfieldset(); 
     $css->CerrarDiv();

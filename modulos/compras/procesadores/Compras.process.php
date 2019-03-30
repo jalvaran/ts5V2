@@ -210,6 +210,14 @@ if( !empty($_REQUEST["Accion"]) ){
             print("OK;$Mensaje");
         break;//Fin caso 9
         
+        case 10://copio los items de una orden a una compra
+            $idCompra=$obCon->normalizar($_REQUEST["idCompra"]);  
+            $idOrdenCompra=$obCon->normalizar($_REQUEST["idOrdenCompra"]);    
+            $obCon->AgregueItemDesdeOrdenCompra($idCompra, $idOrdenCompra, "");
+            $Mensaje="Items Copiados";
+            print("OK;$Mensaje");
+        break;//Fin caso 10
+        
     }
     
     

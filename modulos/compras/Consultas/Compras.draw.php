@@ -199,13 +199,14 @@ if( !empty($_REQUEST["Accion"]) ){
                 $css->CierraFilaTabla();
                 //Dibujo los productos
                 $sql="SELECT *,(SELECT Nombre FROM productosventa WHERE idProductosVenta=factura_compra_items.idProducto) as NombreProducto
+                            ,(SELECT Referencia FROM productosventa WHERE idProductosVenta=factura_compra_items.idProducto) as Referencia
                          FROM factura_compra_items WHERE idFacturaCompra='$idCompra' ORDER BY ID DESC";
                 $Consulta=$obCon->Query($sql);
                 while ($DatosItems = $obCon->FetchAssoc($Consulta)) {
                     $idItem=$DatosItems["ID"];
                     $idProducto=$DatosItems["idProducto"];
                     $css->FilaTabla(12);
-                        $css->ColTabla($DatosItems["idProducto"], 1, "C");
+                        $css->ColTabla($DatosItems["Referencia"], 1, "C");
                         
                         print("<td onclick=PrintEtiqueta($idProducto) style='font-size:16px;cursor:pointer;text-align:center;color:green' title='Imprimir Tiquete'>");
                         
