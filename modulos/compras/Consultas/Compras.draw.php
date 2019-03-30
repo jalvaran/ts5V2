@@ -580,7 +580,12 @@ if( !empty($_REQUEST["Accion"]) ){
                                     $css->Coption();
                                     $Parametros=$obCon->DevuelveValores("parametros_contables", "ID", 27);
                                     $css->option("", "", "", $Parametros["CuentaPUC"], "", "");
-                                        print("Retefuente ".$Parametros["CuentaPUC"]);
+                                        print("Retefuente por Servicios ".$Parametros["CuentaPUC"]);
+                                    $css->Coption();
+                                    
+                                    $Parametros=$obCon->DevuelveValores("parametros_contables", "ID", 32);
+                                    $css->option("", "", "", $Parametros["CuentaPUC"], "", "");
+                                        print("Retefuente por Honorarios ".$Parametros["CuentaPUC"]);
                                     $css->Coption();
                                     $Parametros=$obCon->DevuelveValores("parametros_contables", "ID", 25);
                                     $css->option("", "", "", $Parametros["CuentaPUC"], "", "");

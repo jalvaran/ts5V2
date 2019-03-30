@@ -1261,33 +1261,13 @@ function GuardarCompra(idCompra=''){
         var idCompra = document.getElementById('idCompra').value;
     }
         
-    var CmbTipoPago = document.getElementById("CmbTipoPago").value;
-    var CmbCuentaOrigen = document.getElementById("CmbCuentaOrigen").value;
-    var CmbCuentaPUCCXP = document.getElementById("CmbCuentaPUCCXP").value;
-    var TxtFechaProgramada = document.getElementById("TxtFechaProgramada").value;
-    var CmbTraslado = document.getElementById("CmbTraslado").value;
     
-    
-    if(TxtFechaProgramada==''){
-        alertify.alert("El campo fecha programada no puede estar vacío");
-        document.getElementById("TxtFechaProgramada").style.backgroundColor="pink";
-        return;
-    }else{
-        document.getElementById("TxtFechaProgramada").style.backgroundColor="white";
-    }
-    
-    
-    document.getElementById("TxtFechaProgramada").value='';
     var form_data = new FormData();
         form_data.append('Accion', '9'); 
         form_data.append('idCompra', idCompra);
-        form_data.append('CmbTipoPago', CmbTipoPago);
-        form_data.append('CmbCuentaOrigen', CmbCuentaOrigen);
-        form_data.append('CmbCuentaPUCCXP', CmbCuentaPUCCXP);
-        form_data.append('TxtFechaProgramada', TxtFechaProgramada);
-        form_data.append('CmbTraslado', CmbTraslado);
+        
         $.ajax({
-        url: './procesadores/Compras.process.php',
+        url: './procesadores/OrdenCompra.process.php',
         //dataType: 'json',
         cache: false,
         contentType: false,

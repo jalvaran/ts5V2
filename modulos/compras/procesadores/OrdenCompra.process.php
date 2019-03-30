@@ -188,23 +188,12 @@ if( !empty($_REQUEST["Accion"]) ){
         case 9://Guardo la factura
             $idCompra=$obCon->normalizar($_REQUEST["idCompra"]);
             
-            $TipoPago=$obCon->normalizar($_REQUEST["CmbTipoPago"]);
-            $CuentaOrigen=$obCon->normalizar($_REQUEST["CmbCuentaOrigen"]);
-            $CuentaPUCCXP=$obCon->normalizar($_REQUEST["CmbCuentaPUCCXP"]);
-            $FechaProgramada=$obCon->normalizar($_REQUEST["TxtFechaProgramada"]);
-            $obCon->GuardarFacturaCompra($idCompra, $TipoPago, $CuentaOrigen,$CuentaPUCCXP, $FechaProgramada,"");
-            $obCon->ActualicePreciosVentaFacturaCompra($idCompra);
-            $LinkTraslado="";
-            $LinkFactura="../../VAtencion/PDF_FCompra.php?ID=$idCompra";
-            $MensajeTraslado="";
-            if($_REQUEST["CmbTraslado"]>0){
-                $idSede=$obCon->normalizar($_REQUEST["CmbTraslado"]);
-                $idTraslado=$obCon->CrearTrasladoDesdeCompra($idCompra,$idSede, "");
-                $LinkTraslado="../../tcpdf/examples/imprimirTraslado.php?idTraslado=$idTraslado";
-                $MensajeTraslado="<br><strong>Traslado $idTraslado Creado Correctamente </strong><a href='$LinkTraslado'  target='blank'> Imprimir</a>";
-            }
-            $Mensaje="<strong>Factura $idCompra Creada Correctamente </strong><a href='$LinkFactura'  target='blank'> Imprimir</a>";
-            $Mensaje.=$MensajeTraslado;
+            $obCon->ActualizaRegistro("ordenesdecompra", "Estado", "CERRADA", "ID", $idCompra);
+            
+            $LinkOrden="../../tcpdf/examples/imprimirOC.php?idOT=$idCompra";
+            
+            $Mensaje="<strong>Orden de Compra $idCompra Creada Correctamente </strong><a href='$LinkOrden'  target='blank'> Imprimir</a>";
+            
             print("OK;$Mensaje");
         break;//Fin caso 9
         

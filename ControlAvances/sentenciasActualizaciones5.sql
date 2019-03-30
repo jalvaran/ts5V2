@@ -102,3 +102,7 @@ INSERT INTO `configuracion_general` (`ID`, `Descripcion`, `Valor`, `Updated`, `S
 
 ALTER TABLE `ordenesdecompra` ADD `idCentroCostos` INT NOT NULL DEFAULT '1' AFTER `UsuarioCreador`, ADD `idSucursal` INT NOT NULL DEFAULT '1' AFTER `idCentroCostos`;
 
+INSERT INTO `parametros_contables` (`ID`, `Descripcion`, `CuentaPUC`, `NombreCuenta`, `Updated`, `Sync`) VALUES
+(32,	'Retefuente por compra de Honorarios',	236515,	'Retencion en la fuente por honorarios',	'2019-03-30 11:53:40',	'2019-03-30 11:53:40');
+
+
